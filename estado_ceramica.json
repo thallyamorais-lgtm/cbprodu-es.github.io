@@ -1,0 +1,69 @@
+{
+  "livro": [
+    {
+      "id": "2026-03",
+      "mes": "Março",
+      "ano": "2026",
+      "preco": 800,
+      "status": "closed",
+      "equipesRemovidas": {
+        "2": "Equipe 2"
+      },
+      "nextTeamId": 3,
+      "teams": [
+        {
+          "id": 1,
+          "label": "Equipe 1",
+          "members": [
+            "IVAN GOMES DE SOUZA"
+          ],
+          "rows": [
+            {
+              "quadra": "19",
+              "lots": [
+                23,
+                24
+              ]
+            }
+          ],
+          "salaries": {
+            "IVAN GOMES DE SOUZA": 1096.29
+          }
+        }
+      ]
+    },
+    {
+      "id": "2026-04",
+      "mes": "Abril",
+      "ano": "2026",
+      "preco": 1400,
+      "status": "open",
+      "equipesRemovidas": {
+        "2": "Equipe 2"
+      },
+      "nextTeamId": 3,
+      "teams": [
+        {
+          "id": 1,
+          "label": "Equipe 1",
+          "members": [
+            "IVAN GOMES DE SOUZA"
+          ],
+          "rows": [],
+          "salaries": {}
+        }
+      ]
+    },
+    {
+      "id": "2026-06",
+      "mes": "Junho",
+      "ano": "2026",
+      "preco": 1250,
+      "status": "open",
+      "equipesRemovidas": {},
+      "nextTeamId": 1,
+      "teams": []
+    }
+  ],
+  "mesAtivoId": "2026-04"
+}
