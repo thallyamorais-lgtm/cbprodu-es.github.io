@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Produção Gesso — JB I e II</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0f0f;--surface:#171717;--surface2:#1f1f1f;
+  --border:#2a2a2a;--border2:#333;
+  --accent:#c8f135;--accent-dim:#a8cc2a;
+  --text:#e8e8e8;--text2:#888;--text3:#555;
+  --danger:#ff5a5a;--warning:#f0a030;
+  --jbi-bg:#1a2e1a;--jbi-fg:#6fcf97;
+  --jbi2-bg:#1a1a2e;--jbi2-fg:#7f9cf5;
+  --radius:6px;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* SERVER BAR */
+#serverBar{font-family:var(--mono);font-size:10px;letter-spacing:.06em;padding:5px 28px;text-align:center;transition:all .3s;}
+
+/* HEADER */
+header{border-bottom:1px solid var(--border);padding:12px 28px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.header-left{display:flex;align-items:baseline;gap:12px;min-width:0;}
+.logo{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;white-space:nowrap;}
+.header-title{font-size:14px;font-weight:500;white-space:nowrap;}
+.header-meta{font-family:var(--mono);font-size:11px;color:var(--text3);white-space:nowrap;}
+.badge{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:3px;margin-left:4px;}
+.badge-green{background:#1a2e1a;color:#6fcf97;}
+.badge-orange{background:#1a1208;color:var(--warning);}
+.badge-gray{background:#222;color:var(--text3);}
+.header-actions{display:flex;gap:6px;flex-shrink:0;}
+
+/* BUTTONS */
+.btn{border:none;padding:7px 14px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);transition:all .15s;white-space:nowrap;}
+.btn-accent{background:var(--accent);color:#0f0f0f;}.btn-accent:hover{background:var(--accent-dim);}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2);}.btn-ghost:hover{border-color:var(--text);color:var(--text);}
+.btn-ghost.red:hover{border-color:var(--danger);color:var(--danger);}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text2);}.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+.btn-warn{background:transparent;border:1px solid var(--warning);color:var(--warning);}.btn-warn:hover{background:rgba(240,160,48,.1);}
+.btn-primary{background:var(--accent);color:#0f0f0f;border:none;}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:260px 1fr;height:calc(100vh - 82px);}
+
+/* SIDEBAR */
+.sidebar{border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.sidebar-head{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sidebar-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;}
+.sidebar-price{font-family:var(--mono);font-size:10px;color:var(--accent);}
+.team-list{display:flex;flex-direction:column;gap:3px;overflow-y:auto;flex:1;padding:8px;}
+.team-item{padding:9px 11px;border-radius:var(--radius);border:1px solid transparent;cursor:pointer;transition:all .1s;display:flex;flex-direction:column;gap:2px;}
+.team-item:hover{background:var(--surface2);border-color:var(--border2);}
+.team-item.active{background:var(--surface2);border-color:var(--accent);}
+.team-num{font-family:var(--mono);font-size:10px;color:var(--accent);}
+.team-names{font-size:12px;color:var(--text);line-height:1.4;}
+.team-stat{font-family:var(--mono);font-size:10px;color:var(--text3);}
+.team-stat span{color:var(--accent);}
+.btn-add-team{margin:8px;padding:8px;border:1px dashed var(--border2);background:transparent;color:var(--text3);font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);transition:all .1s;}
+.btn-add-team:hover{border-color:var(--accent);color:var(--accent);}
+
+/* MAIN */
+.main{display:flex;flex-direction:column;overflow:hidden;}
+.main-header{padding:14px 28px 10px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;}
+.main-team-name{font-size:16px;font-weight:500;margin-bottom:2px;}
+.main-team-members{font-size:12px;color:var(--text2);}
+.summary-strip{display:flex;padding:9px 28px;gap:22px;border-bottom:1px solid var(--border);background:var(--surface);}
+.stat{display:flex;flex-direction:column;gap:2px;}
+.stat-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;}
+.stat-value{font-family:var(--mono);font-size:14px;font-weight:500;}
+.stat-value.accent{color:var(--accent);}
+.stat-value.warn{color:var(--warning);}
+.sep{width:1px;background:var(--border);margin:2px 0;}
+.rows-area{flex:1;overflow-y:auto;padding:14px 28px;}
+
+/* ROW CARDS */
+.row-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden;}
+.row-card-head{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);}
+.quadra-input{background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:13px;padding:5px 9px;border-radius:var(--radius);width:76px;outline:none;transition:border-color .1s;}
+.quadra-input:focus{border-color:var(--accent);}
+.quadra-input:disabled{opacity:.5;cursor:not-allowed;}
+.jb-tag{font-size:10px;padding:2px 6px;border-radius:3px;font-family:var(--mono);font-weight:500;white-space:nowrap;}
+.jb-tag.jbi{background:var(--jbi-bg);color:var(--jbi-fg);}
+.jb-tag.jbii{background:var(--jbi2-bg);color:var(--jbi2-fg);}
+.jb-tag.unknown{background:#2a1f1a;color:var(--warning);}
+.row-qty-info{font-family:var(--mono);font-size:11px;color:var(--text3);margin-left:auto;}
+.row-qty-info span{color:var(--accent);}
+.btn-remove-row{background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:3px 7px;line-height:1;transition:color .1s;}
+.btn-remove-row:hover{color:var(--danger);}
+.lot-grid-wrap{padding:10px 14px;}
+.lot-grid-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.lot-grid{display:flex;flex-wrap:wrap;gap:4px;}
+.lot-btn{width:36px;height:30px;border-radius:4px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .1s;display:flex;align-items:center;justify-content:center;}
+.lot-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);background:rgba(200,241,53,.07);}
+.lot-btn.selected{background:var(--accent);border-color:var(--accent);color:#0f0f0f;font-weight:500;}
+.lot-btn.prev-self{background:#1a1208;border-color:#4a3510;color:var(--warning);cursor:not-allowed;opacity:.7;}
+.lot-btn.prev-other{background:#1a0808;border-color:#4a1010;color:var(--danger);cursor:not-allowed;opacity:.7;}
+.lot-btn:disabled{cursor:not-allowed;}
+.acum-info{padding:7px 14px 10px;display:flex;gap:14px;align-items:center;border-top:1px solid var(--border);flex-wrap:wrap;}
+.acum-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:3px;background:var(--surface2);color:var(--text2);}
+.acum-badge .dot{width:5px;height:5px;border-radius:50%;background:var(--text3);}
+.acum-badge.has-acum .dot{background:var(--warning);}
+.valor-mes{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--accent);margin-left:auto;}
+.legend{display:flex;gap:14px;padding:0 28px 12px;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text3);}
+.legend-dot{width:11px;height:11px;border-radius:2px;}
+.btn-add-row{display:flex;align-items:center;gap:8px;background:transparent;border:1px dashed var(--border2);color:var(--text3);padding:9px 14px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);transition:all .1s;width:100%;}
+.btn-add-row:hover{border-color:var(--accent);color:var(--accent);}
+.salary-section{border-top:1px solid var(--border);padding:10px 28px;background:var(--surface);display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;}
+.salary-field{display:flex;flex-direction:column;gap:4px;}
+.salary-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;}
+.salary-wrap{position:relative;display:flex;align-items:center;}
+.salary-prefix{font-family:var(--mono);font-size:12px;color:var(--text3);position:absolute;left:9px;pointer-events:none;}
+.salary-input{background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:13px;padding:6px 9px 6px 26px;border-radius:var(--radius);outline:none;width:130px;transition:border-color .1s;}
+.salary-input:focus{border-color:var(--accent);}
+.salary-input.pending{border-color:var(--warning);}
+.salary-note{font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:2px;}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:180px;gap:10px;color:var(--text3);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;}
+
+/* MODALS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;z-index:100;}
+.overlay.open{display:flex;align-items:center;justify-content:center;}
+.overlay.scroll{display:none;overflow-y:auto;padding:20px;}
+.overlay.scroll.open{display:block;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:24px;width:420px;max-width:94vw;}
+.modal-lg{background:var(--surface);border-radius:10px;overflow:hidden;max-width:800px;margin:0 auto;}
+.modal-title{font-size:14px;font-weight:500;margin-bottom:16px;}
+.form-field{margin-bottom:12px;}
+.form-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;display:block;}
+.form-input{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:var(--sans);font-size:13px;padding:7px 11px;border-radius:var(--radius);outline:none;transition:border-color .1s;}
+.form-input:focus{border-color:var(--accent);}
+.form-select{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 11px;border-radius:var(--radius);outline:none;}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;}
+.member-row{display:flex;gap:7px;margin-bottom:7px;}
+.member-row .form-input{flex:1;}
+.btn-rm{background:transparent;border:1px solid var(--border2);color:var(--text3);padding:7px 9px;cursor:pointer;border-radius:var(--radius);font-size:12px;transition:all .1s;}
+.btn-rm:hover{border-color:var(--danger);color:var(--danger);}
+.btn-add-member{background:transparent;border:1px dashed var(--border2);color:var(--text3);padding:6px 11px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);width:100%;margin-top:3px;transition:all .1s;}
+.btn-add-member:hover{border-color:var(--accent);color:var(--accent);}
+.warn-box{font-size:11px;color:var(--warning);margin-bottom:12px;padding:7px 11px;border:1px solid rgba(240,160,48,.3);border-radius:4px;line-height:1.5;}
+.preview-box{background:var(--surface2);border-radius:5px;padding:11px;margin-bottom:14px;font-family:var(--mono);font-size:11px;color:var(--text2);line-height:1.6;}
+
+/* HISTORICO */
+.hist-header{background:#111;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;}
+.hist-title{font-size:14px;font-weight:500;color:#fff;}
+.hist-body{padding:18px 22px;}
+.hist-section{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
+.hist-new{background:var(--surface2);border-radius:7px;padding:14px;margin-bottom:18px;border:1px solid var(--border2);}
+.hist-row-form{display:flex;gap:9px;align-items:flex-end;flex-wrap:wrap;}
+.hist-months{display:flex;flex-direction:column;gap:5px;}
+.hist-month{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--surface2);border-radius:6px;border:1px solid var(--border);}
+.hist-month.is-active{border-color:var(--accent);}
+.hist-month.is-closed{opacity:.85;}
+.hist-month-name{font-family:var(--mono);font-size:11px;font-weight:500;min-width:88px;}
+.hist-month-name.active{color:var(--accent);}
+.hist-month-name.closed{color:var(--text2);}
+.hist-month-name.open{color:var(--warning);}
+.hist-month-info{font-family:var(--mono);font-size:10px;color:var(--text3);}
+.hist-month-uhs{font-family:var(--mono);font-size:10px;color:var(--text2);margin-left:auto;}
+.hist-status{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:3px;}
+.hist-status.closed{background:#222;color:var(--text3);}
+.hist-status.open{background:#1a2008;color:var(--accent);}
+.hist-actions{display:flex;gap:5px;}
+.hist-close-btn{background:transparent;border:none;color:#555;font-size:20px;cursor:pointer;padding:3px 7px;line-height:1;}
+.hist-close-btn:hover{color:#fff;}
+
+/* PAINEL */
+.painel-header{background:#111;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;}
+.painel-title{font-size:14px;font-weight:500;color:#fff;}
+.kpi-block{padding:16px 22px 12px;border-bottom:1px solid var(--border);}
+.kpi-row{display:flex;align-items:center;gap:18px;margin-bottom:9px;}
+.kpi-num{font-size:38px;font-weight:600;color:var(--text);line-height:1;font-family:var(--mono);}
+.kpi-label{font-size:12px;color:var(--text2);}
+.kpi-pct{font-size:32px;font-weight:600;color:#4caf50;margin-left:auto;font-family:var(--mono);}
+.prog-wrap{height:9px;background:#2a2a2a;border-radius:5px;overflow:hidden;}
+.prog-fill{height:100%;background:#4caf50;border-radius:5px;transition:width .5s ease;}
+.quadras-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:14px 22px 16px;}
+.q-card{background:var(--surface2);border-radius:6px;padding:11px 13px;border-left:4px solid #555;}
+.q-card.verde{border-color:#4caf50;}
+.q-card.amarelo{border-color:#f9a825;}
+.q-card.vermelho{border-color:#ef5350;}
+.q-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px;}
+.q-equipes{font-size:11px;color:var(--text3);margin-bottom:7px;font-family:var(--mono);}
+.q-prog-wrap{height:5px;background:#333;border-radius:3px;overflow:hidden;margin-bottom:7px;}
+.q-prog-fill{height:100%;border-radius:3px;}
+.q-prog-fill.verde{background:#4caf50;}
+.q-prog-fill.amarelo{background:#f9a825;}
+.q-prog-fill.vermelho{background:#ef5350;}
+.q-bottom{display:flex;align-items:center;justify-content:space-between;}
+.q-count{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text);}
+.q-mes{font-family:var(--mono);font-size:10px;color:var(--text3);}
+.q-pct{font-family:var(--mono);font-size:13px;font-weight:500;}
+.q-pct.verde{color:#4caf50;}
+.q-pct.amarelo{color:#f9a825;}
+.q-pct.vermelho{color:#ef5350;}
+/* GRÁFICO MENSAL */
+.chart-section{padding:14px 22px 18px;border-top:1px solid var(--border);}
+.chart-title{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;}
+.chart-wrap{display:flex;align-items:flex-end;gap:6px;height:120px;overflow-x:auto;padding-bottom:2px;}
+.chart-col{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:44px;}
+.chart-bar-wrap{display:flex;align-items:flex-end;height:90px;}
+.chart-bar{width:28px;border-radius:3px 3px 0 0;background:var(--accent);opacity:.85;transition:height .4s ease;min-height:2px;}
+.chart-bar.current{opacity:1;box-shadow:0 0 8px rgba(200,241,53,.3);}
+.chart-val{font-family:var(--mono);font-size:9px;color:var(--text2);margin-bottom:2px;}
+.chart-label{font-family:var(--mono);font-size:9px;color:var(--text3);text-align:center;line-height:1.2;}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--accent);color:#0f0f0f;font-family:var(--mono);font-size:11px;padding:9px 16px;border-radius:var(--radius);transform:translateY(60px);opacity:0;transition:all .25s;z-index:999;}
+.toast.show{transform:translateY(0);opacity:1;}
+.divider{width:1px;height:16px;background:var(--border2);margin:0 2px;}
+</style>
+</head>
+<body>
+
+<div id="serverBar" style="background:#2e1a1a;color:#ff5a5a;">● Verificando servidor...</div>
+
+<header>
+  <div class="header-left">
+    <span class="logo">CB Eng</span>
+    <span class="header-title">Gesso</span>
+    <span class="header-meta" id="hMeta">JB I e II</span>
+    <span id="hBadge" style="display:none" class="badge"></span>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-outline" onclick="abrirHistorico()">⊞ Histórico</button>
+    <div class="divider"></div>
+    <button class="btn btn-outline" onclick="abrirPainel()" id="btnPainel">◧ Painel</button>
+    <button class="btn btn-warn" onclick="abrirConsolidar()" id="btnConsolidar">✓ Consolidar</button>
+    <button class="btn btn-accent" onclick="exportarPDF()">⬇ PDF</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-head">
+      <span class="sidebar-label" id="sidebarLabel">Equipes</span>
+      <span class="sidebar-price" id="sidebarPrice"></span>
+    </div>
+    <div class="team-list" id="teamList"></div>
+    <button class="btn-add-team" id="btnAddTeam" onclick="openAddTeamModal()">+ Nova equipe</button>
+  </aside>
+  <main class="main" id="mainArea">
+    <div class="empty-state" style="height:100%">
+      <div style="font-size:32px;opacity:.15">◫</div>
+      Selecione uma equipe
+    </div>
+  </main>
+</div>
+
+<!-- MODAL: EQUIPE -->
+<div class="overlay" id="teamModal">
+  <div class="modal">
+    <div class="modal-title" id="teamModalTitle">Nova equipe</div>
+    <div id="membersContainer"></div>
+    <button class="btn-add-member" onclick="addMemberField()">+ Adicionar membro</button>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('teamModal')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveTeam()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONSOLIDAR -->
+<div class="overlay" id="consolidarModal">
+  <div class="modal">
+    <div class="modal-title">Consolidar mês</div>
+    <div class="preview-box" id="consolPreview"></div>
+    <div class="warn-box">⚠ Após consolidar, este mês fica bloqueado permanentemente.</div>
+    <div class="form-field">
+      <label class="form-label">Próximo mês</label>
+      <div style="display:flex;gap:8px">
+        <select class="form-select" id="consolMes" style="flex:2">
+          <option>Janeiro</option><option>Fevereiro</option><option>Março</option>
+          <option>Abril</option><option>Maio</option><option>Junho</option>
+          <option>Julho</option><option>Agosto</option><option>Setembro</option>
+          <option>Outubro</option><option>Novembro</option><option>Dezembro</option>
+        </select>
+        <input type="number" class="form-input" id="consolAno" style="flex:1;width:80px" min="2024" max="2040">
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Valor por UH no próximo mês (R$)</label>
+      <input type="number" class="form-input" id="consolPreco" step="0.01" placeholder="1250.00">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('consolidarModal')">Cancelar</button>
+      <button class="btn btn-warn" onclick="consolidar()">Consolidar</button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY: HISTÓRICO -->
+<div class="overlay scroll" id="histOverlay">
+  <div class="modal-lg">
+    <div class="hist-header">
+      <div>
+        <div class="hist-title">Histórico de Meses</div>
+        <div style="font-size:11px;color:#666;font-family:var(--mono);margin-top:2px">JB I e II</div>
+      </div>
+      <button class="hist-close-btn" onclick="fecharHistorico()">×</button>
+    </div>
+    <div class="hist-body">
+      <div class="hist-section">Adicionar mês retroativo</div>
+      <div class="hist-new">
+        <div class="hist-row-form">
+          <div>
+            <label class="form-label">Mês</label>
+            <select class="form-select" id="novoMes" style="width:120px">
+              <option>Janeiro</option><option>Fevereiro</option><option>Março</option>
+              <option>Abril</option><option>Maio</option><option>Junho</option>
+              <option>Julho</option><option>Agosto</option><option>Setembro</option>
+              <option>Outubro</option><option>Novembro</option><option>Dezembro</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Ano</label>
+            <input type="number" class="form-input" id="novoAno" style="width:88px" value="2026">
+          </div>
+          <div>
+            <label class="form-label">R$ / UH</label>
+            <input type="number" class="form-input" id="novoPreco" style="width:100px" step="0.01" placeholder="1250.00">
+          </div>
+          <button class="btn btn-outline" onclick="criarMesRetroativo()">+ Criar</button>
+        </div>
+      </div>
+      <div class="hist-section">Todos os meses</div>
+      <div class="hist-months" id="histMonths"></div>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY: PAINEL -->
+<div class="overlay scroll" id="painelOverlay">
+  <div class="modal-lg">
+    <div class="painel-header">
+      <div>
+        <div class="painel-title">Painel de Produção — Gesso</div>
+        <div style="font-size:11px;color:#666;font-family:var(--mono);margin-top:2px" id="painelSub">JB I e II</div>
+      </div>
+      <button class="hist-close-btn" onclick="fecharPainel()">×</button>
+    </div>
+    <div class="kpi-block">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:9px">Progresso Geral</div>
+      <div class="kpi-row">
+        <div><div class="kpi-num" id="kpiN">0</div><div class="kpi-label">de <b>444</b> unidades</div></div>
+        <div class="kpi-pct" id="kpiP">0%</div>
+      </div>
+      <div class="prog-wrap"><div class="prog-fill" id="kpiBar" style="width:0%"></div></div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:5px" id="kpiRest"></div>
+    </div>
+    <div class="quadras-grid" id="quadrasGrid"></div>
+    <div class="painel-footer">
+      <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#4caf50;margin-right:3px"></span>≥ 75%</span>
+      <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#f9a825;margin-right:3px"></span>≥ 40%</span>
+      <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#ef5350;margin-right:3px"></span>&lt; 40%</span>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════════════
+// ESTADO GLOBAL
+// ════════════════════════════════════════════════════════════════════════════
+
+const SERVER    = 'http://localhost:5000';
+const TOTAL_UHS = 444;
+const MESES_NM  = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                   'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const QRANGE    = {2:15,8:15,9:15,15:13,16:13,17:13};
+
+// livro: array de meses ordenado cronologicamente
+// Cada mês: { id, mes, ano, preco, status('open'|'closed'), teams, nextTeamId, equipesRemovidas }
+// status 'closed' = PERMANENTEMENTE bloqueado para edição
+let livro = [];
+let mesAtivoId  = null;  // id do mês sendo editado/visualizado
+let activeTeamId = null;
+let editingTeamId = null;
+let modalMembers  = [];
+let servidorOk    = false;
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+
+function lotMax(q){ return QRANGE[parseInt(q)] || 30; }
+
+function resolveJB(q){
+  const n=parseInt(q);
+  if([2,3,4,6,7,8,9,10,11].includes(n)) return 'JBI';
+  if([12,13,14,15,16,17,18,19,20].includes(n)) return 'JBII';
+  return null;
+}
+
+function quadraLabel(q){
+  const jb=resolveJB(q), n=parseInt(q);
+  if(!n) return '';
+  return jb ? `${jb}: Q${String(n).padStart(2,'0')}` : `Q${String(n).padStart(2,'0')}`;
+}
+
+function lotLabel(n){ return String(n).padStart(2,'0'); }
+
+function mesId(mes,ano){
+  return `${ano}-${String(MESES_NM.indexOf(mes)+1).padStart(2,'0')}`;
+}
+
+function fmt(v){
+  return 'R$ '+(parseFloat(v)||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+// ── ACESSO AO MÊS ────────────────────────────────────────────────────────────
+
+function getMesAtivo(){ return livro.find(m=>m.id===mesAtivoId) || livro[livro.length-1]; }
+function getMesAberto(){ return livro.find(m=>m.status==='open'); }
+function getTeams(){ return getMesAtivo().teams; }
+function getPreco(){ return getMesAtivo().preco || 1250; }
+function isClosed(){ return getMesAtivo().status === 'closed'; }
+
+// ── ACUMULADOS (calculado dinamicamente) ─────────────────────────────────────
+// Lê todos os meses FECHADOS anteriores ao mês ativo e computa
+// { teamId: { quadraNum: { qty, value, lots } } }
+
+function computeAcumulados(){
+  const acum = {};
+  const ativoIdx = livro.findIndex(m=>m.id===mesAtivoId);
+  for(let i=0;i<ativoIdx;i++){
+    const mes=livro[i];
+    if(mes.status!=='closed') continue;
+    const preco=mes.preco||1250;
+    mes.teams.forEach(team=>{
+      if(!acum[team.id]) acum[team.id]={};
+      team.rows.forEach(r=>{
+        const qn=parseInt(r.quadra);
+        if(!qn||!r.lots.length) return;
+        if(!acum[team.id][qn]) acum[team.id][qn]={qty:0,value:0,lots:[]};
+        r.lots.forEach(lot=>{
+          if(!acum[team.id][qn].lots.includes(lot)){
+            acum[team.id][qn].lots.push(lot);
+            acum[team.id][qn].qty++;
+            acum[team.id][qn].value+=preco;
+          }
+        });
+      });
+    });
+  }
+  return acum;
+}
+
+function getAcum(teamId,q){
+  const n=parseInt(q);
+  const acum=computeAcumulados();
+  return (acum[teamId]&&n) ? (acum[teamId][n]||null) : null;
+}
+
+// ── CONFLITO DE LOTES ────────────────────────────────────────────────────────
+
+function lotStatus(teamId,q,lot,excludeRowIdx){
+  const n=parseInt(lot), qn=parseInt(q);
+  const acum=computeAcumulados();
+
+  // Acumulado desta equipe
+  if(acum[teamId]&&acum[teamId][qn]&&acum[teamId][qn].lots.includes(n))
+    return {blocked:true,reason:'prev-self'};
+
+  // Acumulado de outra equipe
+  for(const [tid,qmap] of Object.entries(acum)){
+    if(parseInt(tid)===teamId) continue;
+    if(qmap[qn]&&qmap[qn].lots.includes(n)){
+      const t=getTeams().find(t=>t.id===parseInt(tid));
+      return {blocked:true,reason:'prev-other',who:t?t.label:`Equipe ${tid}`};
+    }
+  }
+
+  // Mês atual — mesma equipe, outra linha
+  const myTeam=getTeams().find(t=>t.id===teamId);
+  if(myTeam){
+    for(let i=0;i<myTeam.rows.length;i++){
+      if(i===excludeRowIdx) continue;
+      if(parseInt(myTeam.rows[i].quadra)===qn&&myTeam.rows[i].lots.includes(n))
+        return {blocked:true,reason:'cur-self'};
+    }
+  }
+
+  // Mês atual — outra equipe
+  for(const t of getTeams()){
+    if(t.id===teamId) continue;
+    for(const r of t.rows){
+      if(parseInt(r.quadra)===qn&&r.lots.includes(n))
+        return {blocked:true,reason:'cur-other',who:t.label};
+    }
+  }
+  return null;
+}
+
+// ── PAINEL GLOBAL ────────────────────────────────────────────────────────────
+
+function computeQuadrasGlobal(){
+  const quadras={};
+  const feitos={}; // chave 'qn:lot' → evita duplos
+  // mapa teamId → label (de todos os meses)
+  const labelMap={};
+  livro.forEach(mes=>{
+    mes.teams.forEach(t=>{ labelMap[t.id]=t.label; });
+    Object.entries(mes.equipesRemovidas||{}).forEach(([id,lbl])=>{ labelMap[parseInt(id)]=lbl; });
+  });
+
+  livro.forEach(mes=>{
+    if(mes.status!=='closed'&&mes.id!==mesAtivoId) return;
+    mes.teams.forEach(team=>{
+      const lbl=labelMap[team.id]||`Equipe ${team.id}`;
+      team.rows.forEach(r=>{
+        const qn=parseInt(r.quadra); if(!qn) return;
+        const label=quadraLabel(qn); if(!label) return;
+        if(!quadras[label]) quadras[label]={feito:0,mes:0,equipes:new Set()};
+        r.lots.forEach(lot=>{
+          const key=`${qn}:${lot}`;
+          if(!feitos[key]){
+            feitos[key]=true;
+            quadras[label].feito++;
+            if(mes.id===mesAtivoId) quadras[label].mes++;
+          }
+          quadras[label].equipes.add(lbl);
+        });
+      });
+    });
+  });
+  return quadras;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// RENDERIZAÇÃO
+// ════════════════════════════════════════════════════════════════════════════
+
+function updateHeader(){
+  const mes=getMesAtivo();
+  const closed=mes.status==='closed';
+  const isAtualAberto = livro.filter(m=>m.status==='open').some(m=>m.id===mes.id);
+
+  document.getElementById('hMeta').textContent=`JB I e II — ${mes.mes} / ${mes.ano}`;
+  const badge=document.getElementById('hBadge');
+
+  if(closed){
+    badge.textContent='FECHADO'; badge.className='badge badge-gray'; badge.style.display='';
+  } else if(!isAtualAberto){
+    badge.textContent='RETROATIVO'; badge.className='badge badge-orange'; badge.style.display='';
+  } else {
+    badge.style.display='none';
+  }
+
+  document.getElementById('sidebarPrice').textContent=
+    `R$ ${mes.preco.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+  document.getElementById('sidebarLabel').textContent=
+    closed ? 'Equipes (leitura)' : 'Equipes';
+  document.getElementById('btnAddTeam').style.display=closed?'none':'';
+  document.getElementById('btnConsolidar').style.display=closed?'none':'';
+}
+
+function renderSidebar(){
+  updateHeader();
+  const list=document.getElementById('teamList');
+  const closed=isClosed();
+  list.innerHTML='';
+  getTeams().forEach(t=>{
+    const uhs=t.rows.reduce((s,r)=>s+r.lots.length,0);
+    const d=document.createElement('div');
+    d.className='team-item'+(t.id===activeTeamId?' active':'');
+    d.innerHTML=`
+      <span class="team-num">${t.label.toUpperCase()}</span>
+      <span class="team-names">${t.members.map(m=>m.split(' ')[0]).join(' · ')}</span>
+      <span class="team-stat"><span>${uhs}</span> UH${uhs!==1?'s':''}</span>`;
+    d.onclick=()=>selectTeam(t.id);
+    list.appendChild(d);
+  });
+}
+
+function selectTeam(id){ activeTeamId=id; renderSidebar(); renderMain(); }
+
+function renderMain(){
+  const mes=getMesAtivo();
+  const team=getTeams().find(t=>t.id===activeTeamId);
+  if(!team) return;
+  const closed=isClosed();
+  const preco=getPreco();
+  const totalUHs=team.rows.reduce((s,r)=>s+r.lots.length,0);
+  const gross=totalUHs*preco;
+  const perMember=team.members.length ? gross/team.members.length : 0;
+  const totalSal=team.members.reduce((s,m)=>s+(parseFloat(team.salaries[m])||0),0);
+  const net=gross-totalSal;
+
+  document.getElementById('mainArea').innerHTML=`
+    <div class="main-header">
+      <div>
+        <div class="main-team-name">${team.label}</div>
+        <div class="main-team-members">${team.members.join('  ·  ')}</div>
+      </div>
+      <div style="display:flex;gap:7px">
+        ${!closed
+          ? `<button class="btn btn-ghost" onclick="openEditTeamModal(${team.id})">Editar</button>
+             <button class="btn btn-ghost red" onclick="deleteTeam(${team.id})">Remover</button>`
+          : `<span style="font-family:var(--mono);font-size:10px;color:var(--text3);padding:6px">🔒 somente leitura</span>`}
+      </div>
+    </div>
+    <div class="summary-strip">
+      <div class="stat"><span class="stat-label">UHs no mês</span><span class="stat-value accent" id="s-uhs">${totalUHs}</span></div>
+      <div class="sep"></div>
+      <div class="stat"><span class="stat-label">Prod. bruta</span><span class="stat-value" id="s-gross">${fmt(gross)}</span></div>
+      <div class="sep"></div>
+      <div class="stat"><span class="stat-label">Por membro</span><span class="stat-value" id="s-per">${fmt(perMember)}</span></div>
+      <div class="sep"></div>
+      <div class="stat"><span class="stat-label">(-) Salários</span><span class="stat-value ${!totalSal?'warn':''}" id="s-sal">${totalSal?fmt(totalSal):'pendente'}</span></div>
+      <div class="sep"></div>
+      <div class="stat"><span class="stat-label">Prod. líquida</span><span class="stat-value accent" id="s-net">${totalSal?fmt(net):'—'}</span></div>
+    </div>
+    <div class="rows-area" id="rowsArea">${renderRowCards(team,closed)}</div>
+    <div class="salary-section">
+      ${team.members.map(m=>`
+        <div class="salary-field">
+          <label class="salary-label">${m.split(' ')[0]}</label>
+          <div class="salary-wrap">
+            <span class="salary-prefix">R$</span>
+            <input type="number" step="0.01"
+              class="salary-input ${!team.salaries[m]?'pending':''}"
+              placeholder="0,00" value="${team.salaries[m]||''}"
+              ${closed?'disabled':''}
+              onchange="setSalary(${team.id},'${m}',this.value)">
+          </div>
+          <span class="salary-note">Salário líquido</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderRowCards(team,closed){
+  let html=`<div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Selecionado</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#1a1208;border:1px solid #4a3510"></div>Feito antes (esta equipe)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#1a0808;border:1px solid #4a1010"></div>Feito por outra equipe</div>
+  </div>`;
+  if(!team.rows.length){
+    html+=`<div class="empty-state"><div style="font-size:26px;opacity:.2">◫</div>Nenhuma quadra adicionada</div>`;
+  } else {
+    team.rows.forEach((r,ri)=>{ html+=buildRowCard(team,r,ri,closed); });
+  }
+  if(!closed) html+=`<button class="btn-add-row" onclick="addRow(${team.id})">+ Adicionar quadra</button>`;
+  return html;
+}
+
+function buildRowCard(team,row,ri,closed){
+  const qn=parseInt(row.quadra);
+  const jb=resolveJB(qn);
+  const max=qn?lotMax(qn):0;
+  const acum=getAcum(team.id,qn);
+  const acumQty=acum?acum.qty:0;
+  const acumVal=acum?acum.value:0;
+  const selQty=row.lots.length;
+  const preco=getPreco();
+  const jbTag=qn?`<span class="jb-tag ${jb?jb.toLowerCase():'unknown'}">${jb||'?'}</span>`:'';
+  let lotsHtml='';
+  if(qn&&max){
+    for(let lot=1;lot<=max;lot++){
+      const sel=row.lots.includes(lot);
+      const st=sel?null:lotStatus(team.id,qn,lot,ri);
+      let cls='lot-btn', title=`Lote ${lotLabel(lot)}`, dis='';
+      if(sel) cls+=' selected';
+      else if(st){
+        dis='disabled';
+        if(st.reason==='prev-self')  { cls+=' prev-self';  title+=' — feito antes (esta equipe)'; }
+        if(st.reason==='prev-other') { cls+=' prev-other'; title+=` — ${st.who} (mês anterior)`; }
+        if(st.reason==='cur-self')   { cls+=' prev-self';  title+=' — outra linha desta equipe'; }
+        if(st.reason==='cur-other')  { cls+=' prev-other'; title+=` — ${st.who}`; }
+      }
+      if(closed&&!sel) dis='disabled';
+      const click=(!closed&&!dis)?`onclick="toggleLot(${team.id},${ri},${lot})"`:'' ;
+      lotsHtml+=`<button class="${cls}" ${dis} title="${title}" ${click}>${lotLabel(lot)}</button>`;
+    }
+  }
+  return `<div class="row-card">
+    <div class="row-card-head">
+      <input class="quadra-input ${qn&&!jb?'error':''}" type="number"
+        min="2" max="20" placeholder="nº" value="${row.quadra||''}"
+        ${closed?'disabled':''}
+        oninput="updateRowQuadra(${team.id},${ri},this.value)">
+      ${jbTag}
+      ${qn?`<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">${quadraLabel(qn)} · ${max} lotes</span>`:''}
+      <span class="row-qty-info"><span>${selQty}</span> sel.</span>
+      ${!closed?`<button class="btn-remove-row" onclick="removeRow(${team.id},${ri})">×</button>`:''}
+    </div>
+    ${qn&&max?`
+      <div class="lot-grid-wrap">
+        <div class="lot-grid-label">Lotes</div>
+        <div class="lot-grid">${lotsHtml}</div>
+      </div>
+      <div class="acum-info">
+        <span class="acum-badge ${acum?'has-acum':''}">
+          <span class="dot"></span>
+          Acum.: ${acumQty?acumQty+' UHs · '+fmt(acumVal):'—'}
+        </span>
+        <span style="font-family:var(--mono);font-size:11px;color:var(--text2)">
+          Total: ${(acumQty+selQty)>0?(acumQty+selQty)+' UHs · '+fmt(acumVal+selQty*preco):'—'}
+        </span>
+        <span class="valor-mes">${selQty?fmt(selQty*preco):'—'}</span>
+      </div>`
+    :`<div style="padding:9px 14px;font-family:var(--mono);font-size:11px;color:var(--text3)">Digite o número da quadra</div>`}
+  </div>`;
+}
+
+// ── OPERAÇÕES DE LINHA ────────────────────────────────────────────────────────
+
+function addRow(teamId){
+  getTeams().find(t=>t.id===teamId).rows.push({quadra:'',lots:[]});
+  refreshRowsArea();
+  setTimeout(()=>{ const ins=document.querySelectorAll('.quadra-input'); if(ins.length) ins[ins.length-1].focus(); },50);
+}
+
+function removeRow(teamId,ri){
+  getTeams().find(t=>t.id===teamId).rows.splice(ri,1);
+  refreshRowsArea(); refreshSummary(); renderSidebar(); salvarEstado();
+}
+
+function updateRowQuadra(teamId,ri,val){
+  const team=getTeams().find(t=>t.id===teamId);
+  if(team.rows[ri].quadra!==val) team.rows[ri].lots=[];
+  team.rows[ri].quadra=val;
+  refreshRowsArea();
+}
+
+function toggleLot(teamId,ri,lot){
+  const team=getTeams().find(t=>t.id===teamId);
+  const row=team.rows[ri];
+  const idx=row.lots.indexOf(lot);
+  if(idx>=0){ row.lots.splice(idx,1); }
+  else {
+    if(lotStatus(teamId,row.quadra,lot,ri)?.blocked) return;
+    row.lots.push(lot); row.lots.sort((a,b)=>a-b);
+  }
+  refreshRowsArea(); refreshSummary(); renderSidebar(); salvarEstado();
+}
+
+function refreshRowsArea(){
+  const team=getTeams().find(t=>t.id===activeTeamId);
+  if(!team) return;
+  const area=document.getElementById('rowsArea');
+  if(area) area.innerHTML=renderRowCards(team,isClosed());
+}
+
+function setSalary(teamId,member,val){
+  getTeams().find(t=>t.id===teamId).salaries[member]=parseFloat(val)||0;
+  refreshSummary(); salvarEstado();
+}
+
+function refreshSummary(){
+  const team=getTeams().find(t=>t.id===activeTeamId);
+  if(!team) return;
+  const preco=getPreco();
+  const totalUHs=team.rows.reduce((s,r)=>s+r.lots.length,0);
+  const gross=totalUHs*preco;
+  const per=team.members.length?gross/team.members.length:0;
+  const sal=team.members.reduce((s,m)=>s+(parseFloat(team.salaries[m])||0),0);
+  const set=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  set('s-uhs',totalUHs); set('s-gross',fmt(gross)); set('s-per',fmt(per));
+  const se=document.getElementById('s-sal');
+  if(se){ se.textContent=sal?fmt(sal):'pendente'; se.className='stat-value'+(sal?'':' warn'); }
+  set('s-net',sal?fmt(gross-sal):'—');
+}
+
+// ── MODAL EQUIPE ──────────────────────────────────────────────────────────────
+
+function openAddTeamModal(){
+  editingTeamId=null; modalMembers=[''];
+  document.getElementById('teamModalTitle').textContent='Nova equipe';
+  renderMemberFields();
+  document.getElementById('teamModal').classList.add('open');
+}
+
+function openEditTeamModal(id){
+  const t=getTeams().find(t=>t.id===id);
+  editingTeamId=id; modalMembers=[...t.members];
+  document.getElementById('teamModalTitle').textContent='Editar '+t.label;
+  renderMemberFields();
+  document.getElementById('teamModal').classList.add('open');
+}
+
+function renderMemberFields(){
+  document.getElementById('membersContainer').innerHTML=
+    `<div class="form-field"><label class="form-label">Membros</label>${
+      modalMembers.map((m,i)=>`
+        <div class="member-row">
+          <input class="form-input" placeholder="Nome completo" value="${m}"
+            oninput="modalMembers[${i}]=this.value.toUpperCase()">
+          <button class="btn-rm" onclick="removeMemberField(${i})" ${modalMembers.length===1?'disabled':''}>×</button>
+        </div>`).join('')
+    }</div>`;
+}
+
+function addMemberField(){
+  modalMembers.push(''); renderMemberFields();
+  setTimeout(()=>{ const els=document.querySelectorAll('#membersContainer .form-input'); if(els.length) els[els.length-1].focus(); },30);
+}
+
+function removeMemberField(i){ modalMembers.splice(i,1); renderMemberFields(); }
+
+function saveTeam(){
+  const members=modalMembers.map(m=>m.trim().toUpperCase()).filter(Boolean);
+  if(!members.length) return;
+  const mes=getMesAtivo();
+  if(editingTeamId){
+    mes.teams.find(t=>t.id===editingTeamId).members=members;
+  } else {
+    mes.teams.push({id:mes.nextTeamId++,label:`Equipe ${mes.teams.length+1}`,members,rows:[],salaries:{}});
+  }
+  closeModal('teamModal'); renderSidebar();
+  if(editingTeamId) renderMain();
+  salvarEstado();
+  showToast(editingTeamId?'Equipe atualizada':'Equipe adicionada');
+}
+
+function deleteTeam(id){
+  if(!confirm('Remover esta equipe deste mês?')) return;
+  const mes=getMesAtivo();
+  const removed=mes.teams.find(t=>t.id===id);
+  if(removed) mes.equipesRemovidas[id]=removed.label;
+  mes.teams=mes.teams.filter(t=>t.id!==id);
+  activeTeamId=null; renderSidebar(); salvarEstado();
+  document.getElementById('mainArea').innerHTML=
+    `<div class="empty-state" style="height:100%"><div style="font-size:32px;opacity:.15">◫</div>Selecione uma equipe</div>`;
+  showToast('Equipe removida');
+}
+
+// ── CONSOLIDAR ────────────────────────────────────────────────────────────────
+
+function abrirConsolidar(){
+  const mes=getMesAtivo();
+  const idx=MESES_NM.indexOf(mes.mes);
+  document.getElementById('consolMes').value=MESES_NM[(idx+1)%12];
+  document.getElementById('consolAno').value=idx===11?String(parseInt(mes.ano)+1):mes.ano;
+  document.getElementById('consolPreco').value=mes.preco;
+  let total=0; const res=[];
+  mes.teams.forEach(t=>{ const u=t.rows.reduce((s,r)=>s+r.lots.length,0); if(u){res.push(`${t.label}: ${u} UHs`);total+=u;} });
+  document.getElementById('consolPreview').innerHTML=
+    `<b>${mes.mes}/${mes.ano}</b>  ·  R$ ${mes.preco}/UH  ·  <b>${total} UHs</b><br>`+
+    (res.length?res.join(' · '):'<span style="color:var(--text3)">Nenhuma medição lançada</span>');
+  document.getElementById('consolidarModal').classList.add('open');
+}
+
+async function consolidar(){
+  const novoMes=document.getElementById('consolMes').value;
+  const novoAno=document.getElementById('consolAno').value;
+  const novoPreco=parseFloat(document.getElementById('consolPreco').value)||1250;
+  if(!novoMes||!novoAno){ showToast('Preencha mês e ano'); return; }
+
+  // Referência ao mês sendo fechado ANTES de alterar status
+  const mesAtual=getMesAtivo();
+  mesAtual.status='closed';
+
+  const nid=mesId(novoMes,novoAno);
+  const jaExiste=livro.find(m=>m.id===nid);
+
+  if(jaExiste){
+    // Mês já existe (retroativo criado antes) — apenas navega para ele
+    // Se equipes vazias, copia do mês recém-fechado
+    if(!jaExiste.teams.length){
+      jaExiste.teams=mesAtual.teams.map(t=>({
+        id:t.id,label:t.label,members:[...t.members],rows:[],salaries:{}
+      }));
+      jaExiste.nextTeamId=mesAtual.nextTeamId;
+      jaExiste.equipesRemovidas={...mesAtual.equipesRemovidas};
+    }
+    mesAtivoId=nid;
+  } else {
+    // Cria novo mês herdando equipes do mês fechado
+    const novoMesObj={
+      id:nid, mes:novoMes, ano:novoAno, preco:novoPreco,
+      status:'open',
+      equipesRemovidas:{...mesAtual.equipesRemovidas},
+      nextTeamId:mesAtual.nextTeamId,
+      teams:mesAtual.teams.map(t=>({
+        id:t.id,label:t.label,members:[...t.members],rows:[],salaries:{}
+      }))
+    };
+    livro.push(novoMesObj);
+    livro.sort((a,b)=>a.id.localeCompare(b.id));
+    mesAtivoId=nid;
+  }
+
+  activeTeamId=null;
+  closeModal('consolidarModal');
+  await salvarEstado();
+  renderSidebar();
+  document.getElementById('mainArea').innerHTML=
+    `<div class="empty-state" style="height:100%"><div style="font-size:32px;opacity:.15">◫</div>Selecione uma equipe</div>`;
+  showToast('Consolidado! '+novoMes+'/'+novoAno);
+}
+
+// ── HISTÓRICO ─────────────────────────────────────────────────────────────────
+
+function abrirHistorico(){ renderHistorico(); document.getElementById('histOverlay').classList.add('open'); }
+function fecharHistorico(){ document.getElementById('histOverlay').classList.remove('open'); }
+
+function renderHistorico(){
+  const c=document.getElementById('histMonths');
+  c.innerHTML='';
+  [...livro].sort((a,b)=>b.id.localeCompare(a.id)).forEach(mes=>{
+    const isAtivo=mes.id===mesAtivoId;
+    const closed=mes.status==='closed';
+    const uhs=mes.teams.reduce((s,t)=>s+t.rows.reduce((ss,r)=>ss+r.lots.length,0),0);
+    const div=document.createElement('div');
+    div.className=`hist-month ${isAtivo?'is-active':''} ${closed?'is-closed':''}`;
+    div.innerHTML=`
+      <span class="hist-month-name ${isAtivo?'active':closed?'closed':'open'}">${mes.mes} ${mes.ano}</span>
+      <span class="hist-month-info">R$ ${mes.preco.toLocaleString('pt-BR',{minimumFractionDigits:2})}/UH</span>
+      <span class="hist-month-uhs">${uhs} UHs</span>
+      <span class="hist-status ${closed?'closed':'open'}">${closed?'Fechado':'Aberto'}</span>
+      <div class="hist-actions">
+        ${isAtivo
+          ? `<span style="font-family:var(--mono);font-size:10px;color:var(--text3)">Ativo</span>`
+          : `<button class="btn btn-outline" style="font-size:10px;padding:4px 9px" onclick="irParaMes('${mes.id}')">
+               ${closed?'Visualizar':'Abrir'}
+             </button>`}
+        ${!closed?`<button class="btn btn-ghost" style="font-size:10px;padding:4px 9px" onclick="editarPreco('${mes.id}')">Preço</button>`:''}
+      </div>`;
+    c.appendChild(div);
+  });
+}
+
+function irParaMes(id){
+  // Simplesmente navega para o mês — sem alterar status de nenhum mês
+  // Meses closed ficam em leitura; meses open ficam editáveis
+  mesAtivoId=id;
+  activeTeamId=null;
+  fecharHistorico();
+  renderSidebar();
+  document.getElementById('mainArea').innerHTML=
+    `<div class="empty-state" style="height:100%"><div style="font-size:32px;opacity:.15">◫</div>Selecione uma equipe</div>`;
+  const mes=getMesAtivo();
+  showToast((mes.status==='closed'?'Visualizando ':'Editando ')+mes.mes+'/'+mes.ano);
+}
+
+function criarMesRetroativo(){
+  const mes=document.getElementById('novoMes').value;
+  const ano=document.getElementById('novoAno').value;
+  const preco=parseFloat(document.getElementById('novoPreco').value);
+  if(!mes||!ano||!preco){ showToast('Preencha todos os campos'); return; }
+  const id=mesId(mes,ano);
+  if(livro.find(m=>m.id===id)){ showToast('Este mês já existe'); return; }
+
+  // Copia equipes do mês fechado mais recente anterior a este
+  const fonte=livro.filter(m=>m.id<id&&m.teams&&m.teams.length>0)
+                   .sort((a,b)=>b.id.localeCompare(a.id))[0];
+  const equipes=fonte?fonte.teams.map(t=>({
+    id:t.id,label:t.label,members:[...t.members],rows:[],salaries:{}
+  })):[];
+
+  livro.push({
+    id, mes, ano, preco, status:'open',
+    equipesRemovidas: fonte?{...fonte.equipesRemovidas}:{},
+    nextTeamId: fonte?fonte.nextTeamId:1,
+    teams: equipes
+  });
+  livro.sort((a,b)=>a.id.localeCompare(b.id));
+  mesAtivoId=id;
+  activeTeamId=null;
+  fecharHistorico();
+  salvarEstado();
+  renderSidebar();
+  document.getElementById('mainArea').innerHTML=
+    `<div class="empty-state" style="height:100%"><div style="font-size:32px;opacity:.15">◫</div>Selecione uma equipe</div>`;
+  showToast('Mês '+mes+'/'+ano+' criado');
+}
+
+function editarPreco(id){
+  const mes=livro.find(m=>m.id===id);
+  if(!mes) return;
+  const novo=prompt(`Novo valor por UH para ${mes.mes}/${mes.ano} (atual: R$ ${mes.preco}):`,mes.preco);
+  if(novo===null) return;
+  const p=parseFloat(novo);
+  if(isNaN(p)||p<=0){ showToast('Valor inválido'); return; }
+  mes.preco=p;
+  salvarEstado(); renderHistorico();
+  if(id===mesAtivoId){ renderSidebar(); refreshRowsArea(); refreshSummary(); }
+  showToast('Preço atualizado');
+}
+
+// ── PAINEL ────────────────────────────────────────────────────────────────────
+
+// Calcula UHs produzidas por mês (apenas meses até o ativo, inclusive)
+function computeHistorico(){
+  const ativoIdx = livro.findIndex(m=>m.id===mesAtivoId);
+  return livro
+    .filter((_,i) => i <= ativoIdx)
+    .map(mes => ({
+      label: mes.mes.substring(0,3)+'/'+mes.ano.toString().slice(-2),
+      uhs:   mes.teams.reduce((s,t)=>s+t.rows.reduce((ss,r)=>ss+r.lots.length,0),0),
+      atual: mes.id === mesAtivoId
+    }));
+}
+
+function renderChart(dados){
+  const wrap = document.getElementById('chartWrap');
+  if(!wrap) return;
+  const maxUhs = Math.max(...dados.map(d=>d.uhs), 1);
+  wrap.innerHTML = dados.map(d => {
+    const h = Math.max(Math.round((d.uhs/maxUhs)*86), d.uhs>0?4:1);
+    return `<div class="chart-col">
+      <div class="chart-val">${d.uhs>0?d.uhs:''}</div>
+      <div class="chart-bar-wrap">
+        <div class="chart-bar ${d.atual?'current':''}" style="height:${h}px"></div>
+      </div>
+      <div class="chart-label">${d.label}</div>
+    </div>`;
+  }).join('');
+}
+
+
+function abrirPainel(){
+  renderPainel();
+  document.getElementById('painelOverlay').classList.add('open');
+  document.getElementById('btnPainel').classList.add('active');
+}
+function fecharPainel(){
+  document.getElementById('painelOverlay').classList.remove('open');
+  document.getElementById('btnPainel').classList.remove('active');
+}
+function renderPainel(){
+  const q=computeQuadrasGlobal();
+  const total=Object.values(q).reduce((s,v)=>s+v.feito,0);
+  const pct=total/TOTAL_UHS*100;
+  const mes=getMesAtivo();
+  document.getElementById('painelSub').textContent=`JB I e II  ·  ${mes.mes} / ${mes.ano}`;
+  document.getElementById('kpiN').textContent=total;
+  document.getElementById('kpiP').textContent=pct.toFixed(1)+'%';
+  document.getElementById('kpiBar').style.width=pct.toFixed(1)+'%';
+  document.getElementById('kpiRest').textContent=(TOTAL_UHS-total)+' restantes';
+  const grid=document.getElementById('quadrasGrid');
+  grid.innerHTML='';
+  Object.entries(q).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([label,data])=>{
+    const num=parseInt(label.split('Q').pop()||'0');
+    const max=num?lotMax(num):30;
+    const pq=max?data.feito/max*100:0;
+    const cls=pq>=75?'verde':pq>=40?'amarelo':'vermelho';
+    const eq=[...data.equipes].sort().join(', ');
+    const card=document.createElement('div');
+    card.className=`q-card ${cls}`;
+    card.innerHTML=`
+      <div class="q-name">${label}</div>
+      <div class="q-equipes">${eq}</div>
+      <div class="q-prog-wrap"><div class="q-prog-fill ${cls}" style="width:${pq.toFixed(1)}%"></div></div>
+      <div class="q-bottom">
+        <span class="q-count">${data.feito}<span style="color:var(--text3);font-size:11px">/${max}</span></span>
+        <span class="q-mes">+${data.mes} este mês</span>
+        <span class="q-pct ${cls}">${pq.toFixed(0)}%</span>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ── EXPORT PDF ────────────────────────────────────────────────────────────────
+
+function buildPayload(){
+  const mes=getMesAtivo();
+  const preco=getPreco();
+  const payload={mes:mes.mes,ano:mes.ano,preco,teams:[]};
+  mes.teams.forEach(team=>{
+    const uhs=team.rows.reduce((s,r)=>s+r.lots.length,0);
+    const per=team.members.length?(uhs*preco)/team.members.length:0;
+    payload.teams.push({
+      label:team.label,
+      members:team.members.map(m=>({
+        name:m,cargo:'PEDREIRO',
+        sal_liq:parseFloat(team.salaries[m])||0,
+        prod_liq:per-(parseFloat(team.salaries[m])||0)
+      })),
+      rows:team.rows.filter(r=>r.lots.length).map(r=>{
+        const a=getAcum(team.id,r.quadra);
+        return {
+          quadra:quadraLabel(r.quadra),
+          lotes:r.lots.length?'UH: '+r.lots.map(l=>lotLabel(l)).join(', '):'',
+          qty:r.lots.length,
+          acum_qty:a?a.qty:0,
+          acum_val:a?a.value:0
+        };
+      })
+    });
+  });
+
+  // Dados globais do painel (total real acumulado de todos os meses)
+  const qg = computeQuadrasGlobal();
+  payload.painel = {
+    total_feito: Object.values(qg).reduce((s,v)=>s+v.feito,0),
+    total_loteamento: TOTAL_UHS,
+    quadras: Object.entries(qg).sort((a,b)=>a[0].localeCompare(b[0])).map(([label,data])=>{
+      const num = parseInt(label.split('Q').pop()||'0');
+      const max = num ? lotMax(num) : 30;
+      return {
+        label,
+        feito: data.feito,
+        mes: data.mes,
+        max,
+        equipes: [...data.equipes].sort().join(', ')
+      };
+    })
+  };
+
+  // Histórico mensal para o gráfico do PDF
+  payload.historico = computeHistorico();
+
+  return payload;
+}
+
+async function exportarPDF(){
+  const btn=document.querySelector('.btn-accent');
+  btn.textContent='⏳'; btn.disabled=true;
+  try{
+    const resp=await fetch(SERVER+'/gerar-pdf',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(buildPayload())
+    });
+    const data=await resp.json();
+    if(!data.ok) throw new Error(data.error);
+    const bin=atob(data.pdf);
+    const bytes=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    const blob=new Blob([bytes],{type:'application/pdf'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    const mes=getMesAtivo();
+    a.href=url; a.download=`gesso_${mes.mes}_${mes.ano}.pdf`; a.click();
+    URL.revokeObjectURL(url);
+    showToast('PDF exportado');
+  }catch(e){
+    showToast('Servidor offline — baixando JSON');
+    const blob=new Blob([JSON.stringify(buildPayload(),null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    const mes=getMesAtivo();
+    a.href=url; a.download=`dados_gesso_${mes.mes}_${mes.ano}.json`; a.click();
+    URL.revokeObjectURL(url);
+  }finally{
+    btn.textContent='⬇ PDF'; btn.disabled=false;
+  }
+}
+
+// ── SERVIDOR / PERSISTÊNCIA ───────────────────────────────────────────────────
+
+function setServerStatus(ok){
+  servidorOk=ok;
+  const bar=document.getElementById('serverBar');
+  if(ok){
+    bar.style.background='#1a2e1a'; bar.style.color='#6fcf97';
+    bar.textContent='● Servidor ativo — dados salvos automaticamente';
+  } else {
+    bar.style.background='#2e1a1a'; bar.style.color='#ff5a5a';
+    bar.textContent='● Servidor offline — execute iniciar.bat';
+  }
+}
+
+async function salvarEstado(){
+  // Backup local imediato
+  try{ localStorage.setItem('cb_estado_gesso',JSON.stringify({livro,mesAtivoId})); }catch(e){}
+  // Servidor
+  try{
+    const r=await fetch(SERVER+'/salvar-estado',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({livro,mesAtivoId,servico:'gesso'})
+    });
+    if(r.ok) setServerStatus(true);
+  }catch(e){ setServerStatus(false); }
+}
+
+async function carregarEstado(){
+  // Tenta servidor primeiro
+  try{
+    const r=await fetch(SERVER+'/carregar-estado?servico=gesso',{signal:AbortSignal.timeout(3000)});
+    if(r.ok){
+      const d=await r.json();
+      if(d&&d.livro){
+        livro=d.livro; mesAtivoId=d.mesAtivoId||livro[livro.length-1].id;
+        setServerStatus(true); return;
+      }
+    }
+  }catch(e){}
+  // Fallback localStorage
+  setServerStatus(false);
+  try{
+    const local=localStorage.getItem('cb_estado_gesso');
+    if(local){
+      const d=JSON.parse(local);
+      if(d&&d.livro){ livro=d.livro; mesAtivoId=d.mesAtivoId||livro[livro.length-1].id; showToast('Dados carregados do backup local'); return; }
+    }
+  }catch(e){}
+  // Seed vazia
+  livro=[{id:'2026-06',mes:'Junho',ano:'2026',preco:1250,status:'open',equipesRemovidas:{},nextTeamId:1,teams:[]}];
+  mesAtivoId='2026-06';
+}
+
+// Ping periódico
+async function ping(){
+  try{
+    const r=await fetch(SERVER+'/ping',{signal:AbortSignal.timeout(2000)});
+    const d=await r.json(); setServerStatus(d.ok===true);
+  }catch(e){ setServerStatus(false); }
+}
+ping();
+setInterval(ping,10000);
+
+window.addEventListener('beforeunload',e=>{
+  if(!servidorOk){ e.preventDefault(); e.returnValue='Servidor offline — dados podem não estar salvos. Execute iniciar.bat.'; }
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+carregarEstado().then(()=>{
+  if(!mesAtivoId) mesAtivoId=livro[livro.length-1].id;
+  renderSidebar();
+});
+</script>
+</body>
+</html>

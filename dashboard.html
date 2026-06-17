@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard — CB Engenharia</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0f0f;--surface:#171717;--surface2:#1f1f1f;
+  --border:#2a2a2a;--border2:#333;
+  --accent:#c8f135;--text:#e8e8e8;--text2:#888;--text3:#555;
+  --danger:#ff5a5a;--warning:#f0a030;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
+  --radius:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* HEADER */
+header{
+  background:#111;border-bottom:1px solid var(--border);
+  padding:16px 32px;display:flex;align-items:center;justify-content:space-between;
+}
+.header-left{display:flex;align-items:baseline;gap:14px;}
+.logo{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;}
+.header-title{font-size:16px;font-weight:600;}
+.header-sub{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.header-right{display:flex;align-items:center;gap:12px;}
+#serverDot{width:8px;height:8px;border-radius:50%;background:#ef5350;flex-shrink:0;}
+#serverDot.ok{background:#4caf50;}
+#serverMsg{font-family:var(--mono);font-size:10px;color:var(--text3);}
+#lastUpdate{font-family:var(--mono);font-size:10px;color:var(--text3);}
+.btn-refresh{background:transparent;border:1px solid var(--border2);color:var(--text2);
+  padding:6px 14px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;cursor:pointer;border-radius:6px;transition:all .15s;}
+.btn-refresh:hover{border-color:var(--accent);color:var(--accent);}
+.nav-links{display:flex;gap:6px;}
+.nav-link{font-family:var(--mono);font-size:10px;color:var(--text3);padding:5px 10px;
+  border-radius:4px;text-decoration:none;letter-spacing:.06em;transition:all .15s;}
+.nav-link:hover{background:var(--surface2);color:var(--text);}
+
+/* SUMMARY BAR */
+.summary-bar{
+  display:flex;gap:0;border-bottom:1px solid var(--border);
+  background:var(--surface);overflow-x:auto;
+}
+.summary-stat{
+  padding:14px 24px;display:flex;flex-direction:column;gap:4px;
+  border-right:1px solid var(--border);min-width:160px;
+}
+.summary-stat:last-child{border-right:none;}
+.ss-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;}
+.ss-value{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--text);}
+.ss-value.accent{color:var(--accent);}
+.ss-sub{font-family:var(--mono);font-size:10px;color:var(--text3);}
+
+/* MAIN GRID */
+.main{padding:24px 32px;}
+.section-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.12em;
+  text-transform:uppercase;margin-bottom:16px;}
+.cards-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+  gap:16px;
+  margin-bottom:32px;
+}
+
+/* FRENTE CARD */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  transition:border-color .15s;
+}
+.card:hover{border-color:var(--border2);}
+.card-header{
+  padding:14px 18px 12px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-nome{font-size:14px;font-weight:500;}
+.card-link{font-family:var(--mono);font-size:10px;color:var(--text3);text-decoration:none;
+  padding:3px 8px;border:1px solid var(--border2);border-radius:4px;transition:all .12s;}
+.card-link:hover{border-color:var(--accent);color:var(--accent);}
+.card-body{padding:14px 18px;}
+
+/* PROGRESS */
+.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.prog-nums{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--text);white-space:nowrap;}
+.prog-nums small{font-size:12px;color:var(--text3);font-weight:400;}
+.prog-pct{font-family:var(--mono);font-size:18px;font-weight:500;margin-left:auto;white-space:nowrap;}
+.prog-pct.verde{color:#4caf50;}
+.prog-pct.amarelo{color:#f9a825;}
+.prog-pct.vermelho{color:#ef5350;}
+.prog-bar-wrap{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-bottom:14px;}
+.prog-bar{height:100%;border-radius:3px;transition:width .6s ease;}
+.prog-bar.verde{background:#4caf50;}
+.prog-bar.amarelo{background:#f9a825;}
+.prog-bar.vermelho{background:#ef5350;}
+
+/* METRICS ROW */
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.metric{background:var(--surface2);border-radius:6px;padding:10px 12px;}
+.metric-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:4px;}
+.metric-value{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text);}
+.metric-value.accent{color:var(--accent);}
+.metric-value.warn{color:var(--warning);}
+.metric-sub{font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:2px;}
+
+/* MINI CHART */
+.mini-chart{display:flex;align-items:flex-end;gap:3px;height:44px;padding-top:6px;}
+.mini-bar-col{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;}
+.mini-bar{width:100%;border-radius:2px 2px 0 0;background:var(--accent);opacity:.6;min-height:2px;}
+.mini-bar.last{opacity:1;}
+.mini-lbl{font-family:var(--mono);font-size:7px;color:var(--text3);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center;}
+
+/* OFFLINE CARD */
+.card-offline{opacity:.4;}
+.card-offline .card-body{
+  display:flex;align-items:center;justify-content:center;
+  height:120px;font-family:var(--mono);font-size:11px;color:var(--text3);
+}
+
+/* LOADING */
+#loading{
+  display:flex;align-items:center;justify-content:center;
+  height:300px;flex-direction:column;gap:12px;
+  font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:.08em;
+}
+.spinner{
+  width:24px;height:24px;border:2px solid var(--border2);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="logo">CB Engenharia</span>
+    <span class="header-title">Dashboard Geral</span>
+    <span class="header-sub">Loteamento Jose Bernardino I e II</span>
+  </div>
+  <div class="header-right">
+    <div id="serverDot"></div>
+    <span id="serverMsg">Conectando...</span>
+    <span id="lastUpdate"></span>
+    <button class="btn-refresh" onclick="gerarRelatorio()" id="btnRelatorio" style="border-color:#c8f135;color:#c8f135" disabled>⬇ Relatório PDF</button>
+    <button class="btn-refresh" onclick="carregar()">↻ Atualizar</button>
+  </div>
+</header>
+
+<div class="summary-bar" id="summaryBar">
+  <div class="summary-stat">
+    <span class="ss-label">Total do loteamento</span>
+    <span class="ss-value">444</span>
+    <span class="ss-sub">unidades habitacionais</span>
+  </div>
+  <div class="summary-stat">
+    <span class="ss-label">Frentes ativas</span>
+    <span class="ss-value" id="st-frentes">—</span>
+    <span class="ss-sub">de 10 frentes</span>
+  </div>
+  <div class="summary-stat">
+    <span class="ss-label">Frente mais avançada</span>
+    <span class="ss-value accent" id="st-lider" style="font-size:14px;padding-top:3px">—</span>
+    <span class="ss-sub" id="st-lider-pct">—</span>
+  </div>
+  <div class="summary-stat">
+    <span class="ss-label">Valor bruto total</span>
+    <span class="ss-value accent" id="st-valor" style="font-size:14px;padding-top:3px">—</span>
+    <span class="ss-sub">todas as frentes</span>
+  </div>
+</div>
+
+<div style="background:var(--surface);border-bottom:1px solid var(--border);padding:8px 32px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+  <span style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-right:4px">Frentes:</span>
+  <a href="http://localhost:5000/contencao"   target="_blank" class="nav-link">Contenção</a>
+  <a href="http://localhost:5000/inst_radier"  target="_blank" class="nav-link">Inst. Radier</a>
+  <a href="http://localhost:5000/lona_malha"   target="_blank" class="nav-link">Lona/Malha</a>
+  <a href="http://localhost:5000/conc_radier"  target="_blank" class="nav-link">Conc. Radier</a>
+  <a href="http://localhost:5000/inst_reg"     target="_blank" class="nav-link">Inst. Registros</a>
+  <a href="http://localhost:5000/graute_inf"   target="_blank" class="nav-link">Graute Inf.</a>
+  <a href="http://localhost:5000/graute_sup"   target="_blank" class="nav-link">Graute Sup.</a>
+  <a href="http://localhost:5000/telhado"      target="_blank" class="nav-link">Telhado</a>
+  <a href="http://localhost:5000/inst_hidro"   target="_blank" class="nav-link">Inst. Hidro.</a>
+  <a href="http://localhost:5000/alvenaria"     target="_blank" class="nav-link">Alvenaria</a>
+  <a href="http://localhost:5000/acabamento"   target="_blank" class="nav-link">Acabamento</a>
+  <a href="http://localhost:5000/gesso"        target="_blank" class="nav-link">Gesso</a>
+  <a href="http://localhost:5000/contrapiso"   target="_blank" class="nav-link">Contrapiso</a>
+  <a href="http://localhost:5000/caixinha"     target="_blank" class="nav-link">Caixinha</a>
+  <a href="http://localhost:5000/peitoril"     target="_blank" class="nav-link">Peitoril</a>
+  <a href="http://localhost:5000/esquadrias"   target="_blank" class="nav-link">Esquadrias</a>
+  <a href="http://localhost:5000/cabeamento"   target="_blank" class="nav-link">Cabeamento</a>
+  <a href="http://localhost:5000/impermea"     target="_blank" class="nav-link">Impermeab.</a>
+  <a href="http://localhost:5000/ceramica"     target="_blank" class="nav-link">Cerâmica</a>
+</div>
+
+<div class="main">
+  <div id="loading">
+    <div class="spinner"></div>
+    Carregando dados...
+  </div>
+  <div id="cardsContainer" style="display:none">
+    <div class="section-label" id="sectionLabel">Frentes de Serviço</div>
+    <div class="cards-grid" id="cardsGrid"></div>
+  </div>
+</div>
+
+<script>
+const SERVER = 'http://localhost:5000';
+const TOTAL  = 444;
+
+const LINKS = {
+  contencao:'contencao', inst_radier:'inst_radier', lona_malha:'lona_malha',
+  conc_radier:'conc_radier', inst_reg:'inst_reg', graute_inf:'graute_inf',
+  graute_sup:'graute_sup', telhado:'telhado', inst_hidro:'inst_hidro',
+  acabamento:'acabamento', gesso:'gesso', contrapiso:'contrapiso',
+  caixinha:'caixinha', peitoril:'peitoril', esquadrias:'esquadrias',
+  cabeamento:'cabeamento', impermea:'impermea', ceramica:'ceramica'
+};
+
+function brl(v){
+  return 'R$ '+(parseFloat(v)||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function brlK(v){
+  if(v>=1000000) return 'R$ '+(v/1000000).toFixed(2).replace('.',',')+'M';
+  if(v>=1000)    return 'R$ '+(v/1000).toFixed(1).replace('.',',')+'k';
+  return brl(v);
+}
+
+function pctClass(pct){
+  return pct>=75?'verde':pct>=40?'amarelo':'vermelho';
+}
+
+function renderMiniChart(historico){
+  if(!historico||!historico.length) return '<div style="font-family:var(--mono);font-size:10px;color:var(--text3)">Sem histórico</div>';
+  const maxUhs = Math.max(...historico.map(h=>h.uhs),1);
+  // Show last 8 months max
+  const data = historico.slice(-8);
+  return `<div class="mini-chart">${
+    data.map((h,i)=>{
+      const isLast = i===data.length-1;
+      const barH = Math.max(Math.round((h.uhs/maxUhs)*36),h.uhs>0?3:1);
+      return `<div class="mini-bar-col">
+        <div class="mini-bar ${isLast?'last':''}" style="height:${barH}px"></div>
+        <div class="mini-lbl">${h.label}</div>
+      </div>`;
+    }).join('')
+  }</div>`;
+}
+
+function renderCard(d){
+  if(!d.ok){
+    return `<div class="card card-offline">
+      <div class="card-header">
+        <span class="card-nome">${d.nome}</span>
+      </div>
+      <div class="card-body">Sem dados registrados</div>
+    </div>`;
+  }
+
+  const cls   = pctClass(d.pct);
+  const pctW  = Math.min(d.pct,100).toFixed(1);
+  const link  = LINKS[d.slug]||d.slug;
+
+  return `<div class="card">
+    <div class="card-header">
+      <span class="card-nome">${d.nome}</span>
+      <a class="card-link" href="${SERVER}/${link}" target="_blank">Abrir →</a>
+    </div>
+    <div class="card-body">
+      <div class="prog-row">
+        <div class="prog-nums">${d.total}<small>/${TOTAL}</small></div>
+        <div class="prog-pct ${cls}">${d.pct}%</div>
+      </div>
+      <div class="prog-bar-wrap">
+        <div class="prog-bar ${cls}" style="width:${pctW}%"></div>
+      </div>
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">Últ. consolidado</div>
+          <div class="metric-value">${d.ultimo_mes}</div>
+          <div class="metric-sub">${d.ultimo_uhs} UHs produzidas</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Projeção conclusão</div>
+          <div class="metric-value ${d.projecao==='Sem dados'?'warn':d.projecao==='Concluído'?'accent':''}">${d.projecao}</div>
+          <div class="metric-sub">${d.restantes} UHs restantes</div>
+        </div>
+        <div class="metric" style="grid-column:1/-1">
+          <div class="metric-label">Produção bruta acumulada</div>
+          <div class="metric-value accent">${brl(d.valor_bruto)}</div>
+        </div>
+      </div>
+      <div class="metric-label" style="margin-bottom:6px">Histórico mensal</div>
+      ${renderMiniChart(d.historico)}
+    </div>
+  </div>`;
+}
+
+async function carregar(){
+  document.getElementById('loading').style.display='flex';
+  document.getElementById('cardsContainer').style.display='none';
+  document.getElementById('serverMsg').textContent='Conectando...';
+  document.getElementById('serverDot').className='';
+
+  try{
+    const resp = await fetch(SERVER+'/dashboard-dados',{signal:AbortSignal.timeout(5000)});
+    if(!resp.ok) throw new Error('Servidor retornou '+resp.status);
+    const dados = await resp.json();
+
+    document.getElementById('serverDot').className='ok';
+    document.getElementById('serverMsg').textContent='Online';
+    document.getElementById('lastUpdate').textContent=
+      'Atualizado '+new Date().toLocaleTimeString('pt-BR');
+
+    // Summary bar
+    const ativos   = dados.filter(d=>d.ok&&d.total>0).length;
+    const lider    = dados.filter(d=>d.ok).sort((a,b)=>b.pct-a.pct)[0];
+    const valorTot = dados.filter(d=>d.ok).reduce((s,d)=>s+d.valor_bruto,0);
+
+    document.getElementById('st-frentes').textContent = ativos;
+    if(lider){
+      document.getElementById('st-lider').textContent = lider.nome;
+      document.getElementById('st-lider-pct').textContent = lider.pct+'% concluído';
+    }
+    document.getElementById('st-valor').textContent = brlK(valorTot);
+
+    // Cards
+    const grid = document.getElementById('cardsGrid');
+    grid.innerHTML = dados.map(renderCard).join('');
+
+    // Section label
+    const total_exec = dados.filter(d=>d.ok).reduce((s,d)=>s+d.total,0);
+    document.getElementById('sectionLabel').textContent =
+      `Frentes de Serviço — ${ativos} com dados · ${dados.length} total`;
+
+    document.getElementById('loading').style.display='none';
+    document.getElementById('cardsContainer').style.display='block';
+    document.getElementById('btnRelatorio').disabled=false;
+
+  }catch(e){
+    document.getElementById('serverDot').className='';
+    document.getElementById('serverMsg').textContent='Offline — execute iniciar.bat';
+    document.getElementById('loading').innerHTML=`
+      <div style="font-size:28px;opacity:.2">⚡</div>
+      <div>Servidor offline</div>
+      <div style="font-size:10px;color:var(--text3)">Execute iniciar.bat e atualize a página</div>`;
+  }
+}
+
+// Auto-refresh a cada 60 segundos
+carregar();
+setInterval(carregar, 60000);
+
+async function gerarRelatorio(){
+  const btn = document.getElementById('btnRelatorio');
+  btn.textContent = '⏳ Gerando...'; btn.disabled = true;
+  try{
+    const resp = await fetch(SERVER+'/dashboard-dados',{signal:AbortSignal.timeout(5000)});
+    const dados = await resp.json();
+    const r = await fetch(SERVER+'/gerar-relatorio',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(dados)
+    });
+    const d = await r.json();
+    if(!d.ok) throw new Error(d.error);
+    const bin = atob(d.pdf);
+    const bytes = new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    const blob = new Blob([bytes],{type:'application/pdf'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href=url; a.download='Relatorio_Consolidado_JB.pdf'; a.click();
+    URL.revokeObjectURL(url);
+  }catch(e){
+    alert('Erro ao gerar relatório: '+e.message);
+  }finally{
+    btn.textContent='⬇ Relatório PDF'; btn.disabled=false;
+  }
+}
+</script>
+</body>
+</html>
