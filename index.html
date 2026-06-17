@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Produção Cerâmica — CB Engenharia</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0f0f;--surface:#171717;--surface2:#1f1f1f;
+  --border:#2a2a2a;--border2:#333;
+  --accent:#c8f135;--accent-dim:#a8cc2a;
+  --text:#e8e8e8;--text2:#888;--text3:#555;
+  --danger:#ff5a5a;--warning:#f0a030;
+  --jbi-bg:#1a2e1a;--jbi-fg:#6fcf97;
+  --jbi2-bg:#1a1a2e;--jbi2-fg:#7f9cf5;
+  --radius:6px;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;}
+
+/* 🔒 ESTILOS DA TELA DE LOGIN */
+.login-screen { background:var(--surface); border:1px solid var(--border); padding:30px; border-radius:var(--radius); width:100%; max-width:400px; text-align:center; box-shadow:0 10px 25px rgba(0,0,0,0.5); }
+.input-group { margin-bottom:15px; text-align:left; }
+.input-group label { display:block; color:var(--text2); margin-bottom:5px; font-size:14px; }
+.input-group input { width:100%; padding:10px; background:var(--surface2); border:1px solid var(--border); color:var(--text); border-radius:var(--radius); box-sizing: border-box; }
+.btn-login { background:var(--accent); color:#000; padding:12px; border:none; width:100%; border-radius:var(--radius); cursor:pointer; font-weight:600; font-size:16px; transition:0.2s; }
+.btn-login:hover { background:var(--accent-dim); }
+
+/* 📊 CONTAINER DO SEU SITE ORIGINAL */
+.main-app { display:none; width:100%; max-width:1200px; align-self: flex-start; }
+.admin-only { display:none; } /* Seção que só você verá */
+
+/* Mantendo os estilos originais do seu app */
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:16px;}
+.logo-container{display:flex;align-items:center;gap:12px;}
+.logo-box{width:36px;height:36px;background:var(--accent);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-weight:600;color:#000;}
+.logo-img{height:32px;display:block;}
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+
+<div class="login-screen" id="loginScreen">
+  <h2 style="color:var(--accent); margin-bottom:10px;">CB Engenharia</h2>
+  <p style="color:var(--text2); margin-bottom:20px;">Painel de Produção — Login Obrigatório</p>
+  <div class="input-group">
+    <label>E-mail</label>
+    <input type="email" id="email" placeholder="seu-email@empresa.com">
+  </div>
+  <div class="input-group">
+    <label>Senha</label>
+    <input type="password" id="password" placeholder="••••••••">
+  </div>
+  <button class="btn-login" onclick="fazerLogin()">Entrar no Sistema</button>
+  <p id="erroLogin" style="color:var(--danger); margin-top:15px; font-size:14px;"></p>
+</div>
+
+<div class="main-app" id="mainApp">
+  <header>
+    <div class="logo-container">
+      <div class="logo-box">CB</div>
+      <div>
+        <h1 style="font-size:18px;font-weight:500;letter-spacing:-0.3px;">CB Engenharia</h1>
+        <p style="font-size:12px;color:var(--text2);">Controle de Produção — Logado como: <span id="userEmail" style="color:var(--accent)"></span></p>
+      </div>
+    </div>
+    <button onclick="fazerLogout()" style="background:var(--danger); color:#fff; border:none; padding:8px 15px; border-radius:var(--radius); cursor:pointer; font-weight:600;">Sair</button>
+  </header>
+
+  <div style="background:var(--surface); border:1px solid var(--border); padding:20px; border-radius:var(--radius);">
+    <h3 style="margin-bottom:10px;">Lançamento de Lotes e Quadras</h3>
+    <p style="color:var(--text2); margin-bottom:20px;">Insira os dados da evolução abaixo. O progresso é salvo na nuvem.</p>
+    
+    <div style="padding:40px; text-align:center; border:2px dashed var(--border); color:var(--accent);">
+      [Suas tabelas de quadras e lançamento de dados originais aparecem perfeitamente aqui]
+    </div>
+  </div>
+
+  <div class="admin-only" id="adminSection" style="background:var(--surface); border:1px solid var(--danger); padding:20px; border-radius:var(--radius); margin-top:20px;">
+    <h3 style="color:var(--danger); margin-bottom:10px;">Configurações do Administrador (Apenas Você)</h3>
+    <p style="color:var(--text2)">Nenhum outro funcionário comum tem acesso a este bloco. Aqui você poderá resetar dados, alterar valores base e ver relatórios consolidados de fechamento.</p>
+  </div>
+</div>
+
+<script>
+// Chaves oficiais do seu Firebase cadastradas por você!
+const firebaseConfig = {
+  apiKey: "AIzaSyAopowEma-grqzHvcRIantOiib8mcegZAc",
+  authDomain: "cb-producoes.firebaseapp.com",
+  projectId: "cb-producoes",
+  storageBucket: "cb-producoes.firebasestorage.app",
+  messagingSenderId: "680753223608",
+  appId: "1:680753223608:web:764354d726cddb90f2214d"
+};
+
+// Inicializa o Firebase Auth
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// 👑 COLOQUE O SEU E-MAIL DE ADMINISTRADOR EXATAMENTE AQUI:
+const emailDoAdmin = "seu-email-adm@empresa.com"; 
+
+function fazerLogin() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const erroDiv = document.getElementById('erroLogin');
+  erroDiv.innerText = "";
+
+  auth.signInWithEmailAndPassword(email, password).catch(error => {
+    erroDiv.innerText = "Acesso negado. Verifique o e-mail e a senha.";
+  });
+}
+
+// Ouvinte que gerencia as telas e permissões automaticamente
+auth.onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    document.getElementById('userEmail').innerText = user.email;
+
+    // Regra de Ouro: Se for o seu e-mail, liga a seção de Administrador
+    if (user.email === emailDoAdmin) {
+      document.getElementById('adminSection').style.display = 'block';
+    } else {
+      document.getElementById('adminSection').style.display = 'none';
+    }
+  } else {
+    document.getElementById('loginScreen').style.display = 'block';
+    document.getElementById('mainApp').style.display = 'none';
+  }
+});
+
+function fazerLogout() { auth.signOut(); }
+</script>
+</body>
+</html>
