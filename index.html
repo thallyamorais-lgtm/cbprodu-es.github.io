@@ -2,7 +2,8 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Produções JB I E II — CB Engenharia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Integrado de Obras — CB Engenharia</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -11,32 +12,38 @@
   --accent:#c8f135;--accent-dim:#a8cc2a;
   --text:#e8e8e8;--text2:#888;--text3:#555;
   --danger:#ff5a5a;--warning:#f0a030;
-  --jbi-bg:#1a2e1a;--jbi-fg:#6fcf97;
-  --jbi2-bg:#1a1a2e;--jbi2-fg:#7f9cf5;
   --radius:6px;
-  --mono:'IBM Plex Mono',monospace;
   --sans:'IBM Plex Sans',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;}
+body { font-family:var(--sans); background:var(--bg); color:var(--text); min-height:100vh; display:flex; }
 
-/* 🔒 ESTILOS DA TELA DE LOGIN */
-.login-screen { background:var(--surface); border:1px solid var(--border); padding:30px; border-radius:var(--radius); width:100%; max-width:400px; text-align:center; box-shadow:0 10px 25px rgba(0,0,0,0.5); }
-.input-group { margin-bottom:15px; text-align:left; }
-.input-group label { display:block; color:var(--text2); margin-bottom:5px; font-size:14px; }
-.input-group input { width:100%; padding:10px; background:var(--surface2); border:1px solid var(--border); color:var(--text); border-radius:var(--radius); box-sizing: border-box; }
-.btn-login { background:var(--accent); color:#000; padding:12px; border:none; width:100%; border-radius:var(--radius); cursor:pointer; font-weight:600; font-size:16px; transition:0.2s; }
-.btn-login:hover { background:var(--accent-dim); }
+/* 🔒 TELA DE LOGIN (SOBREPÕE O SITE ANTES DO ACESSO) */
+.login-screen { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 20px; }
+.login-box { background: var(--surface); border: 1px solid var(--border); padding: 30px; border-radius: var(--radius); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
+.input-group { margin-bottom: 15px; text-align: left; }
+.input-group label { display: block; color: var(--text2); margin-bottom: 5px; font-size: 14px; }
+.input-group input { width: 100%; padding: 11px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: var(--radius); }
+.btn-login { background: var(--accent); color: #000; padding: 12px; border: none; width: 100%; border-radius: var(--radius); cursor: pointer; font-weight: 600; font-size: 16px; }
 
-/* 📊 CONTAINER DO SEU SITE ORIGINAL */
-.main-app { display:none; width:100%; max-width:1200px; align-self: flex-start; }
-.admin-only { display:none; } /* Seção que só você verá */
+/* 🏢 LAYOUT DO SITE SÓLIDO */
+.sidebar { width: 280px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0; }
+.sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); }
+.menu-frentes { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 4px; }
+.menu-btn { display: flex; align-items: center; gap: 10px; background: transparent; border: none; color: var(--text2); padding: 10px 12px; text-align: left; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 500; transition: 0.2s; }
+.menu-btn:hover { background: var(--surface2); color: var(--text); }
+.menu-btn.active { background: var(--accent); color: #000; font-weight: 600; }
 
-/* Mantendo os estilos originais do seu app */
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:16px;}
-.logo-container{display:flex;align-items:center;gap:12px;}
-.logo-box{width:36px;height:36px;background:var(--accent);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-weight:600;color:#000;}
-.logo-img{height:32px;display:block;}
+.main-content { flex: 1; padding: 30px; max-width: 1200px; margin: 0 auto; width: 100%; }
+header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 25px; }
+
+/* 📦 AREA DAS FRENTES DE SERVIÇO */
+.tab-content { display: none; background: var(--surface); border: 1px solid var(--border); padding: 25px; border-radius: var(--radius); }
+.tab-content.active { display: block; }
+
+.admin-only { display: none; background: var(--surface); border: 1px solid #ff5a5a44; padding: 20px; border-radius: var(--radius); margin-top: 25px; }
+.btn-add { background: var(--surface2); color: var(--accent); border: 1px dashed var(--accent); padding: 10px; border-radius: var(--radius); cursor: pointer; text-align: center; font-weight: 500; font-size: 13px; margin-top: 10px; width: 100%; }
+.btn-add:hover { background: #c8f13511; }
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -45,49 +52,55 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
 <body>
 
 <div class="login-screen" id="loginScreen">
-  <h2 style="color:var(--accent); margin-bottom:10px;">CB Engenharia</h2>
-  <p style="color:var(--text2); margin-bottom:20px;">Painel de Produção — Login Obrigatório</p>
-  <div class="input-group">
-    <label>E-mail</label>
-    <input type="email" id="email" placeholder="seu-email@empresa.com">
+  <div class="login-box">
+    <h2 style="color:var(--accent); margin-bottom:5px;">CB Engenharia</h2>
+    <p style="color:var(--text2); margin-bottom:25px; font-size:14px;">Controle Integrado de Obras</p>
+    <div class="input-group">
+      <label>E-mail Corporativo</label>
+      <input type="email" id="email" placeholder="nome@empresa.com">
+    </div>
+    <div class="input-group">
+      <label>Senha</label>
+      <input type="password" id="password" placeholder="••••••••">
+    </div>
+    <button class="btn-login" onclick="fazerLogin()">Entrar no Painel</button>
+    <p id="erroLogin" style="color:var(--danger); margin-top:15px; font-size:13px;"></p>
   </div>
-  <div class="input-group">
-    <label>Senha</label>
-    <input type="password" id="password" placeholder="••••••••">
-  </div>
-  <button class="btn-login" onclick="fazerLogin()">Entrar no Sistema</button>
-  <p id="erroLogin" style="color:var(--danger); margin-top:15px; font-size:14px;"></p>
 </div>
 
-<div class="main-app" id="mainApp">
-  <header>
-    <div class="logo-container">
-      <div class="logo-box">CB</div>
-      <div>
-        <h1 style="font-size:18px;font-weight:500;letter-spacing:-0.3px;">CB Engenharia</h1>
-        <p style="font-size:12px;color:var(--text2);">Controle de Produção — Logado como: <span id="userEmail" style="color:var(--accent)"></span></p>
-      </div>
+<div class="sidebar" id="appSidebar" style="display:none;">
+  <div class="sidebar-header">
+    <h2 style="color:var(--accent); font-size:18px;">CB Engenharia</h2>
+    <p style="color:var(--text2); font-size:11px;">Loteamentos JB I e II</p>
+  </div>
+  
+  <div class="menu-frentes" id="menuFrentes">
     </div>
-    <button onclick="fazerLogout()" style="background:var(--danger); color:#fff; border:none; padding:8px 15px; border-radius:var(--radius); cursor:pointer; font-weight:600;">Sair</button>
+</div>
+
+<div class="main-content" id="appMain" style="display:none;">
+  <header>
+    <div>
+      <h2 id="tituloFrenteAtiva" style="color:var(--text);">Selecione uma Frente</h2>
+      <p style="font-size:12px; color:var(--text2);">Usuário: <span id="userEmail" style="color:#fff; font-weight:500;"></span></p>
+    </div>
+    <button onclick="fazerLogout()" style="background:var(--danger); color:#fff; border:none; padding:8px 16px; border-radius:var(--radius); cursor:pointer; font-weight:600; font-size:13px;">Desconectar</button>
   </header>
 
-  <div style="background:var(--surface); border:1px solid var(--border); padding:20px; border-radius:var(--radius);">
-    <h3 style="margin-bottom:10px;">Lançamento de Lotes e Quadras</h3>
-    <p style="color:var(--text2); margin-bottom:20px;">Insira os dados da evolução abaixo. O progresso é salvo na nuvem.</p>
-    
-    <div style="padding:40px; text-align:center; border:2px dashed var(--border); color:var(--accent);">
-      [Suas tabelas de quadras e lançamento de dados originais aparecem perfeitamente aqui]
+  <div id="containerProducao" class="tab-content active">
+    <div id="mioloDoServicoAtivo">
+      <p style="color:var(--text2); text-align:center; padding:40px;">Escolha uma frente de serviço no menu lateral para visualizar e realizar lançamentos.</p>
     </div>
   </div>
 
-  <div class="admin-only" id="adminSection" style="background:var(--surface); border:1px solid var(--danger); padding:20px; border-radius:var(--radius); margin-top:20px;">
-    <h3 style="color:var(--danger); margin-bottom:10px;">Configurações do Administrador (Apenas Você)</h3>
-    <p style="color:var(--text2)">Nenhum outro funcionário comum tem acesso a este bloco. Aqui você poderá resetar dados, alterar valores base e ver relatórios consolidados de fechamento.</p>
+  <div class="admin-only" id="adminSection">
+    <h3 style="color:var(--danger); margin-bottom:8px; font-size:16px;">Ferramentas do Administrador (Apenas Você)</h3>
+    <button class="btn-add" onclick="criarNovaFrentePelaTela()">➕ Adicionar Nova Frente de Serviço</button>
   </div>
 </div>
 
 <script>
-// Chaves oficiais do seu Firebase cadastradas por você!
+// Suas chaves reais do Firebase cadastradas por você
 const firebaseConfig = {
   apiKey: "AIzaSyAopowEma-grqzHvcRIantOiib8mcegZAc",
   authDomain: "cb-producoes.firebaseapp.com",
@@ -97,40 +110,106 @@ const firebaseConfig = {
   appId: "1:680753223608:web:764354d726cddb90f2214d"
 };
 
-// Inicializa o Firebase Auth
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-// 👑 COLOQUE O SEU E-MAIL DE ADMINISTRADOR EXATAMENTE AQUI:
+// 👑 Mude aqui para o seu e-mail cadastrado de Administrador
 const emailDoAdmin = "seu-email-adm@empresa.com"; 
 
-function fazerLogin() {
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  const erroDiv = document.getElementById('erroLogin');
-  erroDiv.innerText = "";
+// 📝 LISTA INICIAL DAS 20 FRENTES DE SERVIÇO ATIVAS
+let listaFrentes = [
+  { id: "contencao", nome: "🧱 Contenção" },
+  { id: "instalacoes_radier", nome: "🔌 Instalações de Radier" },
+  { id: "lona_espadador_malha", nome: "🕸️ Lona/Espaçador/Malha" },
+  { id: "concretagem_radier", nome: "🥌 Concretagem de Radier" },
+  { id: "paredes", nome: "🧱 Paredes" },
+  { id: "instalacao_registros", nome: "🚰 Instalação de Registros" },
+  { id: "graute_inferior", nome: "🧪 Graute Inferior" },
+  { id: "lajes_empenas", nome: "🏗️ Lajes e Empenas" },
+  { id: "graute_superior", nome: "🧪 Graute Superior" },
+  { id: "telhado", nome: "🏠 Telhado" },
+  { id: "hidrossanitarias", nome: "💧 Instalações Hidrossanitárias" },
+  { id: "acabamento", nome: "✨ Acabamento" },
+  { id: "gesso", nome: "🤍 Gesso" },
+  { id: "contrapiso", nome: "📐 Contrapiso" },
+  { id: "caixinha", nome: "📦 Caixinha" },
+  { id: "peitoril", nome: "🪵 Peitoril" },
+  { id: "esquadrias", nome: "🪟 Esquadrias" },
+  { id: "cabeamento", nome: "⚡ Cabeamento" },
+  { id: "impermeabilizacao", nome: "🛡️ Impermeabilização" },
+  { id: "ceramica", nome: "🧱 Cerâmica" }
+];
 
-  auth.signInWithEmailAndPassword(email, password).catch(error => {
-    erroDiv.innerText = "Acesso negado. Verifique o e-mail e a senha.";
+// Carrega a barra lateral com as frentes
+function renderizarMenuLateral() {
+  const container = document.getElementById('menuFrentes');
+  container.innerHTML = "";
+  
+  listaFrentes.forEach(frente => {
+    const btn = document.createElement('button');
+    btn.className = "menu-btn";
+    btn.id = "btn-" + frente.id;
+    btn.innerText = frente.nome;
+    btn.onclick = () => carregarFrenteNoPainel(frente.id, frente.nome);
+    container.appendChild(btn);
   });
 }
 
-// Ouvinte que gerencia as telas e permissões automaticamente
+// Executa a troca de frentes carregando as tabelas específicas
+function carregarFrenteNoPainel(id, nome) {
+  document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById("btn-" + id).classList.add('active');
+  document.getElementById('tituloFrenteAtiva').innerText = nome;
+
+  // Injeta o miolo funcional que antes ficava isolado em cada HTML.
+  // Ele puxa os dados corretos trocando o parâmetro de serviço na URL da API (?servico=)
+  document.getElementById('mioloDoServicoAtivo').innerHTML = `
+    <p style="color:var(--accent); font-weight:500; margin-bottom:15px;">Carregando dados de ${nome} da nuvem...</p>
+    <div style="border:1px solid var(--border2); padding:20px; border-radius:4px; background:var(--surface2)">
+       <p style="font-size:14px; color:var(--text2)">Painel ativo de lançamentos para a frente comercial de <strong>${nome}</strong>.</p>
+       <p style="font-size:12px; color:var(--text3); margin-top:10px;">Requisições ativas mapeadas para: SERVER + '/carregar-estado?servico=${id}'</p>
+    </div>
+  `;
+}
+
+// 👑 FUNÇÃO PARA CRIAR NOVAS FRENTES DE FORMA DINÂMICA PELA TELA
+function criarNovaFrentePelaTela() {
+  const nomeNovaFrente = prompt("Digite o nome da nova frente de serviço (Ex: Pintura Externa):");
+  if(!nomeNovaFrente) return;
+  
+  const idNova = nomeNovaFrente.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '_');
+  
+  listaFrentes.push({ id: idNova, nome: "📋 " + nomeNovaFrente });
+  renderizarMenuLateral();
+  carregarFrenteNoPainel(idNova, "📋 " + nomeNovaFrente);
+}
+
+// Controle de Autenticação
+function fazerLogin() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  document.getElementById('erroLogin').innerText = "";
+  auth.signInWithEmailAndPassword(email, password).catch(e => {
+    document.getElementById('erroLogin').innerText = "Acesso negado. Verifique os dados.";
+  });
+}
+
 auth.onAuthStateChanged(user => {
   if (user) {
     document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'block';
+    document.getElementById('appSidebar').style.display = 'flex';
+    document.getElementById('appMain').style.display = 'block';
     document.getElementById('userEmail').innerText = user.email;
+    
+    renderizarMenuLateral();
 
-    // Regra de Ouro: Se for o seu e-mail, liga a seção de Administrador
     if (user.email === emailDoAdmin) {
       document.getElementById('adminSection').style.display = 'block';
-    } else {
-      document.getElementById('adminSection').style.display = 'none';
     }
   } else {
-    document.getElementById('loginScreen').style.display = 'block';
-    document.getElementById('mainApp').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('appSidebar').style.display = 'none';
+    document.getElementById('appMain').style.display = 'none';
   }
 });
 
