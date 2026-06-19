@@ -26,21 +26,21 @@ body { font-family:var(--sans); background:var(--bg); color:var(--text); min-hei
 .login-box { background: var(--surface); border: 1px solid var(--border); padding: 30px; border-radius: var(--radius); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
 .input-group { margin-bottom: 15px; text-align: left; }
 .input-group label { display: block; color: var(--text2); margin-bottom: 5px; font-size: 14px; }
-.input-group input { width: 100%; padding: 11px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: var(--radius); border: 1px solid var(--border); }
+.input-group input { width: 100%; padding: 11px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: var(--radius); }
 .btn-login { background: var(--accent); color: #000; padding: 12px; border: none; width: 100%; border-radius: var(--radius); cursor: pointer; font-weight: 600; font-size: 16px; }
 
 /* 🏢 INTERFACE DO SITE SÓLIDO */
 .sidebar { width: 280px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0; }
 .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); }
 .menu-frentes { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 4px; }
-.menu-btn { display: flex; align-items: center; gap: 10px; background: transparent; border: none; color: var(--text2); padding: 10px 12px; text-align: left; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 500; transition: 0.2s; }
+.menu-btn { display: flex; align-items: center; gap: 10px; background: transparent; border: none; color: var(--text2); padding: 10px 12px; text-align: left; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 500; transition: 0.2s; width: 100%;}
 .menu-btn:hover { background: var(--surface2); color: var(--text); }
 .menu-btn.active { background: var(--accent); color: #000; font-weight: 600; }
 
 .main-content { flex: 1; padding: 30px; overflow-y: auto; height: 100vh; }
 header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 25px; }
 
-/* 🛠️ ESTILOS INTERNOS DO SEU WEB APP DE EXEMPLO */
+/* 🛠️ ESTILOS DO PAINEL DE LANÇAMENTOS */
 .status-bar{display:flex;gap:12px;margin-bottom:24px;font-size:13px;}
 .status-pill{background:var(--surface);border:1px solid var(--border);padding:6px 12px;border-radius:var(--radius);display:flex;align-items:center;gap:8px;}
 .indicator{width:8px;height:8px;border-radius:50%;background:var(--text3);}
@@ -48,10 +48,10 @@ header { display: flex; justify-content: space-between; align-items: center; bor
 .indicator.offline{background:var(--danger);box-shadow:0 0 8px var(--danger);}
 
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:24px;}
-.card-header-actions{display:flex;justify-content:between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px;}
+.card-header-actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px;}
 .flex-group{display:flex;align-items:center;gap:12px;}
 
-select,input[type="text"],input[type="number"]{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:var(--radius);font-family:var(--sans);font-size:14px;}
+select,input[type="text"]{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:var(--radius);font-family:var(--sans);font-size:14px;}
 select:focus,input:focus{outline:none;border-color:var(--accent);}
 
 .btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:var(--radius);cursor:pointer;font-weight:500;font-size:14px;display:inline-flex;align-items:center;gap:8px;transition:0.15s;}
@@ -72,21 +72,10 @@ select:focus,input:focus{outline:none;border-color:var(--accent);}
 .lote-row{display:flex;justify-content:space-between;align-items:center;background:var(--surface);padding:6px 10px;border-radius:4px;border:1px solid var(--border);}
 .lote-name{font-family:var(--mono);font-size:13px;}
 
-/* Checkbox estilizado */
-.cb-container{display:block;position:relative;padding-left:24px;cursor:pointer;font-size:14px;user-select:none;}
-.cb-container input{position:absolute;opacity:0;cursor:pointer;height:0;width:0;}
-.checkmark{position:absolute;top:2px;left:0;height:16px;width:16px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;}
-.cb-container:hover input ~ .checkmark{border-color:var(--text2);}
-.cb-container input:checked ~ .checkmark{background:var(--accent);border-color:var(--accent);}
-.checkmark:after{content:"";position:absolute;display:none;}
-.cb-container input:checked ~ .checkmark:after{display:block;}
-.cb-container .checkmark:after{left:5px;top:2px;width:4px;height:8px;border:solid #000;border-width:0 2px 2px 0;transform:rotate(45deg);}
-
 .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;}
 .summary-card{background:var(--surface2);border:1px solid var(--border);padding:16px;border-radius:var(--radius);}
 .summary-val{font-family:var(--mono);font-size:24px;font-weight:500;color:var(--accent);margin-top:4px;}
 
-/* Toast */
 .toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border);padding:12px 24px;border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,0.6);display:none;align-items:center;gap:12px;z-index:10000;font-size:14px;}
 
 .admin-only { display: none; background: var(--surface); border: 1px solid var(--border); padding: 15px; border-radius: var(--radius); margin-top: auto; }
@@ -141,4 +130,300 @@ select:focus,input:focus{outline:none;border-color:var(--accent);}
 
   <div class="status-bar">
     <div class="status-pill"><div class="indicator" id="ind-server"></div><span id="txt-server">Verificando...</span></div>
-    <div class="status-pill" style="color:var(--
+    <div class="status-pill" style="color:var(--text2);">Serviço Ativo: <span id="txt-servico-id" style="color:var(--accent); font-family:var(--mono)">nenhum</span></div>
+  </div>
+
+  <div id="conteudoDoApp" style="display:none;">
+    
+    <div class="card">
+      <div class="card-header-actions">
+        <div class="flex-group">
+          <span style="font-weight:500;">Mês de Competência:</span>
+          <select id="sel-mes" onchange="mudarMesCompetencia()"></select>
+        </div>
+        <div class="flex-group">
+          <button class="btn" onclick="abrirModalNovoMes()">➕ Novo Mês</button>
+          <button class="btn btn-danger" onclick="fecharMesAtual()" id="btn-fechar-mes">🔒 Fechar Mês</button>
+        </div>
+      </div>
+      <div style="font-size:14px;color:var(--text2);display:flex;gap:24px;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:16px;">
+        <div>Status do Mês: <span id="lbl-status" style="font-weight:600;">-</span></div>
+        <div>Preço Base UH: <span id="lbl-preco" style="font-family:var(--mono);color:var(--accent);">-</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:16px;font-weight:500;margin-bottom:16px;">Equipes de Campo</h3>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <input type="text" id="add-team-name" placeholder="Nome do Empreiteiro / Equipe" style="flex:1;max-width:400px;">
+        <button class="btn btn-primary" onclick="addTeam()">Adicionar Equipe</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header-actions" style="border-bottom:1px solid var(--border);padding-bottom:12px;">
+        <h3 style="font-size:16px;font-weight:500;">Mapa de Lançamento Diário</h3>
+        <div class="flex-group">
+          <span style="font-size:14px;color:var(--text2);">Filtrar Condomínio:</span>
+          <select id="filtro-condo" onchange="renderizarQuadras()"><option value="all">Todos</option><option value="jbi">JB I</option><option value="jbi2">JB II</option></select>
+        </div>
+      </div>
+      <div class="grid-quadras" id="quadras-container" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:16px;font-weight:500;margin-bottom:16px;">Resumo Consolidado</h3>
+      <div class="summary-grid">
+        <div class="summary-card"><div>Total Geral Executado</div><div class="summary-val" id="res-total-uh">0 UH</div></div>
+        <div class="summary-card"><div>Valor Total Acumulado</div><div class="summary-val" id="res-total-rs">R$ 0,00</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="toast-msg"></span></div>
+
+<script>
+// ⚙️ CHAVES DO SEU FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyAopowEma-grqzHvcRIantOiib8mcegZAc",
+  authDomain: "cb-producoes.firebaseapp.com",
+  projectId: "cb-producoes",
+  storageBucket: "cb-producoes.firebasestorage.app",
+  messagingSenderId: "680753223608",
+  appId: "1:680753223608:web:764354d726cddb90f2214d"
+};
+
+// Inicialização segura
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// CONFIGURAÇÃO DO SERVIDOR E ADM
+const SERVER = 'http://localhost:5000'; 
+const emailDoAdmin = "seu-email-adm@empresa.com"; // 👑 COLOQUE O SEU E-MAIL AQUI
+
+// ESTRUTURA DE QUADRAS MAPA JB I E JB II
+const QUADRAS_CONFIG = [
+  {id:'Q1',nome:'Quadra 01',condo:'jbi',lotes:14}, {id:'Q2',nome:'Quadra 02',condo:'jbi',lotes:18},
+  {id:'Q3',nome:'Quadra 03',condo:'jbi',lotes:20}, {id:'Q4',nome:'Quadra 04',condo:'jbi',lotes:12},
+  {id:'Q5',nome:'Quadra 05',condo:'jbi2',lotes:16}, {id:'Q6',nome:'Quadra 06',condo:'jbi2',lotes:22}
+];
+
+// LISTA DAS 20 FRENTES DE SERVIÇO SEQUENCIAIS
+let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes')) || [
+  { id: "contencao", nome: "Contenção" }, { id: "instalacoes_radier", nome: "Instalações de Radier" },
+  { id: "lona_espadador_malha", nome: "Lona/Espaçador/Malha" }, { id: "concretagem_radier", nome: "Concretagem de Radier" },
+  { id: "paredes", nome: "Paredes" }, { id: "instalacao_registros", nome: "Instalação de Registros" },
+  { id: "graute_inferior", nome: "Graute Inferior" }, { id: "lajes_empenas", nome: "Lajes e Empenas" },
+  { id: "graute_superior", nome: "Graute Superior" }, { id: "telhado", nome: "Telhado" },
+  { id: "hidrossanitarias", nome: "Instalações Hidrossanitárias" }, { id: "acabamento", nome: "Acabamento" },
+  { id: "gesso", nome: "Gesso" }, { id: "contrapiso", nome: "Contrapiso" },
+  { id: "caixinha", nome: "Caixinha" }, { id: "peitoril", nome: "Peitoril" },
+  { id: "esquadrias", nome: "Esquadrias" }, { id: "cabeamento", nome: "Cabeamento" },
+  { id: "impermeabilizacao", nome: "Impermeabilização" }, { id: "ceramica", nome: "Cerâmica" }
+];
+
+let servicoAtivoId = '';
+let livro = [];
+let mesAtivoId = '';
+
+function renderizarMenuLateral() {
+  const container = document.getElementById('menuFrentes'); container.innerHTML = "";
+  listaFrentes.forEach(frente => {
+    const btn = document.createElement('button');
+    btn.className = "menu-btn"; btn.id = "btn-" + frente.id;
+    btn.innerHTML = frente.nome;
+    btn.onclick = () => alternarFrenteDeServico(frente.id, frente.nome);
+    container.appendChild(btn);
+  });
+}
+
+async function alternarFrenteDeServico(id, nome) {
+  servicoAtivoId = id;
+  document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+  const activeBtn = document.getElementById("btn-" + id);
+  if(activeBtn) activeBtn.classList.add('active');
+  
+  document.getElementById('tituloFrenteAtiva').innerText = nome;
+  document.getElementById('txt-servico-id').innerText = id;
+  document.getElementById('conteudoDoApp').style.display = 'block';
+
+  await carregarEstadoDaNuvem();
+  renderizarMesesSelect();
+  renderizarQuadras();
+}
+
+async function carregarEstadoDaNuvem(){
+  try{
+    const r = await fetch(`${SERVER}/carregar-estado?servico=${servicoAtivoId}`, {signal: AbortSignal.timeout(3000)});
+    if(r.ok){
+      const d = await r.json();
+      if(d && d.livro){
+        livro = d.livro; mesAtivoId = d.mesAtivoId || livro[livro.length-1].id;
+        setServerStatus(true); return;
+      }
+    }
+  }catch(e){}
+  
+  setServerStatus(false);
+  const local = localStorage.getItem('cb_estado_' + servicoAtivoId);
+  if(local){
+    const d = JSON.parse(local);
+    if(d && d.livro){ livro = d.livro; mesAtivoId = d.mesAtivoId || livro[livro.length-1].id; showToast('Dados carregados do backup local'); return; }
+  }
+  
+  livro = [{id:'2026-06',mes:'Junho',ano:'2026',preco:1250,status:'open',equipesRemovidas:{},nextTeamId:1,teams:[]}];
+  mesAtivoId = '2026-06';
+}
+
+async function salvarEstadoNaNuvem(){
+  const payload = { livro, mesAtivoId };
+  localStorage.setItem('cb_estado_' + servicoAtivoId, JSON.stringify(payload));
+  try{
+    const r = await fetch(`${SERVER}/salvar-estado?servico=${servicoAtivoId}`, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+    });
+    if(r.ok) { setServerStatus(true); return; }
+  }catch(e){}
+  setServerStatus(false);
+}
+
+function renderizarQuadras() {
+  const container = document.getElementById('quadras-container'); if(!container) return;
+  container.innerHTML = "";
+  const filtro = document.getElementById('filtro-condo').value;
+  const mes = livro.find(m => m.id === mesAtivoId) || livro[0];
+
+  QUADRAS_CONFIG.forEach(q => {
+    if(filtro !== 'all' && q.condo !== filtro) return;
+
+    const divQ = document.createElement('div'); divQ.className = "quadra-box";
+    divQ.innerHTML = `
+      <div class="quadra-header">
+        <span style="font-weight:600;">${q.nome}</span>
+        <span class="condo-badge ${q.condo}">${q.condo.toUpperCase()}</span>
+      </div>
+      <div class="lotes-list" id="lotes-${q.id}"></div>
+    `;
+    container.appendChild(divQ);
+
+    const listCont = document.getElementById(`lotes-${q.id}`);
+    for(let i=1; i<=q.lotes; i++) {
+      const loteKey = `${q.id}-L${String(i).padStart(2,'0')}`;
+      const equipeResponsavel = acharEquipeDonoDoLote(mes, loteKey);
+
+      const row = document.createElement('div'); row.className = "lote-row";
+      row.innerHTML = `
+        <span class="lote-name">Lote ${String(i).padStart(2,'0')}</span>
+        <select style="padding:4px 8px; font-size:12px;" onchange="atribuirLote('${loteKey}', this.value)" ${mes.status==='closed'?'disabled':''}>
+          <option value="">Livre</option>
+          ${mes.teams.map(t => `<option value="${t.id}" ${equipeResponsavel==t.id?'selected':''}>${t.name}</option>`).join('')}
+        </select>
+      `;
+      listCont.appendChild(row);
+    }
+  });
+  calcularResumosFinanceiros(mes);
+}
+
+function acharEquipeDonoDoLote(mes, loteKey) {
+  let dono = "";
+  if(mes && mes.teams) {
+    mes.teams.forEach(t => { if(t.lotes && t.lotes.includes(loteKey)) dono = t.id; });
+  }
+  return dono;
+}
+
+function atribuirLote(loteKey, teamId) {
+  const mes = livro.find(m => m.id === mesAtivoId);
+  mes.teams.forEach(t => { if(t.lotes) t.lotes = t.lotes.filter(l => l !== loteKey); });
+  if(teamId) {
+    const t = mes.teams.find(team => team.id == teamId);
+    if(!t.lotes) t.lotes = []; t.lotes.push(loteKey);
+  }
+  salvarEstadoNaNuvem(); renderizarQuadras();
+}
+
+function addTeam() {
+  const inp = document.getElementById('add-team-name'); if(!inp.value.trim()) return;
+  const mes = livro.find(m => m.id === mesAtivoId);
+  mes.teams.push({ id: mes.nextTeamId++, name: inp.value.trim(), lotes: [] });
+  inp.value = ""; salvarEstadoNaNuvem(); renderizarQuadras();
+}
+
+function calcularResumosFinanceiros(mes) {
+  if(!mes) return;
+  let totalLotes = 0;
+  mes.teams.forEach(t => { totalLotes += (t.lotes ? t.lotes.length : 0); });
+  document.getElementById('res-total-uh').innerText = totalLotes + " UH";
+  document.getElementById('res-total-rs').innerText = "R$ " + (totalLotes * mes.preco).toLocaleString('pt-BR', {minimumFractionDigits:2});
+  document.getElementById('lbl-status').innerText = mes.status === 'open' ? '🟢 Aberto para Lançamentos' : '🔴 Fechado';
+  document.getElementById('lbl-preco').innerText = "R$ " + mes.preco.toFixed(2);
+  document.getElementById('btn-fechar-mes').style.display = mes.status === 'open' ? 'inline-flex' : 'none';
+}
+
+function renderizarMesesSelect() {
+  const sel = document.getElementById('sel-mes'); if(!sel) return;
+  sel.innerHTML = "";
+  livro.forEach(m => { sel.innerHTML += `<option value="${m.id}" ${m.id===mesAtivoId?'selected':''}>${m.mes} / ${m.ano}</option>`; });
+}
+function mudarMesCompetencia() { mesAtivoId = document.getElementById('sel-mes').value; renderizarQuadras(); }
+
+function abrirModalNovoMes() {
+  const m = prompt("Nome do Mês (Ex: Julho):"); const a = prompt("Ano (Ex: 2026):"); const p = parseFloat(prompt("Preço Base por UH (R$):"));
+  if(!m || !a || isNaN(p)) return;
+  const id = `${a}-${livro.length+1}`;
+  livro.push({ id, mes: m, ano: a, preco: p, status: 'open', equipesRemovidas:{}, nextTeamId:1, teams:[] });
+  mesAtivoId = id; salvarEstadoNaNuvem(); renderizarMesesSelect(); renderizarQuadras();
+}
+function fecharMesAtual() { if(confirm("Fechar este mês bloqueia edições de funcionários. Confirmar?")) { const m = livro.find(m=>m.id===mesAtivoId); m.status='closed'; salvarEstadoNaNuvem(); renderizarQuadras(); } }
+
+function criarNovaFrentePelaTela() {
+  const nome = prompt("Nome da Nova Frente de Serviço:"); if(!nome) return;
+  const id = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '_');
+  listaFrentes.push({ id, nome: "📋 " + nome });
+  localStorage.setItem('cb_lista_frentes', JSON.stringify(listaFrentes));
+  renderizarMenuLateral(); alternarFrenteDeServico(id, "📋 " + nome);
+}
+
+function setServerStatus(o){
+  const ind = document.getElementById('ind-server'); const txt = document.getElementById('txt-server');
+  if(ind && txt) {
+    ind.className = "indicator " + (o?"online":"offline"); txt.innerText = o ? "Nuvem Conectada" : "Modo Offline (Backup Ativo)";
+  }
+}
+function showToast(m){ const t = document.getElementById('toast'); if(t){ document.getElementById('toast-msg').innerText=m; t.style.display='flex'; setTimeout(()=>t.style.display='none',3000); } }
+
+// 🔓 FUNÇÃO CORRIGIDA DE LOGIN (CHAMADA SEM CONFLITOS DE CONTEXTO)
+function fazerLogin() {
+  const email = document.getElementById('email').value; 
+  const password = document.getElementById('password').value;
+  document.getElementById('erroLogin').innerText = "";
+  
+  auth.signInWithEmailAndPassword(email, password).catch(e => { 
+    document.getElementById('erroLogin').innerText = "Acesso negado. Verifique os dados."; 
+  });
+}
+
+// Ouvinte de Estado de Autenticação do Firebase
+auth.onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appSidebar').style.display = 'flex';
+    document.getElementById('appMain').style.display = 'block';
+    document.getElementById('userEmail').innerText = user.email;
+    renderizarMenuLateral();
+    if(listaFrentes.length > 0 && !servicoAtivoId) alternarFrenteDeServico(listaFrentes[0].id, listaFrentes[0].name);
+    if (user.email === emailDoAdmin) document.getElementById('adminSection').style.display = 'block';
+  } else {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('appSidebar').style.display = 'none';
+    document.getElementById('appMain').style.display = 'none';
+  }
+});
+
+function fazerLogout() { auth.signOut(); }
+</script>
+</body>
+</html>
