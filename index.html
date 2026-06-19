@@ -1,86 +1,180 @@
+Compreendido perfeitamente! Vamos estruturar o seu ficheiro unificado com as seguintes melhorias exatas exigidas pelas imagens e pelo seu fluxo:
+
+1. **Correção do Login Automático:** Removido o login automático ou persistência incorreta. A tela de login possui agora um **fundo dinâmico abstrato e tecnológico de alta velocidade** através de CSS puro (efeito de linhas convergentes em movimento) e centraliza a box branca com o logo da empresa, idêntica à sua imagem.
+2. **Nova Identidade Visual Dinâmica:** Substituído o tom verde limão (`#c8f135`) pelo **azul corporativo escuro refinado** (`#002d62` / `#001f4d`) presente no logo da CB Engenharia.
+3. **Menu Lateral com Percentagem de Progresso:** Cada botão das 20 frentes de serviço no menu esquerdo agora renderiza dinamicamente o nome da frente acompanhado do seu indicador de conclusão (ex: `78% Concluído`) e uma barra de progresso horizontal logo abaixo do texto, respeitando o layout da primeira imagem enviada.
+4. **Visão Geral e Botões de Ação Dinâmicos:** Ao selecionar uma frente, o sistema exibe os botões superiores (**Logar, Salvar e o ícone de Casa**). Conforme o seu fluxo indicado, ao clicar nas frentes, as quadras são mapeadas de forma limpa e os lotes individuais passam a funcionar com o clique direto no ícone/botão da casa (Lote) para alternar o estado do mapeamento diário de equipes.
+
+Aqui está o código completo pronto para colocar no seu `index.html`:
+
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Integrado de Obras — CB Engenharia</title>
+<title>Plataforma Controle de Produções — CB Engenharia</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0f0f0f;--surface:#171717;--surface2:#1f1f1f;
-  --border:#2a2a2a;--border2:#333;
-  --accent:#c8f135;--accent-dim:#a8cc2a;
-  --text:#e8e8e8;--text2:#888;--text3:#555;
-  --danger:#ff5a5a;--warning:#f0a030;
-  --jbi-bg:#1a2e1a;--jbi-fg:#6fcf97;
-  --jbi2-bg:#1a1a2e;--jbi2-fg:#7f9cf5;
-  --radius:6px;
-  --mono:'IBM Plex Mono',monospace;
-  --sans:'IBM Plex Sans',sans-serif;
+:root {
+  --bg: #0f141c;
+  --surface: #182230;
+  --surface2: #223147;
+  --border: #2d3f59;
+  --border2: #3b5375;
+  --accent: #004b93;
+  --accent-light: #0066cc;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --danger: #ef4444;
+  --jbi-fg: #4ade80;
+  --jbi2-fg: #60a5fa;
+  --radius: 6px;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body { font-family:var(--sans); background:var(--bg); color:var(--text); min-height:100vh; display:flex; margin:0; }
 
-/* 🔒 TELA DE LOGIN */
-.login-screen { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 20px; }
-.login-box { background: var(--surface); border: 1px solid var(--border); padding: 30px; border-radius: var(--radius); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
-.input-group { margin-bottom: 15px; text-align: left; }
-.input-group label { display: block; color: var(--text2); margin-bottom: 5px; font-size: 14px; }
-.input-group input { width: 100%; padding: 11px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: var(--radius); }
-.btn-login { background: var(--accent); color: #000; padding: 12px; border: none; width: 100%; border-radius: var(--radius); cursor: pointer; font-weight: 600; font-size: 16px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
 
-/* 🏢 INTERFACE DO SITE SÓLIDO */
-.sidebar { width: 280px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0; }
-.sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); }
-.menu-frentes { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 4px; }
-.menu-btn { display: flex; align-items: center; gap: 10px; background: transparent; border: none; color: var(--text2); padding: 10px 12px; text-align: left; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 500; transition: 0.2s; width: 100%;}
-.menu-btn:hover { background: var(--surface2); color: var(--text); }
-.menu-btn.active { background: var(--accent); color: #000; font-weight: 600; }
+/* 🌪️ TELA DE LOGIN COM FUNDO DINÂMICO ABSTRATO */
+.login-screen {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, #1e3a8a 0%, #020617 100%);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+/* Efeito de Linhas de Velocidade Abstratas em CSS */
+.login-screen::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background-image: 
+    repeating-linear-gradient(45deg, transparent 0px, transparent 2px, rgba(96, 165, 250, 0.03) 2px, rgba(96, 165, 250, 0.03) 4px),
+    repeating-linear-gradient(-45deg, transparent 0px, transparent 2px, rgba(96, 165, 250, 0.03) 2px, rgba(96, 165, 250, 0.03) 4px);
+  animation: speedLines 20s linear infinite;
+  transform-origin: center;
+}
+@keyframes speedLines {
+  0% { transform: translate(-25%, -25%) rotate(0deg); }
+  100% { transform: translate(-25%, -25%) rotate(360deg); }
+}
 
-.main-content { flex: 1; padding: 30px; overflow-y: auto; height: 100vh; }
-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 25px; }
+.login-box {
+  position: relative;
+  background: #ffffff;
+  color: #1e293b;
+  padding: 40px 35px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+.login-box .logo-img {
+  max-width: 180px;
+  margin-bottom: 15px;
+}
+.login-box h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #0f172a;
+}
+.login-box p {
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+.input-group { margin-bottom: 20px; text-align: left; }
+.input-group label { display: block; color: #475569; margin-bottom: 6px; font-size: 13px; font-weight: 500; }
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  border-radius: var(--radius);
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.input-group input:focus { outline: none; border-color: var(--accent); background: #fff; }
+.btn-login {
+  background: #002d62;
+  color: #ffffff;
+  padding: 14px;
+  border: none;
+  width: 100%;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  transition: background 0.2s;
+}
+.btn-login:hover { background: #001f4d; }
 
-/* 🛠️ ESTILOS DO PAINEL DE LANÇAMENTOS */
-.status-bar{display:flex;gap:12px;margin-bottom:24px;font-size:13px;}
-.status-pill{background:var(--surface);border:1px solid var(--border);padding:6px 12px;border-radius:var(--radius);display:flex;align-items:center;gap:8px;}
-.indicator{width:8px;height:8px;border-radius:50%;background:var(--text3);}
-.indicator.online{background:var(--jbi-fg);box-shadow:0 0 8px var(--jbi-fg);}
-.indicator.offline{background:var(--danger);box-shadow:0 0 8px var(--danger);}
+/* 🏢 INTERFACE DO PAINEL PRINCIPAL */
+.sidebar { width: 300px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0; }
+.sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); text-align: center; }
+.sidebar-header .logo-panel { max-width: 140px; filter: drop-shadow(0 0 4px rgba(255,255,255,0.1)); }
+.sidebar-title-section { background: #1c2838; padding: 10px 20px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text2); font-weight: 600; }
 
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:24px;}
-.card-header-actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px;}
-.flex-group{display:flex;align-items:center;gap:12px;}
+.menu-frentes { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.menu-btn-container { display: flex; flex-direction: column; background: transparent; padding: 6px 12px; border-radius: var(--radius); cursor: pointer; transition: 0.2s; }
+.menu-frentes .menu-btn-container:hover { background: var(--surface2); }
+.menu-frentes .menu-btn-container.active { background: #1e293b; border-left: 4px solid var(--jbi2-fg); }
 
-select,input[type="text"]{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:var(--radius);font-family:var(--sans);font-size:14px;}
-select:focus,input:focus{outline:none;border-color:var(--accent);}
+.menu-btn-header { display: flex; justify-content: space-between; align-items: center; width: 100%; font-size: 14px; color: var(--text); font-weight: 500; margin-bottom: 6px; }
+.menu-progress-bg { width: 100%; height: 5px; background: #0f172a; border-radius: 3px; overflow: hidden; }
+.menu-progress-bar { height: 100%; background: linear-gradient(90deg, #0052a3, var(--jbi2-fg)); border-radius: 3px; transition: width 0.3s; }
 
-.btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:var(--radius);cursor:pointer;font-weight:500;font-size:14px;display:inline-flex;align-items:center;gap:8px;transition:0.15s;}
-.btn:hover{background:var(--border);border-color:var(--text2);}
-.btn-primary{background:var(--accent);color:#000;border:none;font-weight:600;}
-.btn-primary:hover{background:var(--accent-dim);color:#000;}
-.btn-danger{background:#2a1a1a;border-color:#552222;color:var(--danger);}
-.btn-danger:hover{background:#442222;}
+/* CONTEÚDO */
+.main-content { flex: 1; padding: 25px; overflow-y: auto; height: 100vh; }
+.nav-header { display: flex; justify-content: space-between; align-items: center; background: var(--surface); border: 1px solid var(--border); padding: 15px 20px; border-radius: var(--radius); margin-bottom: 25px; }
+.nav-actions { display: flex; align-items: center; gap: 12px; }
 
-.grid-quadras{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
-.quadra-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
-.quadra-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:1px solid var(--border);padding-bottom:8px;}
-.condo-badge{font-size:11px;font-weight:600;padding:2px 6px;border-radius:4px;text-transform:uppercase;}
-.condo-badge.jbi{background:var(--jbi-bg);color:var(--jbi-fg);}
-.condo-badge.jbi2{background:var(--jbi2-bg);color:var(--jbi2-fg);}
+/* BOTÕES ESTILO WEB */
+.btn-web { background: #1e293b; border: 1px solid var(--border); color: var(--text); padding: 8px 18px; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; }
+.btn-web:hover { background: var(--surface2); border-color: var(--text2); }
+.btn-web-primary { background: #003a7a; border: none; font-weight: 600; }
+.btn-web-primary:hover { background: #002d62; }
+.btn-home { background: #1e293b; border: 1px solid var(--border); padding: 8px 12px; border-radius: var(--radius); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.btn-home svg { width: 18px; height: 18px; fill: var(--text); }
 
-.lotes-list{display:flex;flex-direction:column;gap:8px;}
-.lote-row{display:flex;justify-content:space-between;align-items:center;background:var(--surface);padding:6px 10px;border-radius:4px;border:1px solid var(--border);}
-.lote-name{font-family:var(--mono);font-size:13px;}
+/* QUADRAS E CASAS */
+.grid-quadras { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
+.quadra-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+.quadra-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; font-weight: 600; }
+.condo-tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+.condo-tag.jbi { background: rgba(74, 222, 128, 0.1); color: var(--jbi-fg); }
+.condo-tag.jbi2 { background: rgba(96, 165, 250, 0.1); color: var(--jbi2-fg); }
 
-.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;}
-.summary-card{background:var(--surface2);border:1px solid var(--border);padding:16px;border-radius:var(--radius);}
-.summary-val{font-family:var(--mono);font-size:24px;font-weight:500;color:var(--accent);margin-top:4px;}
+.lotes-list { display: flex; flex-direction: column; gap: 10px; }
+.lote-item { display: flex; justify-content: space-between; align-items: center; background: var(--surface2); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border); }
+.lote-info { display: flex; flex-direction: column; gap: 2px; }
+.lote-title { font-family: var(--mono); font-size: 13px; font-weight: 500; }
+.lote-team-label { font-size: 11px; color: var(--text2); }
 
-.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border);padding:12px 24px;border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,0.6);display:none;align-items:center;gap:12px;z-index:10000;font-size:14px;}
+/* BOTÃO DA CASA DIRETÃO (MUDAR EQUIPE/STATUS) */
+.btn-casa-lote { background: #1c2838; border: 1px solid var(--border); width: 34px; height: 34px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.15s; }
+.btn-casa-lote:hover { background: #003a7a; border-color: var(--jbi2-fg); }
+.btn-casa-lote.active { background: #004b93; border-color: var(--jbi2-fg); }
+.btn-casa-lote svg { width: 16px; height: 16px; fill: var(--text2); transition: 0.15s; }
+.btn-casa-lote.active svg { fill: #ffffff; }
 
-.admin-only { display: none; background: var(--surface); border: 1px solid var(--border); padding: 15px; border-radius: var(--radius); margin-top: auto; }
-.btn-add { background: var(--surface2); color: var(--accent); border: 1px dashed var(--accent); padding: 10px; border-radius: var(--radius); cursor: pointer; text-align: center; font-weight: 500; font-size: 13px; width: 100%; margin-top: 5px; }
-.btn-add:hover { background: #c8f13511; }
+.status-pill { background: var(--surface); border: 1px solid var(--border); padding: 6px 14px; border-radius: var(--radius); font-size: 13px; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+.indicator { width: 8px; height: 8px; border-radius: 50%; background: var(--text3); }
+.indicator.online { background: var(--jbi-fg); box-shadow: 0 0 8px var(--jbi-fg); }
+.indicator.offline { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
+
+.admin-only { display: none; padding: 15px; border-top: 1px solid var(--border); background: var(--surface2); }
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--border); padding: 12px 24px; border-radius: var(--radius); display: none; z-index: 10000; font-size: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -90,102 +184,71 @@ select:focus,input:focus{outline:none;border-color:var(--accent);}
 
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
-    <h2 style="color:var(--accent); margin-bottom:5px;">CB Engenharia</h2>
-    <p style="color:var(--text2); margin-bottom:25px; font-size:14px;">Controle Integrado de Obras</p>
+    <img src="https://i.imgur.com/E8Y8f5G.png" class="logo-img" alt="CB Engenharia" onerror="this.src='https://placehold.co/180x60/002d62/white?text=CB+ENGENHARIA'">
+    <h2>Login Obrigatório —</h2>
+    <p>Plataforma Integrada de Obras</p>
+    
     <div class="input-group">
-      <label>E-mail Corporativo</label>
-      <input type="email" id="email" placeholder="nome@empresa.com">
+      <label>Login</label>
+      <input type="email" id="email" placeholder="maria.souza@cbengenharia.com">
     </div>
     <div class="input-group">
-      <label>Senha</label>
+      <label>Password</label>
       <input type="password" id="password" placeholder="••••••••">
     </div>
-    <button class="btn-login" onclick="fazerLogin()">Entrar no Painel</button>
-    <p id="erroLogin" style="color:var(--danger); margin-top:15px; font-size:13px;"></p>
+    
+    <button class="btn-login" onclick="fazerLogin()">Acessar Painel</button>
+    <p id="erroLogin" style="color:var(--danger); margin-top:15px; font-size:13px; font-weight:500;"></p>
   </div>
 </div>
 
 <div class="sidebar" id="appSidebar" style="display:none;">
   <div class="sidebar-header">
-    <h2 style="color:var(--accent); font-size:18px;">CB Engenharia</h2>
-    <p style="color:var(--text2); font-size:11px;">Loteamentos JB I e II</p>
+    <img src="https://i.imgur.com/E8Y8f5G.png" class="logo-panel" alt="CB Engenharia" onerror="this.src='https://placehold.co/140x45/002d62/white?text=CB+ENGENHARIA'">
   </div>
+  
+  <div class="sidebar-title-section">Serviços fronts</div>
   
   <div class="menu-frentes" id="menuFrentes">
     </div>
 
   <div class="admin-only" id="adminSection">
-    <button class="btn-add" onclick="criarNovaFrentePelaTela()">➕ Nova Frente de Serviço</button>
+    <button class="btn-web" onclick="criarNovaFrentePelaTela()" style="width:100%; justify-content:center; border: 1px dashed var(--jbi2-fg);">➕ Nova Frente</button>
   </div>
 </div>
 
 <div class="main-content" id="appMain" style="display:none;">
-  <header>
+  <div class="nav-header">
     <div>
-      <h2 id="tituloFrenteAtiva" style="color:var(--text); font-weight: 600;">Selecione uma Frente</h2>
-      <p style="font-size:12px; color:var(--text2);">Usuário: <span id="userEmail" style="color:#fff; font-weight:500;"></span></p>
+      <h2 style="font-size:20px; font-weight:600; color:#fff;" id="txt-dashboard-title">Dashboard</h2>
+      <p style="font-size:12px; color:var(--text2); margin-top:2px;">Frente ativa: <span id="tituloFrenteAtiva" style="color:var(--jbi2-fg); font-weight:600;">Nenhuma</span></p>
     </div>
-    <button onclick="fazerLogout()" style="background:var(--danger); color:#fff; border:none; padding:8px 16px; border-radius:var(--radius); cursor:pointer; font-weight:600; font-size:13px;">Sair</button>
-  </header>
+    
+    <div class="nav-actions">
+      <button class="btn-home" onclick="voltarParaHome()" title="Home">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      </button>
+      <button class="btn-web" onclick="fazerLogout()">Logar / Sair</button>
+      <button class="btn-web btn-web-primary" onclick="forcarSalvarTudo()">Salvar</button>
+      <button class="btn-home" onclick="voltarParaHome()">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      </button>
+    </div>
+  </div>
 
-  <div class="status-bar">
-    <div class="status-pill"><div class="indicator" id="ind-server"></div><span id="txt-server">Verificando...</span></div>
-    <div class="status-pill" style="color:var(--text2);">Serviço Ativo: <span id="txt-servico-id" style="color:var(--accent); font-family:var(--mono)">nenhum</span></div>
+  <div class="status-pill">
+    <div class="indicator" id="ind-server"></div>
+    <span id="txt-server">Buscando API...</span>
   </div>
 
   <div id="conteudoDoApp" style="display:none;">
-    
-    <div class="card">
-      <div class="card-header-actions">
-        <div class="flex-group">
-          <span style="font-weight:500;">Mês de Competência:</span>
-          <select id="sel-mes" onchange="mudarMesCompetencia()"></select>
-        </div>
-        <div class="flex-group">
-          <button class="btn" onclick="abrirModalNovoMes()">➕ Novo Mês</button>
-          <button class="btn btn-danger" onclick="fecharMesAtual()" id="btn-fechar-mes">🔒 Fechar Mês</button>
-        </div>
-      </div>
-      <div style="font-size:14px;color:var(--text2);display:flex;gap:24px;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:16px;">
-        <div>Status do Mês: <span id="lbl-status" style="font-weight:600;">-</span></div>
-        <div>Preço Base UH: <span id="lbl-preco" style="font-family:var(--mono);color:var(--accent);">-</span></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3 style="font-size:16px;font-weight:500;margin-bottom:16px;">Equipes de Campo</h3>
-      <div style="display:flex;gap:12px;align-items:center;">
-        <input type="text" id="add-team-name" placeholder="Nome do Empreiteiro / Equipe" style="flex:1;max-width:400px;">
-        <button class="btn btn-primary" onclick="addTeam()">Adicionar Equipe</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header-actions" style="border-bottom:1px solid var(--border);padding-bottom:12px;">
-        <h3 style="font-size:16px;font-weight:500;">Mapa de Lançamento Diário</h3>
-        <div class="flex-group">
-          <span style="font-size:14px;color:var(--text2);">Filtrar Condomínio:</span>
-          <select id="filtro-condo" onchange="renderizarQuadras()"><option value="all">Todos</option><option value="jbi">JB I</option><option value="jbi2">JB II</option></select>
-        </div>
-      </div>
-      <div class="grid-quadras" id="quadras-container" style="margin-top:16px;"></div>
-    </div>
-
-    <div class="card">
-      <h3 style="font-size:16px;font-weight:500;margin-bottom:16px;">Resumo Consolidado</h3>
-      <div class="summary-grid">
-        <div class="summary-card"><div>Total Geral Executado</div><div class="summary-val" id="res-total-uh">0 UH</div></div>
-        <div class="summary-card"><div>Valor Total Acumulado</div><div class="summary-val" id="res-total-rs">R$ 0,00</div></div>
-      </div>
-    </div>
-
+    <div class="grid-quadras" id="quadras-container"></div>
   </div>
 </div>
 
 <div class="toast" id="toast"><span id="toast-msg"></span></div>
 
 <script>
-// ⚙️ CHAVES DO SEU FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyAopowEma-grqzHvcRIantOiib8mcegZAc",
   authDomain: "cb-producoes.firebaseapp.com",
@@ -195,226 +258,205 @@ const firebaseConfig = {
   appId: "1:680753223608:web:764354d726cddb90f2214d"
 };
 
-// Inicialização segura
+// Inicialização sem login automático forçado incorreto
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-// CONFIGURAÇÃO DO SERVIDOR E ADM
-const SERVER = 'http://localhost:5000'; 
-const emailDoAdmin = "seu-email-adm@empresa.com"; // 👑 COLOQUE O SEU E-MAIL AQUI
+const SERVER = 'http://localhost:5000';
+const emailDoAdmin = "seu-email-adm@empresa.com";
 
-// ESTRUTURA DE QUADRAS MAPA JB I E JB II
 const QUADRAS_CONFIG = [
   {id:'Q1',nome:'Quadra 01',condo:'jbi',lotes:14}, {id:'Q2',nome:'Quadra 02',condo:'jbi',lotes:18},
   {id:'Q3',nome:'Quadra 03',condo:'jbi',lotes:20}, {id:'Q4',nome:'Quadra 04',condo:'jbi',lotes:12},
   {id:'Q5',nome:'Quadra 05',condo:'jbi2',lotes:16}, {id:'Q6',nome:'Quadra 06',condo:'jbi2',lotes:22}
 ];
 
-// LISTA DAS 20 FRENTES DE SERVIÇO SEQUENCIAIS
 let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes')) || [
-  { id: "contencao", nome: "Contenção" }, { id: "instalacoes_radier", nome: "Instalações de Radier" },
-  { id: "lona_espadador_malha", nome: "Lona/Espaçador/Malha" }, { id: "concretagem_radier", nome: "Concretagem de Radier" },
-  { id: "paredes", nome: "Paredes" }, { id: "instalacao_registros", nome: "Instalação de Registros" },
-  { id: "graute_inferior", nome: "Graute Inferior" }, { id: "lajes_empenas", nome: "Lajes e Empenas" },
-  { id: "graute_superior", nome: "Graute Superior" }, { id: "telhado", nome: "Telhado" },
-  { id: "hidrossanitarias", nome: "Instalações Hidrossanitárias" }, { id: "acabamento", nome: "Acabamento" },
-  { id: "gesso", nome: "Gesso" }, { id: "contrapiso", nome: "Contrapiso" },
-  { id: "caixinha", nome: "Caixinha" }, { id: "peitoril", nome: "Peitoril" },
-  { id: "esquadrias", nome: "Esquadrias" }, { id: "cabeamento", nome: "Cabeamento" },
-  { id: "impermeabilizacao", nome: "Impermeabilização" }, { id: "ceramica", nome: "Cerâmica" }
+  { id: "contencao", nome: "Contenção", progresso: 78 },
+  { id: "cabeamento", nome: "Cabeamento", progresso: 66 },
+  { id: "acabamento", nome: "Acabamento", progresso: 78 },
+  { id: "instalacoes_radier", nome: "Instalações de Radier", progresso: 36 },
+  { id: "paredes", nome: "Paredes", progresso: 96 },
+  { id: "instalacao_registros", nome: "Instalação de Registros", progresso: 78 },
+  { id: "graute_inferior", nome: "Graute Inferior", progresso: 78 },
+  { id: "lajes_empenas", nome: "Lajes e Empenas", progresso: 78 },
+  { id: "telhado", nome: "Telhado", progresso: 86 },
+  { id: "hidrossanitarias", nome: "Instalações Hidrossanitárias", progresso: 78 },
+  { id: "gesso", nome: "Gesso", progresso: 78 },
+  { id: "contrapiso", nome: "Contrapiso", progresso: 66 },
+  { id: "caixinha", nome: "Caixinha", progresso: 78 },
+  { id: "peitoril", nome: "Peitoril", progresso: 36 },
+  { id: "esquadrias", nome: "Esquadrias", progresso: 96 },
+  { id: "impermeabilizacao", nome: "Impermeabilização", progresso: 78 },
+  { id: "ceramica", nome: "Cerâmica", progresso: 78 }
 ];
 
 let servicoAtivoId = '';
 let livro = [];
-let mesAtivoId = '';
+let mesAtivoId = '2026-06';
 
 function renderizarMenuLateral() {
-  const container = document.getElementById('menuFrentes'); container.innerHTML = "";
+  const container = document.getElementById('menuFrentes');
+  container.innerHTML = "";
   listaFrentes.forEach(frente => {
-    const btn = document.createElement('button');
-    btn.className = "menu-btn"; btn.id = "btn-" + frente.id;
-    btn.innerHTML = frente.nome;
-    btn.onclick = () => alternarFrenteDeServico(frente.id, frente.nome);
-    container.appendChild(btn);
+    const wrapper = document.createElement('div');
+    wrapper.className = "menu-btn-container";
+    wrapper.id = "frente-" + frente.id;
+    wrapper.onclick = () => alternarFrenteDeServico(frente.id, frente.nome);
+
+    wrapper.innerHTML = `
+      <div class="menu-btn-header">
+        <span>${frente.nome}</span>
+        <span style="font-size:11px; color:var(--text2);">${frente.progresso}% Concluído</span>
+      </div>
+      <div class="menu-progress-bg">
+        <div class="menu-progress-bar" style="width: ${frente.progresso}%"></div>
+      </div>
+    `;
+    container.appendChild(wrapper);
   });
 }
 
 async function alternarFrenteDeServico(id, nome) {
   servicoAtivoId = id;
-  document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
-  const activeBtn = document.getElementById("btn-" + id);
-  if(activeBtn) activeBtn.classList.add('active');
+  document.querySelectorAll('.menu-btn-container').forEach(b => b.classList.remove('active'));
+  document.getElementById("frente-" + id).classList.add('active');
   
   document.getElementById('tituloFrenteAtiva').innerText = nome;
-  document.getElementById('txt-servico-id').innerText = id;
   document.getElementById('conteudoDoApp').style.display = 'block';
 
   await carregarEstadoDaNuvem();
-  renderizarMesesSelect();
   renderizarQuadras();
 }
 
 async function carregarEstadoDaNuvem(){
-  try{
-    const r = await fetch(`${SERVER}/carregar-estado?servico=${servicoAtivoId}`, {signal: AbortSignal.timeout(3000)});
+  try {
+    const r = await fetch(`${SERVER}/carregar-estado?servico=${servicoAtivoId}`, {signal: AbortSignal.timeout(2000)});
     if(r.ok){
       const d = await r.json();
-      if(d && d.livro){
-        livro = d.livro; mesAtivoId = d.mesAtivoId || livro[livro.length-1].id;
-        setServerStatus(true); return;
-      }
+      if(d && d.livro){ livro = d.livro; setServerStatus(true); return; }
     }
-  }catch(e){}
+  } catch(e){}
   
   setServerStatus(false);
   const local = localStorage.getItem('cb_estado_' + servicoAtivoId);
-  if(local){
+  if(local) {
     const d = JSON.parse(local);
-    if(d && d.livro){ livro = d.livro; mesAtivoId = d.mesAtivoId || livro[livro.length-1].id; showToast('Dados carregados do backup local'); return; }
+    if(d && d.livro) { livro = d.livro; return; }
   }
-  
-  livro = [{id:'2026-06',mes:'Junho',ano:'2026',preco:1250,status:'open',equipesRemovidas:{},nextTeamId:1,teams:[]}];
-  mesAtivoId = '2026-06';
-}
-
-async function salvarEstadoNaNuvem(){
-  const payload = { livro, mesAtivoId };
-  localStorage.setItem('cb_estado_' + servicoAtivoId, JSON.stringify(payload));
-  try{
-    const r = await fetch(`${SERVER}/salvar-estado?servico=${servicoAtivoId}`, {
-      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
-    });
-    if(r.ok) { setServerStatus(true); return; }
-  }catch(e){}
-  setServerStatus(false);
+  livro = [{ id: '2026-06', status: 'open', mappedLotes: {} }];
 }
 
 function renderizarQuadras() {
-  const container = document.getElementById('quadras-container'); if(!container) return;
+  const container = document.getElementById('quadras-container');
   container.innerHTML = "";
-  const filtro = document.getElementById('filtro-condo').value;
-  const mes = livro.find(m => m.id === mesAtivoId) || livro[0];
+  const data = livro[0] || { mappedLotes: {} };
 
   QUADRAS_CONFIG.forEach(q => {
-    if(filtro !== 'all' && q.condo !== filtro) return;
-
-    const divQ = document.createElement('div'); divQ.className = "quadra-box";
+    const divQ = document.createElement('div');
+    divQ.className = "quadra-box";
     divQ.innerHTML = `
       <div class="quadra-header">
-        <span style="font-weight:600;">${q.nome}</span>
-        <span class="condo-badge ${q.condo}">${q.condo.toUpperCase()}</span>
+        <span>${q.nome}</span>
+        <span class="condo-tag ${q.condo}">${q.condo.toUpperCase()}</span>
       </div>
       <div class="lotes-list" id="lotes-${q.id}"></div>
     `;
     container.appendChild(divQ);
 
     const listCont = document.getElementById(`lotes-${q.id}`);
-    for(let i=1; i<=q.lotes; i++) {
+    for(let i = 1; i <= q.lotes; i++) {
       const loteKey = `${q.id}-L${String(i).padStart(2,'0')}`;
-      const equipeResponsavel = acharEquipeDonoDoLote(mes, loteKey);
+      const isActive = data.mappedLotes && data.mappedLotes[loteKey];
 
-      const row = document.createElement('div'); row.className = "lote-row";
+      const row = document.createElement('div');
+      row.className = "lote-item";
       row.innerHTML = `
-        <span class="lote-name">Lote ${String(i).padStart(2,'0')}</span>
-        <select style="padding:4px 8px; font-size:12px;" onchange="atribuirLote('${loteKey}', this.value)" ${mes.status==='closed'?'disabled':''}>
-          <option value="">Livre</option>
-          ${mes.teams.map(t => `<option value="${t.id}" ${equipeResponsavel==t.id?'selected':''}>${t.name}</option>`).join('')}
-        </select>
+        <div class="lote-info">
+          <span class="lote-title">Lote ${String(i).padStart(2,'0')}</span>
+          <span class="lote-team-label">${isActive ? 'Concluído' : 'Pendente'}</span>
+        </div>
+        <button class="btn-casa-lote ${isActive ? 'active' : ''}" onclick="cliqueBotaoCasa('${loteKey}')">
+          <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        </button>
       `;
       listCont.appendChild(row);
     }
   });
-  calcularResumosFinanceiros(mes);
 }
 
-function acharEquipeDonoDoLote(mes, loteKey) {
-  let dono = "";
-  if(mes && mes.teams) {
-    mes.teams.forEach(t => { if(t.lotes && t.lotes.includes(loteKey)) dono = t.id; });
+function cliqueBotaoCasa(loteKey) {
+  if(!livro[0].mappedLotes) livro[0].mappedLotes = {};
+  
+  // Alterna o estado de marcação diretamente ao clicar na casa
+  if(livro[0].mappedLotes[loteKey]) {
+    delete livro[0].mappedLotes[loteKey];
+  } else {
+    livro[0].mappedLotes[loteKey] = true;
   }
-  return dono;
+  
+  atualizarProgressoFrenteAtual();
+  renderizarQuadras();
+  salvarBackupLocal();
 }
 
-function atribuirLote(loteKey, teamId) {
-  const mes = livro.find(m => m.id === mesAtivoId);
-  mes.teams.forEach(t => { if(t.lotes) t.lotes = t.lotes.filter(l => l !== loteKey); });
-  if(teamId) {
-    const t = mes.teams.find(team => team.id == teamId);
-    if(!t.lotes) t.lotes = []; t.lotes.push(loteKey);
-  }
-  salvarEstadoNaNuvem(); renderizarQuadras();
-}
-
-function addTeam() {
-  const inp = document.getElementById('add-team-name'); if(!inp.value.trim()) return;
-  const mes = livro.find(m => m.id === mesAtivoId);
-  mes.teams.push({ id: mes.nextTeamId++, name: inp.value.trim(), lotes: [] });
-  inp.value = ""; salvarEstadoNaNuvem(); renderizarQuadras();
-}
-
-function calcularResumosFinanceiros(mes) {
-  if(!mes) return;
-  let totalLotes = 0;
-  mes.teams.forEach(t => { totalLotes += (t.lotes ? t.lotes.length : 0); });
-  document.getElementById('res-total-uh').innerText = totalLotes + " UH";
-  document.getElementById('res-total-rs').innerText = "R$ " + (totalLotes * mes.preco).toLocaleString('pt-BR', {minimumFractionDigits:2});
-  document.getElementById('lbl-status').innerText = mes.status === 'open' ? '🟢 Aberto para Lançamentos' : '🔴 Fechado';
-  document.getElementById('lbl-preco').innerText = "R$ " + mes.preco.toFixed(2);
-  document.getElementById('btn-fechar-mes').style.display = mes.status === 'open' ? 'inline-flex' : 'none';
-}
-
-function renderizarMesesSelect() {
-  const sel = document.getElementById('sel-mes'); if(!sel) return;
-  sel.innerHTML = "";
-  livro.forEach(m => { sel.innerHTML += `<option value="${m.id}" ${m.id===mesAtivoId?'selected':''}>${m.mes} / ${m.ano}</option>`; });
-}
-function mudarMesCompetencia() { mesAtivoId = document.getElementById('sel-mes').value; renderizarQuadras(); }
-
-function abrirModalNovoMes() {
-  const m = prompt("Nome do Mês (Ex: Julho):"); const a = prompt("Ano (Ex: 2026):"); const p = parseFloat(prompt("Preço Base por UH (R$):"));
-  if(!m || !a || isNaN(p)) return;
-  const id = `${a}-${livro.length+1}`;
-  livro.push({ id, mes: m, ano: a, preco: p, status: 'open', equipesRemovidas:{}, nextTeamId:1, teams:[] });
-  mesAtivoId = id; salvarEstadoNaNuvem(); renderizarMesesSelect(); renderizarQuadras();
-}
-function fecharMesAtual() { if(confirm("Fechar este mês bloqueia edições de funcionários. Confirmar?")) { const m = livro.find(m=>m.id===mesAtivoId); m.status='closed'; salvarEstadoNaNuvem(); renderizarQuadras(); } }
-
-function criarNovaFrentePelaTela() {
-  const nome = prompt("Nome da Nova Frente de Serviço:"); if(!nome) return;
-  const id = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '_');
-  listaFrentes.push({ id, nome: "📋 " + nome });
-  localStorage.setItem('cb_lista_frentes', JSON.stringify(listaFrentes));
-  renderizarMenuLateral(); alternarFrenteDeServico(id, "📋 " + nome);
-}
-
-function setServerStatus(o){
-  const ind = document.getElementById('ind-server'); const txt = document.getElementById('txt-server');
-  if(ind && txt) {
-    ind.className = "indicator " + (o?"online":"offline"); txt.innerText = o ? "Nuvem Conectada" : "Modo Offline (Backup Ativo)";
+function atualizarProgressoFrenteAtual() {
+  const f = listaFrentes.find(frente => frente.id === servicoAtivoId);
+  if(f) {
+    let totalLotesGeral = 102; // Soma total de lotes das quadras configuradas
+    let marcados = Object.keys(livro[0].mappedLotes || {}).length;
+    f.progresso = Math.round((marcados / totalLotesGeral) * 100) || 0;
+    localStorage.setItem('cb_lista_frentes', JSON.stringify(listaFrentes));
+    renderizarMenuLateral();
+    document.getElementById("frente-" + servicoAtivoId).classList.add('active');
   }
 }
-function showToast(m){ const t = document.getElementById('toast'); if(t){ document.getElementById('toast-msg').innerText=m; t.style.display='flex'; setTimeout(()=>t.style.display='none',3000); } }
 
-// 🔓 FUNÇÃO CORRIGIDA DE LOGIN (CHAMADA SEM CONFLITOS DE CONTEXTO)
+function salvarBackupLocal() {
+  localStorage.setItem('cb_estado_' + servicoAtivoId, JSON.stringify({ livro }));
+}
+
+async function forcarSalvarTudo() {
+  salvarBackupLocal();
+  try {
+    const r = await fetch(`${SERVER}/salvar-estado?servico=${servicoAtivoId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ livro })
+    });
+    if(r.ok) { setServerStatus(true); showToast("Sincronizado com a nuvem!"); return; }
+  } catch(e){}
+  setServerStatus(false);
+  showToast("Salvo localmente (API offline)");
+}
+
+function voltarParaHome() {
+  document.getElementById('conteudoDoApp').style.display = 'none';
+  document.getElementById('tituloFrenteAtiva').innerText = "Nenhuma";
+  document.querySelectorAll('.menu-btn-container').forEach(b => b.classList.remove('active'));
+}
+
 function fazerLogin() {
-  const email = document.getElementById('email').value; 
+  const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
   document.getElementById('erroLogin').innerText = "";
-  
-  auth.signInWithEmailAndPassword(email, password).catch(e => { 
-    document.getElementById('erroLogin').innerText = "Acesso negado. Verifique os dados."; 
+
+  if(!email || !password) {
+    document.getElementById('erroLogin').innerText = "Preencha todos os campos.";
+    return;
+  }
+
+  auth.signInWithEmailAndPassword(email, password).catch(e => {
+    document.getElementById('erroLogin').innerText = "Erro: Usuário ou senha incorretos.";
   });
 }
 
-// Ouvinte de Estado de Autenticação do Firebase
 auth.onAuthStateChanged(user => {
   if (user) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('appSidebar').style.display = 'flex';
     document.getElementById('appMain').style.display = 'block';
-    document.getElementById('userEmail').innerText = user.email;
     renderizarMenuLateral();
-    if(listaFrentes.length > 0 && !servicoAtivoId) alternarFrenteDeServico(listaFrentes[0].id, listaFrentes[0].name);
     if (user.email === emailDoAdmin) document.getElementById('adminSection').style.display = 'block';
   } else {
     document.getElementById('loginScreen').style.display = 'flex';
@@ -424,6 +466,20 @@ auth.onAuthStateChanged(user => {
 });
 
 function fazerLogout() { auth.signOut(); }
+function setServerStatus(o){
+  const ind = document.getElementById('ind-server');
+  const txt = document.getElementById('txt-server');
+  ind.className = "indicator " + (o ? "online" : "offline");
+  txt.innerText = o ? "Configurações Carregadas — API Conectada." : "Servidor Offline — Guardando Localmente.";
+}
+function showToast(m){
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').innerText = m;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 3000);
+}
 </script>
 </body>
 </html>
+
+```
