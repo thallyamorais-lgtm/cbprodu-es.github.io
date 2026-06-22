@@ -13,12 +13,12 @@
   --surface2: #1c1c1c;
   --border: #2d2d2d;
   --border2: #404040;
-  --accent: #ffffff;          /* Elementos de destaque em Branco Puro */
-  --accent-light: #e0e0e0;    /* Branco fosco / Cinza bem claro */
+  --accent: #ffffff;          
+  --accent-light: #e0e0e0;    
   --text: #f5f5f5;
   --text2: #a0a0a0;
   --text3: #666666;
-  --danger: #ffffff;          /* Alertas integrados à paleta minimalista (com borda/estilo diferenciado) */
+  --danger: #ffffff;          
   --jbi-fg: #ffffff;
   --jbi2-fg: #ffffff;
   --radius: 6px;
@@ -29,31 +29,83 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
 
-/* 🌪️ TELA DE LOGIN COM FUNDO DINÂMICO PRETO E CINZA */
+/* 🌪️ TELA DE LOGIN COM FUNDO HIPER DINÂMICO E COM MUITO DESTAQUE */
 .login-screen {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
+  background: #000000;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
 }
+
+/* Camada 1: Efeito de Túnel de Velocidade / Linhas Cônicas Explosivas */
 .login-screen::before {
   content: '';
   position: absolute;
-  width: 200%;
-  height: 200%;
-  background-image: 
-    repeating-linear-gradient(45deg, transparent 0px, transparent 2px, rgba(255, 255, 255, 0.02) 2px, rgba(255, 255, 255, 0.02) 4px),
-    repeating-linear-gradient(-45deg, transparent 0px, transparent 2px, rgba(255, 255, 255, 0.02) 2px, rgba(255, 255, 255, 0.02) 4px);
-  animation: speedLines 25s linear infinite;
-  transform-origin: center;
+  width: 300vw;
+  height: 300vh;
+  top: -100vh;
+  left: -100vw;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 5%,
+    transparent 10%,
+    transparent 30%,
+    rgba(255, 255, 255, 0.2) 35%,
+    transparent 40%,
+    transparent 60%,
+    rgba(255, 255, 255, 0.25) 65%,
+    transparent 70%,
+    transparent 85%,
+    rgba(255, 255, 255, 0.15) 90%,
+    transparent 100%
+  );
+  animation: tunnelRotation 12s linear infinite;
+  transform-origin: center center;
 }
-@keyframes speedLines {
-  0% { transform: translate(-25%, -25%) rotate(0deg); }
-  100% { transform: translate(-25%, -25%) rotate(360deg); }
+
+/* Camada 2: Segunda camada cruzada para dar profundidade e brilho */
+.login-screen::after {
+  content: '';
+  position: absolute;
+  width: 250vw;
+  height: 250vh;
+  top: -75vh;
+  left: -75vw;
+  background: repeating-radial-gradient(
+    circle at center,
+    transparent 0px,
+    transparent 30px,
+    rgba(255, 255, 255, 0.04) 31px,
+    rgba(255, 255, 255, 0.04) 40px
+  );
+  animation: pulseExplosion 4s ease-in-out infinite alternate;
+  transform-origin: center center;
+}
+
+@keyframes tunnelRotation {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes pulseExplosion {
+  0% { transform: scale(0.9); opacity: 0.5; }
+  100% { transform: scale(1.2); opacity: 1; }
+}
+
+/* Brilho Central atrás da Caixa de Login */
+.login-glow {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  z-index: 2;
+  pointer-events: none;
 }
 
 .login-box {
@@ -65,7 +117,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
   width: 100%;
   max-width: 440px;
   text-align: center;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 255, 255, 0.1);
   z-index: 10;
 }
 .login-box .logo-img {
@@ -174,6 +226,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 <body>
 
 <div class="login-screen" id="loginScreen">
+  <div class="login-glow"></div>
   <div class="login-box">
     <img src="logo.png" class="logo-img" id="img-login-logo" alt="CB Engenharia" onerror="this.src='https://placehold.co/180x60/000000/white?text=CB+ENGENHARIA'">
     <h2>Login Obrigatório —</h2>
