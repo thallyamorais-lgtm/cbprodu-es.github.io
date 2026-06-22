@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Plataforma Controle de Produções — CB Engenharia</title>
+<title>Plataforma de Controle de Produções — CB Engenharia</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -18,9 +18,6 @@
   --text: #f5f5f5;
   --text2: #a0a0a0;
   --text3: #666666;
-  --danger: #ffffff;          
-  --jbi-fg: #ffffff;
-  --jbi2-fg: #ffffff;
   --radius: 6px;
   --mono: 'IBM Plex Mono', monospace;
   --sans: 'IBM Plex Sans', sans-serif;
@@ -29,7 +26,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
 
-/* 🌪️ TELA DE LOGIN COM FUNDO HIPER DINÂMICO E COM MUITO DESTAQUE */
+/* 🌪️ TELA DE LOGIN COM FUNDO HIPER DINÂMICO (MUITO DESTAQUE) */
 .login-screen {
   position: fixed;
   inset: 0;
@@ -40,8 +37,6 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
   align-items: center;
   z-index: 9999;
 }
-
-/* Camada 1: Efeito de Túnel de Velocidade / Linhas Cônicas Explosivas */
 .login-screen::before {
   content: '';
   position: absolute;
@@ -67,8 +62,6 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
   animation: tunnelRotation 12s linear infinite;
   transform-origin: center center;
 }
-
-/* Camada 2: Segunda camada cruzada para dar profundidade e brilho */
 .login-screen::after {
   content: '';
   position: absolute;
@@ -86,19 +79,15 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
   animation: pulseExplosion 4s ease-in-out infinite alternate;
   transform-origin: center center;
 }
-
 @keyframes tunnelRotation {
   0% { transform: rotate(0deg) scale(1); }
   50% { transform: rotate(180deg) scale(1.1); }
   100% { transform: rotate(360deg) scale(1); }
 }
-
 @keyframes pulseExplosion {
   0% { transform: scale(0.9); opacity: 0.5; }
   100% { transform: scale(1.2); opacity: 1; }
 }
-
-/* Brilho Central atrás da Caixa de Login */
 .login-glow {
   position: absolute;
   width: 500px;
@@ -125,17 +114,8 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
   margin-bottom: 20px;
   display: inline-block;
 }
-.login-box h2 {
-  font-size: 19px;
-  font-weight: 600;
-  color: #000000;
-  letter-spacing: 0.5px;
-}
-.login-box p {
-  color: #666666;
-  font-size: 13px;
-  margin-bottom: 25px;
-}
+.login-box h2 { font-size: 19px; font-weight: 600; color: #000000; letter-spacing: 0.5px; }
+.login-box p { color: #666666; font-size: 13px; margin-bottom: 25px; }
 .input-group { margin-bottom: 20px; text-align: left; }
 .input-group label { display: block; color: #333333; margin-bottom: 6px; font-size: 13px; font-weight: 500; }
 .input-group input {
@@ -163,7 +143,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 }
 .btn-login:hover { background: #222222; }
 
-/* 🏢 INTERFACE DO PAINEL PRINCIPAL */
+/* 🏢 BARRA LATERAL DA EMPRESA */
 .sidebar { width: 300px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0; }
 .sidebar-header { padding: 25px 20px; border-bottom: 1px solid var(--border); text-align: center; }
 .sidebar-header .logo-panel { max-width: 150px; display: inline-block; }
@@ -178,12 +158,12 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 .menu-progress-bg { width: 100%; height: 4px; background: #000000; border-radius: 2px; overflow: hidden; }
 .menu-progress-bar { height: 100%; background: #ffffff; border-radius: 2px; transition: width 0.3s; }
 
-/* CONTEÚDO */
+/* 📊 CONTEÚDO PRINCIPAL (EXATAMENTE SUA ESTRUTURA) */
 .main-content { flex: 1; padding: 25px; overflow-y: auto; height: 100vh; }
 .nav-header { display: flex; justify-content: space-between; align-items: center; background: var(--surface); border: 1px solid var(--border); padding: 15px 20px; border-radius: var(--radius); margin-bottom: 25px; }
 .nav-actions { display: flex; align-items: center; gap: 12px; }
 
-/* BOTÕES ESTILO PRETO E BRANCO */
+/* BOTÕES CORPORATIVOS */
 .btn-web { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 8px 18px; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
 .btn-web:hover { background: #262626; border-color: var(--border2); }
 .btn-web-primary { background: #ffffff; border: 1px solid #ffffff; color: #000000; font-weight: 600; }
@@ -204,7 +184,6 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 .lote-title { font-family: var(--mono); font-size: 13px; font-weight: 500; }
 .lote-team-label { font-size: 11px; color: var(--text2); }
 
-/* BOTÃO DA CASA DIRETÃO */
 .btn-casa-lote { background: #121212; border: 1px solid var(--border); width: 34px; height: 34px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.15s; }
 .btn-casa-lote:hover { background: #262626; border-color: var(--border2); }
 .btn-casa-lote.active { background: #ffffff; border-color: #ffffff; }
@@ -220,11 +199,13 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 .toast { position: fixed; bottom: 24px; right: 24px; background: #ffffff; color: #000000; padding: 12px 24px; border-radius: var(--radius); display: none; z-index: 10000; font-size: 14px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
 </style>
 
+<!-- Firebase SDK Compat -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 </head>
 <body>
 
+<!-- 🔒 TELA DE LOGIN INTEGRADA -->
 <div class="login-screen" id="loginScreen">
   <div class="login-glow"></div>
   <div class="login-box">
@@ -234,7 +215,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
     
     <div class="input-group">
       <label>Login</label>
-      <input type="email" id="email" placeholder="maria.souza@cbengenharia.com">
+      <input type="email" id="email" placeholder="nome.sobrenome@cbengenharia.com">
     </div>
     <div class="input-group">
       <label>Password</label>
@@ -246,21 +227,24 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
   </div>
 </div>
 
+<!-- 🗂️ BARRA LATERAL CORPORATIVA -->
 <div class="sidebar" id="appSidebar" style="display:none;">
   <div class="sidebar-header">
     <img src="logo.png" class="logo-panel" id="img-sidebar-logo" alt="CB Engenharia" onerror="this.src='https://placehold.co/140x45/000000/white?text=CB+ENGENHARIA'">
   </div>
   
-  <div class="sidebar-title-section">Serviços fronts</div>
+  <div class="sidebar-title-section">Frentes de serviço</div>
   
   <div class="menu-frentes" id="menuFrentes">
-    </div>
+    <!-- Injetado via JS de acordo com a sua lista original -->
+  </div>
 
   <div class="admin-only" id="adminSection">
     <button class="btn-web" onclick="criarNovaFrentePelaTela()" style="width:100%; justify-content:center; border: 1px dashed #fff;">➕ Nova Frente</button>
   </div>
 </div>
 
+<!-- 📊 ÁREA PRINCIPAL -->
 <div class="main-content" id="appMain" style="display:none;">
   <div class="nav-header">
     <div>
@@ -272,11 +256,9 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
       <button class="btn-home" onclick="voltarParaHome()" title="Home">
         <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
       </button>
-      <button class="btn-web" onclick="fazerLogout()">Logar / Sair</button>
+      <!-- Controle de Logout -->
+      <button class="btn-web" onclick="fazerLogout()">Sair do Sistema</button>
       <button class="btn-web btn-web-primary" onclick="forcarSalvarTudo()">Salvar</button>
-      <button class="btn-home" onclick="voltarParaHome()">
-        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-      </button>
     </div>
   </div>
 
@@ -293,6 +275,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 <div class="toast" id="toast"><span id="toast-msg"></span></div>
 
 <script>
+// Configuração original do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAopowEma-grqzHvcRIantOiib8mcegZAc",
   authDomain: "cb-producoes.firebaseapp.com",
@@ -314,24 +297,27 @@ const QUADRAS_CONFIG = [
   {id:'Q5',nome:'Quadra 05',condo:'jbi2',lotes:16}, {id:'Q6',nome:'Quadra 06',condo:'jbi2',lotes:22}
 ];
 
+// Frentes idênticas ao seu arquivo original do prompt (.bat)
 let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes')) || [
-  { id: "contencao", nome: "Contenção", progresso: 78 },
-  { id: "cabeamento", nome: "Cabeamento", progresso: 66 },
-  { id: "acabamento", nome: "Acabamento", progresso: 78 },
-  { id: "instalacoes_radier", nome: "Instalações de Radier", progresso: 36 },
-  { id: "paredes", nome: "Paredes", progresso: 96 },
-  { id: "instalacao_registros", nome: "Instalação de Registros", progresso: 78 },
-  { id: "graute_inferior", nome: "Graute Inferior", progresso: 78 },
-  { id: "lajes_empenas", nome: "Lajes e Empenas", progresso: 78 },
-  { id: "telhado", nome: "Telhado", progresso: 86 },
-  { id: "hidrossanitarias", nome: "Instalações Hidrossanitárias", progresso: 78 },
-  { id: "gesso", nome: "Gesso", progresso: 78 },
-  { id: "contrapiso", nome: "Contrapiso", progresso: 66 },
-  { id: "caixinha", nome: "Caixinha", progresso: 78 },
-  { id: "peitoril", nome: "Peitoril", progresso: 36 },
-  { id: "esquadrias", nome: "Esquadrias", progresso: 96 },
-  { id: "impermeabilizacao", nome: "Impermeabilização", progresso: 78 },
-  { id: "ceramica", nome: "Cerâmica", progresso: 78 }
+  { id: "contencao", nome: "Contenção", progresso: 0 },
+  { id: "inst_radier", nome: "Instalações de Radier", progresso: 0 },
+  { id: "lona_malha", nome: "Lona e Malha", progresso: 0 },
+  { id: "conc_radier", nome: "Concreto do Radier", progresso: 0 },
+  { id: "inst_reg", nome: "Instalação de Registros", progresso: 0 },
+  { id: "graute_inf", nome: "Graute Inferior", progresso: 0 },
+  { id: "graute_sup", nome: "Graute Superior", progresso: 0 },
+  { id: "telhado", nome: "Telhado", progresso: 0 },
+  { id: "inst_hidro", nome: "Instalações Hidrossanitárias", progresso: 0 },
+  { id: "alvenaria", nome: "Alvenaria", progresso: 0 },
+  { id: "acabamento", nome: "Acabamento", progresso: 0 },
+  { id: "gesso", nome: "Gesso", progresso: 0 },
+  { id: "contrapiso", nome: "Contrapiso", progresso: 0 },
+  { id: "caixinha", nome: "Caixinha", progresso: 0 },
+  { id: "peitoril", nome: "Peitoril", progresso: 0 },
+  { id: "esquadrias", nome: "Esquadrias", progresso: 0 },
+  { id: "cabeamento", nome: "Cabeamento", progresso: 0 },
+  { id: "impermea", nome: "Impermeabilização", progresso: 0 },
+  { id: "ceramica", nome: "Cerâmica", progresso: 0 }
 ];
 
 let servicoAtivoId = '';
@@ -362,7 +348,8 @@ function renderizarMenuLateral() {
 async function alternarFrenteDeServico(id, nome) {
   servicoAtivoId = id;
   document.querySelectorAll('.menu-btn-container').forEach(b => b.classList.remove('active'));
-  document.getElementById("frente-" + id).classList.add('active');
+  const el = document.getElementById("frente-" + id);
+  if(el) el.classList.add('active');
   
   document.getElementById('tituloFrenteAtiva').innerText = nome;
   document.getElementById('conteudoDoApp').style.display = 'block';
@@ -416,7 +403,7 @@ function renderizarQuadras() {
       row.innerHTML = `
         <div class="lote-info">
           <span class="lote-title">Lote ${String(i).padStart(2,'0')}</span>
-          <span class="lote-team-label">${isActive ? 'Marcado / Concluído' : 'Pendente'}</span>
+          <span class="lote-team-label">${isActive ? 'Concluído' : 'Pendente'}</span>
         </div>
         <button class="btn-casa-lote ${isActive ? 'active' : ''}" onclick="cliqueBotaoCasa('${loteKey}')">
           <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -449,7 +436,8 @@ function atualizarProgressoFrenteAtual() {
     f.progresso = Math.round((marcados / totalLotesGeral) * 100) || 0;
     localStorage.setItem('cb_lista_frentes', JSON.stringify(listaFrentes));
     renderizarMenuLateral();
-    document.getElementById("frente-" + servicoAtivoId).classList.add('active');
+    const el = document.getElementById("frente-" + servicoAtivoId);
+    if(el) el.classList.add('active');
   }
 }
 
@@ -507,17 +495,24 @@ auth.onAuthStateChanged(user => {
 });
 
 function fazerLogout() { auth.signOut(); }
+
 function setServerStatus(o){
   const ind = document.getElementById('ind-server');
   const txt = document.getElementById('txt-server');
-  ind.className = "indicator " + (o ? "online" : "offline");
-  txt.innerText = o ? "Configurações Carregadas — API Conectada." : "Servidor Local Offline.";
+  if(ind && txt) {
+    ind.className = "indicator " + (o ? "online" : "offline");
+    txt.innerText = o ? "Configurações Carregadas — API Conectada." : "Servidor Local Offline.";
+  }
 }
+
 function showToast(m){
   const t = document.getElementById('toast');
-  document.getElementById('toast-msg').innerText = m;
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 3000);
+  const msg = document.getElementById('toast-msg');
+  if(t && msg) {
+    msg.innerText = m;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+  }
 }
 </script>
 </body>
