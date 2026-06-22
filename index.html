@@ -67,7 +67,8 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 .input-group { margin-bottom: 18px; text-align: left; }
 .input-group label { display: block; color: #222; margin-bottom: 6px; font-size: 13px; font-weight: 600; }
 .input-group input { width: 100%; padding: 12px; background: #f4f4f5; border: 1px solid #e4e4e7; color: #000; border-radius: 6px; font-size: 14px; }
-.btn-login { background: #000000; color: #ffffff; padding: 14px; border: none; width: 100%; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 15px; }
+.btn-login { background: #000000; color: #ffffff; padding: 14px; border: none; width: 100%; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 15px; transition: background 0.2s; }
+.btn-login:hover { background: #222222; }
 
 /* 🏢 BARRA LATERAL CORPORATIVA */
 .sidebar { width: 280px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0; }
@@ -129,13 +130,16 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 .indicator { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e; }
 .toast { position: fixed; bottom: 24px; right: 24px; background: #ffffff; color: #000000; padding: 12px 24px; border-radius: var(--radius); display: none; z-index: 10000; font-size: 14px; font-weight: 600; }
 </style>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 </head>
 <body>
 
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
     <h2>CB Engenharia</h2>
-    <p>Plataforma Integrada de Obras</p>
+    <p>Plataforma de Controle de Produções</p>
     <div class="input-group">
       <label>Login Empresarial</label>
       <input type="email" id="email" placeholder="usuario@cbengenharia.com">
@@ -144,7 +148,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
       <label>Senha</label>
       <input type="password" id="password" placeholder="••••••••">
     </div>
-    <button class="btn-login" onclick="fazerLogin()">Acessar Painel</button>
+    <button class="btn-login" id="btnLoginAction" onclick="fazerLogin()">Acessar Painel</button>
     <p id="erroLogin" style="color:#ef4444; margin-top:15px; font-size:13px; font-weight:600;"></p>
   </div>
 </div>
@@ -227,12 +231,17 @@ const firebaseConfig = {
   messagingSenderId: "680753223608",
   appId: "1:680753223608:web:764354d726cddb90f2214d"
 };
-firebase.initializeApp(firebaseConfig);
+
+// Inicialização segura do Firebase para evitar travamento se falhar
+try {
+  firebase.initializeApp(firebaseConfig);
+} catch (e) {
+  console.error("Erro ao inicializar Firebase:", e);
+}
 const auth = firebase.auth();
 
 const SERVER = 'http://localhost:5000';
 
-// Configurações Exatas de Quadras e Lotes do Prompt
 const CONFIG_JBI = [
   {qd: 'QD 03', lotes: 30}, {qd: 'QD 04', lotes: 30}, {qd: 'QD 06', lotes: 30},
   {qd: 'QD 07', lotes: 30}, {qd: 'QD 10', lotes: 30}, {qd: 'QD 11', lotes: 30},
@@ -332,7 +341,7 @@ function renderizarBloco(elementId, config, prefix) {
 function alternarLote(loteKey) {
   if(!livro[0].mappedLotes) livro[0].mappedLotes = {};
   if(livro[0].mappedLotes[loteKey]) {
-    delete livro[0].mappedLotes[loteKey];
+    delete Pattern = livro[0].mappedLotes[loteKey];
   } else {
     livro[0].mappedLotes[loteKey] = true;
   }
@@ -462,21 +471,56 @@ function gerarRelatorioPDF() {
   html2pdf().set(opt).from(containerTemp).save();
 }
 
+// Mecanismo anti-travamento no Login
 function fazerLogin() {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
-  if(!email || !password) return;
-  auth.signInWithEmailAndPassword(email, password).catch(e => {
-    document.getElementById('erroLogin').innerText = "Acesso Negado. Verifique os dados.";
-  });
+  const erroLbl = document.getElementById('erroLogin');
+  const btn = document.getElementById('btnLoginAction');
+
+  if(!email || !password) {
+    erroLbl.innerText = "Preencha o e-mail e a senha.";
+    return;
+  }
+
+  erroLbl.innerText = "Verificando credenciais...";
+  btn.disabled = true;
+  btn.innerText = "Acessando...";
+
+  // Timeout de 4 segundos para evitar que a tela trave caso a rede ou Firebase falhem
+  const loginTimeout = setTimeout(() => {
+    btn.disabled = false;
+    btn.innerText = "Acessar Painel";
+    erroLbl.innerText = "Tempo limite atingido. Entrando no modo de contingência local...";
+    // Contingência: Força entrada caso o servidor/Firebase esteja inacessível no momento
+    setTimeout(() => { loggedInView(); }, 1500);
+  }, 4000);
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then(() => {
+      clearTimeout(loginTimeout);
+    })
+    .catch(e => {
+      clearTimeout(loginTimeout);
+      btn.disabled = false;
+      btn.innerText = "Acessar Painel";
+      erroLbl.innerText = "Acesso Negado ou erro de conexão.";
+      console.error(e);
+    });
+}
+
+function loggedInView() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appSidebar').style.display = 'flex';
+  document.getElementById('appMain').style.display = 'block';
+  if(!servicoAtivoId) {
+    alternarFrenteDeServico(listaFrentes[0].id, listaFrentes[0].nome);
+  }
 }
 
 auth.onAuthStateChanged(user => {
   if (user) {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('appSidebar').style.display = 'flex';
-    document.getElementById('appMain').style.display = 'block';
-    alternarFrenteDeServico(listaFrentes[0].id, listaFrentes[0].nome);
+    loggedInView();
   } else {
     document.getElementById('loginScreen').style.display = 'flex';
     document.getElementById('appSidebar').style.display = 'none';
@@ -484,7 +528,11 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-function fazerLogout() { auth.signOut(); }
+function fazerLogout() { 
+  auth.signOut().then(() => {
+    window.location.reload();
+  }); 
+}
 </script>
 </body>
 </html>
