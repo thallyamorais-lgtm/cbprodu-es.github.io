@@ -8,7 +8,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root {
-  /* 🖤 PALETA CORPORATIVA MONOCROMÁTICA */
   --bg: #09090b;
   --surface: #18181b;
   --surface2: #27272a;
@@ -25,85 +24,27 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; overflow-x: hidden; }
 
-/* 🟥 TELA DE LOGIN */
-.login-screen {
-  position: fixed;
-  inset: 0;
-  background: #000000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  overflow: hidden;
-}
-.grid-container {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-  grid-template-rows: repeat(auto-fill, minmax(60px, 1fr));
-  gap: 2px;
-  pointer-events: all;
-  z-index: 1;
-}
-.grid-block {
-  background: #09090b;
-  border: 1px solid #18181b;
-  transition: transform 0.6s ease, background-color 0.3s ease;
-  transform-style: preserve-3d;
-}
-.grid-block:hover {
-  background: #ffffff;
-  transform: rotateY(180deg);
-}
-
-.logo-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 15px;
-}
-.logo-img {
-  max-width: 140px;
-  height: auto;
-  object-fit: contain;
-}
-.logo-text {
-  font-family: var(--sans);
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  color: #000000;
-  text-transform: uppercase;
-}
-
-.login-box {
-  position: relative;
-  background: #ffffff;
-  color: #121212;
-  padding: 45px 40px;
-  border-radius: var(--radius);
-  width: 100%;
-  max-width: 420px;
-  text-align: center;
-  box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.9);
-  z-index: 10;
-}
+/* TELA DE LOGIN */
+.login-screen { position: fixed; inset: 0; background: #000000; display: flex; justify-content: center; align-items: center; z-index: 9999; overflow: hidden; }
+.grid-container { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); grid-template-rows: repeat(auto-fill, minmax(60px, 1fr)); gap: 2px; pointer-events: all; z-index: 1; }
+.grid-block { background: #09090b; border: 1px solid #18181b; transition: transform 0.6s ease, background-color 0.3s ease; transform-style: preserve-3d; }
+.grid-block:hover { background: #ffffff; transform: rotateY(180deg); }
+.logo-box { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; margin-bottom: 15px; }
+.logo-img { max-width: 140px; height: auto; object-fit: contain; }
+.logo-text { font-family: var(--sans); font-size: 26px; font-weight: 800; letter-spacing: 2px; color: #000000; text-transform: uppercase; }
+.login-box { position: relative; background: #ffffff; color: #121212; padding: 45px 40px; border-radius: var(--radius); width: 100%; max-width: 420px; text-align: center; box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.9); z-index: 10; }
 .login-box p { color: #666; font-size: 13px; margin-bottom: 25px; }
 .input-group { margin-bottom: 18px; text-align: left; }
 .input-group label { display: block; color: #222; margin-bottom: 6px; font-size: 13px; font-weight: 600; }
 .input-group input { width: 100%; padding: 12px; background: #f4f4f5; border: 1px solid #e4e4e7; color: #000; border-radius: 6px; font-size: 14px; }
 .btn-login { background: #000000; color: #ffffff; padding: 14px; border: none; width: 100%; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 15px; }
 
-/* 🏢 BARRA LATERAL CORPORATIVA */
+/* BARRA LATERAL */
 .sidebar { width: 290px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0; }
 .sidebar-header { padding: 25px 20px; border-bottom: 1px solid var(--border); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .sidebar-logo-img { max-width: 90px; height: auto; object-fit: contain; margin-bottom: 4px; }
 .sidebar-logo { font-size: 18px; font-weight: 800; letter-spacing: 1.5px; color: var(--accent); text-transform: uppercase; }
 .sidebar-title-section { background: #0c0c0e; padding: 12px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text2); font-weight: 700; }
-
 .menu-frentes { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
 .menu-btn-container { padding: 12px 14px; border-radius: var(--radius); cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
 .menu-btn-container:hover { background: var(--surface2); }
@@ -112,57 +53,51 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 .menu-progress-bg { width: 100%; height: 5px; background: #09090b; border-radius: 3px; overflow: hidden; }
 .menu-progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
 
-/* 📊 CONTEÚDO PRINCIPAL */
+/* CONTEÚDO PRINCIPAL */
 .main-content { flex: 1; padding: 30px; overflow-y: auto; height: 100vh; }
 .nav-header { display: flex; justify-content: space-between; align-items: center; background: var(--surface); border: 1px solid var(--border); padding: 16px 24px; border-radius: var(--radius); margin-bottom: 25px; }
 .nav-actions { display: flex; align-items: center; gap: 12px; }
-
 .btn-web { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px 18px; border-radius: var(--radius); cursor: pointer; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
 .btn-web:hover { background: #3f3f46; }
 .btn-web-primary { background: var(--accent); border: 1px solid var(--accent); color: #000; }
 .btn-web-primary:hover { background: #e4e4e7; }
 
-/* 📈 GRID DE MÉTRICAS */
+/* SELEÇÃO SUPERIOR DE EQUIPE ATIVA */
+.selector-top-box { background: #27272a; border: 1px solid var(--border2); padding: 15px 20px; border-radius: var(--radius); margin-bottom: 25px; display: flex; align-items: center; gap: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.selector-top-box label { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #fff; }
+.selector-top-box select { background: #09090b; border: 1px solid var(--border); color: #fff; padding: 10px 15px; border-radius: 6px; font-size: 14px; font-weight: 600; min-width: 250px; cursor: pointer; }
+
 .top-metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 25px; }
 .metric-card { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: var(--radius); }
 .metric-card p { font-size: 12px; color: var(--text2); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
 .metric-card h3 { font-size: 24px; font-weight: 700; margin-top: 6px; font-family: var(--mono); }
 
-/* 🗂️ SEÇÕES DE LOTEAMENTO */
 .loteamento-section { margin-bottom: 35px; background: var(--surface); border: 1px solid var(--border); padding: 24px; border-radius: var(--radius); }
 .loteamento-header { font-size: 18px; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
 .grid-quadras { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
-
 .quadra-box { background: #1c1c1f; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
 .quadra-info-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 600; font-size: 14px; color: var(--accent); }
 .lotes-flex-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-
-.btn-lote-box { background: var(--surface); border: 1px solid var(--border); height: 38px; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--text2); transition: 0.15s; }
+.btn-lote-box { background: var(--surface); border: 1px solid var(--border); height: 38px; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--text2); transition: 0.15s; position: relative; }
 .btn-lote-box:hover { border-color: var(--text2); }
 .btn-lote-box.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+.btn-lote-box .team-indicator { position: absolute; bottom: 2px; font-size: 8px; font-weight: bold; text-transform: uppercase; max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* 📑 CONTAINER DE GESTÃO */
 .management-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 25px; }
 .manage-box { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: var(--radius); }
 .manage-box h4 { font-size: 14px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-
 .form-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
 .form-row input, .form-row select { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 6px; font-size: 13px; flex: 1; min-width: 120px; }
-.form-row input:focus { outline: none; border-color: var(--accent); }
 
 .team-list-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
 .team-list-table th { text-align: left; padding: 8px; color: var(--text2); border-bottom: 1px solid var(--border); }
 .team-list-table td { padding: 8px; border-bottom: 1px solid #27272a; vertical-align: middle; }
-
 .badge-status { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; cursor: pointer; }
 .status-active { background: #22c55e; color: #000; }
 .status-inactive { background: #ef4444; color: #fff; }
-
 .status-pill { background: var(--surface); border: 1px solid var(--border); padding: 6px 14px; border-radius: var(--radius); font-size: 12px; display: inline-flex; align-items: center; gap: 8px; color: var(--text2); }
 .indicator { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e; }
 .toast { position: fixed; bottom: 24px; right: 24px; background: #ffffff; color: #000000; padding: 12px 24px; border-radius: var(--radius); display: none; z-index: 10000; font-size: 14px; font-weight: 600; }
-
-/* Estilo para a lista temporária de funcionários */
 .temp-list { background: #0c0c0e; padding: 10px; border-radius: 6px; border: 1px dashed var(--border); margin-bottom: 15px; font-size: 12px; }
 .temp-item { display: flex; justify-content: space-between; padding: 4px 0; color: var(--text2); }
 </style>
@@ -213,6 +148,13 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
     </div>
   </div>
 
+  <div class="selector-top-box" id="blocoSeletorEquipeSuperior">
+    <label for="seletorEquipeAtiva">Equipe Ativa para Marcação:</label>
+    <select id="seletorEquipeAtiva" onchange="alterouEquipeMarcacao()">
+      <option value="">-- Cadastre ou selecione uma equipe --</option>
+    </select>
+  </div>
+
   <div class="top-metrics-grid">
     <div class="metric-card"><p>Total do Loteamento</p><h3>444 <span style="font-size:14px;color:var(--text2);">UHs</span></h3></div>
     <div class="metric-card"><p>Equipes Ativas</p><h3 id="lbl-equipes-ativas">0</h3></div>
@@ -237,8 +179,12 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
         <h4>Fechamento de Produção Mensal</h4>
         <div class="form-row">
           <label style="font-size: 12px; width: 100%;">Mês Vigente / Valor por Unidade Comercializada</label>
-          <input type="text" id="cfg-mes" placeholder="Mês Ativo (Ex: Junho/2026)" onchange="salvarConfigMensal()">
+          <input type="text" id="cfg-mes" placeholder="Mês Ativo (Ex: Maio/2026)" onchange="salvarConfigMensal()">
           <input type="number" id="cfg-valor-casa" placeholder="Valor por casa (R$)" onchange="salvarConfigMensal()">
+        </div>
+        <div style="margin-top: 15px;">
+          <label style="font-size: 12px; display:block; margin-bottom:5px; color: var(--text2);">Simulação de Lotes Prontos em Meses Anteriores (para cálculo de Acumulado)</label>
+          <input type="number" id="cfg-lotes-anteriores" placeholder="Quantidade de UHs de meses passados" value="0" style="background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 6px; font-size: 13px; width: 100%;" onchange="salvarConfigMensal()">
         </div>
       </div>
 
@@ -275,7 +221,6 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
         </table>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -301,7 +246,7 @@ const CONFIG_JBII = [
   {qd: 'QD 15', lotes: 10}, {qd: 'QD 16', lotes: 10}, {qd: 'QD 17', lotes: 10}
 ];
 
-let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v6')) || [
+let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v7')) || [
   { id: "contencao", nome: "Contenção", progresso: 0 },
   { id: "inst_radier", nome: "Instalação de Radier", progresso: 0 },
   { id: "lona_malha", nome: "Lona/Malha/Conc. Radier", progresso: 0 },
@@ -316,22 +261,23 @@ let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v6')) || [
   { id: "contrapiso", nome: "Contrapiso", progresso: 0 },
   { id: "caixinha", nome: "Caixinha", progresso: 0 },
   { id: "peitoril", nome: "Peitoril", progresso: 0 },
-  { id: "esquadrias", nome: "Esquadrias", progresso: 0 },
+  { id: "esquadrias", nome: "Esquadrias", font: 0, progresso: 0 },
   { id: "cabeamento", nome: "Cabeamento", progresso: 0 },
   { id: "impermea", nome: "Impermeabilização", progresso: 0 },
   { id: "ceramica", nome: "Cerâmica", progresso: 0 }
 ];
 
 let servicoAtivoId = '';
-let libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', equipes: [] };
+let libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', lotesAnteriores: 0, equipes: [] };
 let funcionariosTemporarios = [];
+let equipeSelecionadaParaMarcacao = "";
 
 function fazerLogin() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('appSidebar').style.display = 'flex';
   document.getElementById('appMain').style.display = 'block';
   if(!servicoAtivoId) {
-    alternarFrenteDeServico(listaFrentes[0].id, listaFrentes[0].nome);
+    alternarFrenteDeServico(listaFrentes[4].id, listaFrentes[4].nome);
   }
 }
 
@@ -360,17 +306,20 @@ function alternarFrenteDeServico(id, nome) {
 }
 
 function carregarEstadoLocal() {
-  const local = localStorage.getItem('cb_frente_v6_' + servicoAtivoId);
+  const local = localStorage.getItem('cb_frente_v7_' + servicoAtivoId);
   if (local) {
     libroAtivo = JSON.parse(local);
     if (!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
     if (!libroAtivo.equipes) libroAtivo.equipes = [];
+    if (libroAtivo.lotesAnteriores === undefined) libroAtivo.lotesAnteriores = 0;
   } else {
-    libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', equipes: [] };
+    libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', lotesAnteriores: 0, equipes: [] };
   }
   document.getElementById('cfg-mes').value = libroAtivo.mesAtivo || '';
   document.getElementById('cfg-valor-casa').value = libroAtivo.valorCasa || 0;
+  document.getElementById('cfg-lotes-anteriores').value = libroAtivo.lotesAnteriores || 0;
   
+  atualizarSeletorEquipeSuperior();
   atualizarProgressoFrenteSilencioso();
   renderizarMenuLateral();
   renderizarLoteamentos();
@@ -378,12 +327,31 @@ function carregarEstadoLocal() {
   recalcularTotais();
 }
 
+function atualizarSeletorEquipeSuperior() {
+  const seletor = document.getElementById('seletorEquipeAtiva');
+  seletor.innerHTML = '<option value="">-- Selecione a Equipe Responsável --</option>';
+  
+  libroAtivo.equipes.forEach(e => {
+    if(e.ativo) {
+      const opt = document.createElement('option');
+      opt.value = e.nome;
+      opt.innerText = `👑 ${e.nome}`;
+      if(equipeSelecionadaParaMarcacao === e.nome) opt.selected = true;
+      seletor.appendChild(opt);
+    }
+  });
+}
+
+function alterouEquipeMarcacao() {
+  equipeSelecionadaParaMarcacao = document.getElementById('seletorEquipeAtiva').value;
+}
+
 function atualizarProgressoFrenteSilencioso() {
   const concluidos = Object.keys(libroAtivo.mappedLotes || {}).length;
   const pct = Math.round((concluidos / 444) * 100);
   const f = listaFrentes.find(frente => frente.id === servicoAtivoId);
   if(f) f.progresso = pct;
-  localStorage.setItem('cb_lista_frentes_v6', JSON.stringify(listaFrentes));
+  localStorage.setItem('cb_lista_frentes_v7', JSON.stringify(listaFrentes));
 }
 
 function renderizarLoteamentos() {
@@ -402,10 +370,20 @@ function renderizarBloco(elementId, config, prefix) {
     flexGrid.className = "lotes-flex-grid";
     for(let i = 1; i <= q.lotes; i++) {
       const loteKey = `${prefix}-${q.qd}-L${String(i).padStart(2,'0')}`;
-      const isDone = libroAtivo.mappedLotes && libroAtivo.mappedLotes[loteKey];
+      
+      // Armazena agora um objeto com a equipe associada
+      const dadoLote = libroAtivo.mappedLotes && libroAtivo.mappedLotes[loteKey];
+      const isDone = !!dadoLote;
+      const tNome = dadoLote ? (typeof dadoLote === 'string' ? dadoLote : dadoLote.equipe || 'Equipe Geral') : '';
+
       const btn = document.createElement('div');
       btn.className = `btn-lote-box ${isDone ? 'active' : ''}`;
-      btn.innerText = String(i).padStart(2, '0');
+      btn.innerHTML = `<span>${String(i).padStart(2, '0')}</span>`;
+      
+      if(isDone) {
+        btn.innerHTML += `<span class="team-indicator">${tNome}</span>`;
+      }
+
       btn.onclick = () => alternarLote(loteKey);
       flexGrid.appendChild(btn);
     }
@@ -416,8 +394,16 @@ function renderizarBloco(elementId, config, prefix) {
 
 function alternarLote(loteKey) {
   if(!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
-  if(libroAtivo.mappedLotes[loteKey]) { delete libroAtivo.mappedLotes[loteKey]; } 
-  else { libroAtivo.mappedLotes[loteKey] = true; }
+  
+  if(libroAtivo.mappedLotes[loteKey]) { 
+    delete libroAtivo.mappedLotes[loteKey]; 
+  } else { 
+    if(!equipeSelecionadaParaMarcacao) {
+      alert("ATENÇÃO: Selecione uma 'Equipe Ativa para Marcação' no topo da página antes de lançar a produção.");
+      return;
+    }
+    libroAtivo.mappedLotes[loteKey] = { equipe: equipeSelecionadaParaMarcacao, data: new Date().toLocaleDateString('pt-BR') }; 
+  }
   
   atualizarProgressoFrenteSilencioso();
   renderizarMenuLateral();
@@ -429,6 +415,7 @@ function alternarLote(loteKey) {
 function salvarConfigMensal() {
   libroAtivo.mesAtivo = document.getElementById('cfg-mes').value;
   libroAtivo.valorCasa = parseFloat(document.getElementById('cfg-valor-casa').value) || 0;
+  libroAtivo.lotesAnteriores = parseFloat(document.getElementById('cfg-lotes-anteriores').value) || 0;
   renderizarEquipes();
   recalcularTotais();
   salvarNoDispositivo();
@@ -437,12 +424,7 @@ function salvarConfigMensal() {
 function adicionarFuncionarioTemporario() {
   const funcNome = document.getElementById('nome-funcionario').value.trim();
   const descVal = parseFloat(document.getElementById('desconto-funcionario').value) || 0;
-  
-  if(!funcNome) {
-    alert("Por favor, digite o nome do funcionário.");
-    return;
-  }
-  
+  if(!funcNome) return alert("Digite o nome.");
   funcionariosTemporarios.push({ nome: funcNome, desconto: descVal });
   document.getElementById('nome-funcionario').value = '';
   document.getElementById('desconto-funcionario').value = '';
@@ -452,38 +434,18 @@ function adicionarFuncionarioTemporario() {
 function atualizarVisualListaTemporaria() {
   const container = document.getElementById('lista-temporaria-container');
   const itensDiv = document.getElementById('lista-temporaria-itens');
-  
-  if(funcionariosTemporarios.length === 0) {
-    container.style.display = 'none';
-    return;
-  }
-  
+  if(funcionariosTemporarios.length === 0) { container.style.display = 'none'; return; }
   container.style.display = 'block';
   itensDiv.innerHTML = '';
   funcionariosTemporarios.forEach(f => {
-    itensDiv.innerHTML += `
-      <div class="temp-item">
-        <span>👤 ${f.nome}</span>
-        <span>R$ ${f.desconto.toFixed(2)}</span>
-      </div>
-    `;
+    itensDiv.innerHTML += `<div class="temp-item"><span>👤 ${f.nome}</span><span>R$ ${f.desconto.toFixed(2)}</span></div>`;
   });
 }
 
 function fecharEquipeGeral() {
   const equipeNome = document.getElementById('nome-equipe').value.trim();
-  
-  if(!equipeNome) {
-    alert("Por favor, dê um nome para a equipe antes de fechar.");
-    return;
-  }
-  if(funcionariosTemporarios.length === 0) {
-    alert("Adicione pelo menos um funcionário nesta equipe antes de fechá-la.");
-    return;
-  }
-  
+  if(!equipeNome || funcionariosTemporarios.length === 0) return alert("Preencha o nome e os integrantes.");
   let totalDescontoTime = funcionariosTemporarios.reduce((acc, f) => acc + f.desconto, 0);
-  
   libroAtivo.equipes.push({
     nome: equipeNome,
     integrantesCount: funcionariosTemporarios.length,
@@ -491,11 +453,10 @@ function fecharEquipeGeral() {
     detalhesFuncionarios: [...funcionariosTemporarios],
     ativo: true
   });
-  
   funcionariosTemporarios = [];
   document.getElementById('nome-equipe').value = '';
-  
   atualizarVisualListaTemporaria();
+  atualizarSeletorEquipeSuperior();
   renderizarEquipes();
   recalcularTotais();
   salvarNoDispositivo();
@@ -503,32 +464,20 @@ function fecharEquipeGeral() {
 
 function alternarStatusEquipe(idx) {
   libroAtivo.equipes[idx].ativo = !libroAtivo.equipes[idx].ativo;
-  renderizarEquipes();
-  recalcularTotais();
-  salvarNoDispositivo();
+  atualizarSeletorEquipeSuperior(); renderizarEquipes(); recalcularTotais(); salvarNoDispositivo();
 }
 
 function removerEquipe(idx) {
   libroAtivo.equipes.splice(idx, 1);
-  renderizarEquipes();
-  recalcularTotais();
-  salvarNoDispositivo();
+  atualizarSeletorEquipeSuperior(); renderizarEquipes(); recalcularTotais(); salvarNoDispositivo();
 }
 
 function renderizarEquipes() {
   const corpo = document.getElementById('lista-equipes-corpo');
   corpo.innerHTML = '';
-  
   libroAtivo.equipes.forEach((eq, idx) => {
-    const descontoEfetivo = eq.ativo ? eq.descontoTotal : 0;
     const row = document.createElement('tr');
-    row.innerHTML = `
-      <td style="font-weight:600;">👑 ${eq.nome}</td>
-      <td style="color:var(--text2); text-align: center;">${eq.integrantesCount} funcionário(s)</td>
-      <td>R$ ${descontoEfetivo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-      <td><span class="badge-status ${eq.ativo ? 'status-active' : 'status-inactive'}" onclick="alternarStatusEquipe(${idx})">${eq.ativo ? 'Ativa' : 'Inativa'}</span></td>
-      <td><button onclick="removerEquipe(${idx})" style="background:transparent;color:#ef4444;border:none;cursor:pointer;font-weight:600;">Remover</button></td>
-    `;
+    row.innerHTML = `<td>👑 ${eq.nome}</td><td>${eq.integrantesCount}</td><td>R$ ${eq.descontoTotal.toFixed(2)}</td><td><span class="badge-status ${eq.ativo ? 'status-active' : 'status-inactive'}" onclick="alternarStatusEquipe(${idx})">${eq.ativo ? 'Ativa' : 'Inativa'}</span></td><td><button onclick="removerEquipe(${idx})" style="background:transparent;color:#ef4444;border:none;cursor:pointer;">Remover</button></td>`;
     corpo.appendChild(row);
   });
 }
@@ -537,214 +486,214 @@ function recalcularTotais() {
   const concluidos = Object.keys(libroAtivo.mappedLotes || {}).length;
   const precoCasa = parseFloat(document.getElementById('cfg-valor-casa').value) || 0;
   const bruto = concluidos * precoCasa;
-  
   document.getElementById('lbl-faturamento-total').innerText = bruto.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-  
   const f = listaFrentes.find(frente => frente.id === servicoAtivoId);
-  const pctGeral = f ? f.progresso : 0;
-  document.getElementById('lbl-status-frente-progresso').innerText = `${pctGeral}% Concluído`;
-
-  const ativosCount = libroAtivo.equipes.filter(e => e.ativo).length;
-  document.getElementById('lbl-equipes-ativas').innerText = ativosCount;
+  document.getElementById('lbl-status-frente-progresso').innerText = `${f ? f.progresso : 0}% Concluído`;
+  document.getElementById('lbl-equipes-ativas').innerText = libroAtivo.equipes.filter(e => e.ativo).length;
 }
 
-function salvarNoDispositivo() {
-  localStorage.setItem('cb_frente_v6_' + servicoAtivoId, JSON.stringify(libroAtivo));
-}
+function salvarNoDispositivo() { localStorage.setItem('cb_frente_v7_' + servicoAtivoId, JSON.stringify(libroAtivo)); }
+function forcarSalvarTudo() { salvarNoDispositivo(); const toast = document.getElementById('toast'); toast.style.display = 'block'; setTimeout(() => toast.style.display = 'none', 2000); }
+function fazerLogout() { window.location.reload(); }
 
-function forcarSalvarTudo() {
-  salvarNoDispositivo();
-  const toast = document.getElementById('toast');
-  toast.style.display = 'block';
-  setTimeout(() => toast.style.display = 'none', 2000);
-}
-
-/* 📑 REESTRUTURAÇÃO COMPLETA DO MOTOR DE PDF EXIGIDO PELO SGQ DA CONSTRUÇÃO CIVIL */
+/* ==========================================================================
+   📊 MOTOR DE IMPRESSÃO EXCEL - SEPARADO POR EQUIPE E POR QUADRA
+   ========================================================================== */
 function gerarRelatorioPDF() {
   const containerTemp = document.createElement('div');
-  containerTemp.style.padding = '0';
-  containerTemp.style.color = '#000000';
+  containerTemp.style.padding = '0mm';
   containerTemp.style.background = '#ffffff';
+  containerTemp.style.color = '#000000';
   containerTemp.style.fontFamily = '"Calibri", "Arial", sans-serif';
-  containerTemp.style.fontSize = '10pt';
 
-  const frenteNomeVisual = document.getElementById('tituloFrenteAtiva').innerText.toUpperCase();
-  const mesAnoInput = libroAtivo.mesAtivo || "Maio/2026";
-  const partesData = mesAnoInput.split('/');
-  const mesNome = partesData[0] || "Maio";
-  const anoNome = partesData[1] || "2026";
+  const frenteTitulo = document.getElementById('tituloFrenteAtiva').innerText.toUpperCase();
+  const txtMesAno = libroAtivo.mesAtivo || "Maio/2026";
+  const mNome = txtMesAno.split('/')[0] || "Maio";
+  const aNome = txtMesAno.split('/')[1] || "2026";
+  const vUnit = libroAtivo.valorCasa || 0;
+  const quantAntFixo = parseFloat(libroAtivo.lotesAnteriores) || 0;
 
-  const precoUnidade = libroAtivo.valorCasa || 0;
-  
-  // Agrupar contagens por Quadra com base no mapeamento ativo
-  let quadrasMapeadas = {};
-  CONFIG_JBI.forEach(q => quadrasMapeadas[q.qd] = { concluidos: 0, total: q.lotes, prefix: 'JBI' });
-  CONFIG_JBII.forEach(q => quadrasMapeadas[q.qd] = { concluidos: 0, total: q.lotes, prefix: 'JBII' });
+  // Organizar produções mapeando Equipe -> Quadra -> Quantidade
+  let dadosAgrupados = {};
 
-  Object.keys(libroAtivo.mappedLotes || {}).forEach(loteKey => {
-    // Ex: JBI-QD 03-L02
-    const parts = loteKey.split('-');
-    if(parts.length >= 2) {
-      const qdKey = parts[1];
-      if(quadrasMapeadas[qdKey]) {
-        quadrasMapeadas[qdKey].concluidos++;
-      }
-    }
-  });
+  Object.keys(libroAtivo.mappedLotes || {}).forEach(k => {
+    const p = k.split('-');
+    if(p.length >= 2) {
+      const quadra = p[1];
+      const localRef = k.startsWith('JBI') ? 'José Bernardino I' : 'José Bernardino II';
+      const objLote = libroAtivo.mappedLotes[k];
+      const eqNome = (typeof objLote === 'string') ? objLote : (objLote.equipe || 'Equipe Geral');
 
-  // Geração das linhas de descrição da tabela principal
-  let htmlLinhasTabela = '';
-  let totalQuantAtual = 0;
-  let totalValorAtual = 0;
-  let totalRetencoes = libroAtivo.equipes.filter(e => e.ativo).reduce((acc, e) => acc + e.descontoTotal, 0);
-
-  // Lista de equipes separada por vírgula para o metadado
-  let nomesEquipes = libroAtivo.equipes.filter(e => e.ativo).map(e => e.nome).join(', ') || 'Nenhuma Equipe Ativa';
-
-  Object.keys(quadrasMapeadas).forEach(qd => {
-    const qData = quadrasMapeadas[qd];
-    if(qData.concluidos > 0) {
-      const qutAtu = qData.concluidos;
-      const valTot = qutAtu * precoUnidade;
+      if (!dadosAgrupados[eqNome]) dadosAgrupados[eqNome] = {};
+      if (!dadosAgrupados[eqNome][quadra]) dadosAgrupados[eqNome][quadra] = { atual: 0, ref: localRef };
       
-      totalQuantAtual += qutAtu;
-      totalValorAtual += valTot;
-
-      htmlLinhasTabela += `
-        <tr style="height: 24px;">
-          <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">${qd}</td>
-          <td style="border: 1px solid #000000; text-align: left; vertical-align: middle; padding-left: 6px; white-space: normal; word-wrap: break-word;">Execução de unidades habitacionais no loteamento ${qData.prefix}</td>
-          <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">${qutAtu.toFixed(2)}</td>
-          <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px;">R$ ${precoUnidade.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
-          <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px;">R$ ${valTot.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
-          <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">0.00</td>
-          <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px;">R$ 0,00</td>
-          <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">${qutAtu.toFixed(2)}</td>
-          <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px;">R$ ${valTot.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
-          <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px; font-weight: bold;">R$ ${valTot.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
-        </tr>
-      `;
+      dadosAgrupados[eqNome][quadra].atual++;
     }
   });
 
-  // Caso não existam lançamentos na planilha
-  if(htmlLinhasTabela === '') {
-    htmlLinhasTabela = `
-      <tr style="height: 28px;">
-        <td colspan="10" style="border: 1px solid #000000; text-align: center; vertical-align: middle; color: #555; font-style: italic;">Nenhuma produção computada nesta frente de serviço para o relatório.</td>
-      </tr>
-    `;
+  // Se nenhuma casa foi marcada, insere uma estrutura vazia para evitar PDF sem tabela
+  if(Object.keys(dadosAgrupados).length === 0) {
+    dadosAgrupados['Equipe Geral'] = {};
   }
 
-  const saldoLiquidoFinal = totalValorAtual - totalRetencoes;
+  let linhasHtml = '';
+  let somaQtdAtualTotal = 0;
+  let somaValAtualTotal = 0;
+  let distribuicaoAnt = quantAntFixo;
+
+  // Renderização das linhas do Excel separando por Equipes e suas respectivas Quadras
+  Object.keys(dadosAgrupados).forEach(eqKey => {
+    const quadrasDaEquipe = dadosAgrupados[eqKey];
+    
+    // Sub-Cabeçalho com o nome da Equipe na planilha
+    linhasHtml += `
+      <tr style="height: 24px; background: #f2f2f2; font-weight: bold; font-size: 9.5pt;">
+        <td colspan="10" style="border: 1px solid #000000; text-align: left; padding-left: 8px; color: #000;">PRODUÇÃO INTEGRADA: ${eqKey.toUpperCase()}</td>
+      </tr>
+    `;
+
+    let subSomaAtualEquipe = 0;
+
+    Object.keys(quadrasDaEquipe).forEach(qd => {
+      const q = quadrasDaEquipe[qd];
+      
+      // Abatimento lógico do histórico anterior
+      let qAnt = 0;
+      if (distribuicaoAnt > 0) {
+        qAnt = Math.min(distribuicaoAnt, 30 - q.atual);
+        distribuicaoAnt -= qAnt;
+      }
+
+      const qAtu = q.atual;
+      const qTot = qAnt + qAtu;
+      
+      const valTotAtu = qAtu * vUnit;
+      const valTotAnt = qAnt * vUnit;
+      const valTotGeral = qTot * vUnit;
+
+      somaQtdAtualTotal += qAtu;
+      somaValAtualTotal += valTotAtu;
+      subSomaAtualEquipe += valTotAtu;
+
+      linhasHtml += `
+        <tr style="height: 24px; font-size: 9.5pt;">
+          <td style="border: 1px solid #000000; text-align: center; font-weight: bold;">${qd}</td>
+          <td style="border: 1px solid #000000; text-align: left; padding-left: 5px;">Serviço na ${qd} (${q.ref}) - Resp: ${eqKey}</td>
+          <td style="border: 1px solid #000000; text-align: center;">${qAtu.toFixed(2)}</td>
+          <td style="border: 1px solid #000000; text-align: right; padding-right: 5px;">R$ ${vUnit.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+          <td style="border: 1px solid #000000; text-align: right; padding-right: 5px;">R$ ${valTotAtu.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+          <td style="border: 1px solid #000000; text-align: center;">${qAnt.toFixed(2)}</td>
+          <td style="border: 1px solid #000000; text-align: right; padding-right: 5px;">R$ ${valTotAnt.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+          <td style="border: 1px solid #000000; text-align: center;">${qTot.toFixed(2)}</td>
+          <td style="border: 1px solid #000000; text-align: right; padding-right: 5px;">R$ ${valTotGeral.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+          <td style="border: 1px solid #000000; text-align: right; padding-right: 5px; font-weight: bold; background: #fafafa;">R$ ${valTotAtu.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+        </tr>
+      `;
+    });
+
+    // Se a equipe cadastrada tiver descontos comerciais salvos no painel, aplica direto abaixo dela
+    const dadosEquipePainel = libroAtivo.equipes.find(e => e.nome === eqKey);
+    if(dadosEquipePainel && dadosEquipePainel.descontoTotal > 0 && dadosEquipePainel.ativo) {
+      linhasHtml += `
+        <tr style="height: 22px; font-size: 9pt; background: #fff;">
+          <td style="border: 1px solid #000000; text-align: center; color: red; font-weight:bold;">-</td>
+          <td style="border: 1px solid #000000; text-align: left; padding-left: 5px; color: #a00000; font-style: italic;">(-) Retenções / Descontos Comerciais da equipe (${eqKey})</td>
+          <td colspan="7" style="border: 1px solid #000000; text-align: right; padding-right: 5px; font-weight: bold; color: #a00000;">Deduções da Equipe:</td>
+          <td style="border: 1px solid #000000; text-align: right; padding-right: 5px; font-weight: bold; color: #a00000;">- R$ ${dadosEquipePainel.descontoTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+        </tr>
+      `;
+      subSomaAtualEquipe -= dadosEquipePainel.descontoTotal;
+    }
+  });
+
+  let totalDescontosGeral = libroAtivo.equipes.filter(e => e.ativo).reduce((acc, e) => acc + e.descontoTotal, 0);
+  let valorFinalAPagar = somaValAtualTotal - totalDescontosGeral;
+  let somaQtdAnteriorTotal = quantAntFixo;
+  let somaValAnteriorTotal = quantAntFixo * vUnit;
+  let somaQtdGeralAcumulada = somaQtdAtualTotal + somaQtdAnteriorTotal;
+  let somaValGeralAcumulada = somaValAtualTotal + somaValAnteriorTotal;
+  let nomesEquipesStr = libroAtivo.equipes.filter(e => e.ativo).map(e => e.nome).join(', ') || 'Equipe Geral';
 
   containerTemp.innerHTML = `
-    <div style="border: 2px solid #000000; padding: 12px; background: #ffffff; min-height: 280mm; position: relative;">
+    <div style="border: 2px solid #000000; padding: 10px; min-height: 285mm; box-sizing: border-box; background: #ffffff;">
       
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; border: 2.5px solid #000000;">
-        <tr>
-          <td rowspan="2" style="width: 18%; border: 2px solid #000000; background: #f2f2f2; text-align: center; vertical-align: middle; padding: 6px;">
-            <img src="logo.png" style="max-width: 75px; height: auto;" onerror="this.style.display='none'">
-            <div style="font-size: 8pt; font-weight: bold; margin-top: 4px; font-family: sans-serif;">CB ENGENHARIA</div>
+      <table style="width: 100%; border-collapse: collapse; border: 3px solid #000000; margin-bottom: 12px; font-family: 'Calibri', Arial;">
+        <tr style="background: #e6e6e6; height: 35px;">
+          <td style="width: 15%; border: 2px solid #000000; text-align: center; vertical-align: middle; padding: 4px;">
+            <div style="font-weight: bold; font-size: 11pt;">CB ENGENHARIA</div>
           </td>
-          <td style="width: 42%; border: 2px solid #000000; background: #f2f2f2; font-size: 10pt; font-weight: bold; text-align: center; vertical-align: middle; padding: 6px; text-transform: uppercase;">
+          <td style="width: 40%; border: 2px solid #000000; font-size: 10.5pt; font-weight: bold; text-align: center; vertical-align: middle; text-transform: uppercase;">
             Sistema de Gestão da Qualidade – Loteamento José Bernardino I
           </td>
-          <td rowspan="2" style="width: 25%; border: 2px solid #000000; background: #f2f2f2; font-size: 11pt; font-weight: bold; text-align: center; vertical-align: middle; padding: 6px; letter-spacing: 0.5px;">
-            CONTROLE DE PRODUÇÃO –<br>${frenteNomeVisual}
+          <td style="width: 30%; border: 2px solid #000000; font-size: 11pt; font-weight: bold; text-align: center; vertical-align: middle; text-transform: uppercase;">
+            CONTROLE DE PRODUÇÃO POR EQUIPE –<br>${frenteTitulo}
           </td>
-          <td rowspan="2" style="width: 15%; border: 2px solid #000000; background: #f2f2f2; font-size: 8pt; padding: 4px; vertical-align: top; line-height: 1.4;">
-            <strong>Identificação:</strong> CP-044<br>
-            <strong>Anexo:</strong> VII<br>
-            <strong>Revisão:</strong> 02
-          </td>
-        </tr>
-        <tr>
-          <td style="border: 2px solid #000000; background: #f2f2f2; font-size: 8.5pt; text-align: center; vertical-align: middle; color: #333; font-weight: 500;">
-            Formulário Padrão de Medição Física de Serviços Terceirizados
+          <td style="width: 15%; border: 2px solid #000000; font-size: 8.5pt; padding: 4px; vertical-align: top;">
+            <strong>Identificação:</strong> CP-EXCEL-V2<br>
+            <strong>Anexo:</strong> VI<br>
+            <strong>Revisão:</strong> 04
           </td>
         </tr>
       </table>
 
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-        <tr>
-          <td style="width: 10%; border: 1px solid #000000; padding: 6px; background: #f9f9f9; font-weight: bold; font-size: 9.5pt;">Mês:</td>
-          <td style="width: 23%; border: 1px solid #000000; padding: 6px; font-size: 10pt;">${mesNome}</td>
-          <td style="width: 10%; border: 1px solid #000000; padding: 6px; background: #f9f9f9; font-weight: bold; font-size: 9.5pt;">Ano:</td>
-          <td style="width: 23%; border: 1px solid #000000; padding: 6px; font-size: 10pt;">${anoNome}</td>
-          <td style="width: 10%; border: 1px solid #000000; padding: 6px; background: #f9f9f9; font-weight: bold; font-size: 9.5pt;">Equipe:</td>
-          <td style="width: 24%; border: 1px solid #000000; padding: 6px; font-size: 9.5pt; font-weight: 500;">${nomesEquipes}</td>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-family: 'Calibri', Arial; font-size: 10pt;">
+        <tr style="height: 24px;">
+          <td style="width: 8%; border: 1px solid #000000; font-weight: bold; background: #f2f2f2; text-align: center;">Mês</td>
+          <td style="width: 20%; border: 1px solid #000000; text-align: center;">${mNome}</td>
+          <td style="width: 8%; border: 1px solid #000000; font-weight: bold; background: #f2f2f2; text-align: center;">Ano</td>
+          <td style="width: 20%; border: 1px solid #000000; text-align: center;">${aNome}</td>
+          <td style="width: 10%; border: 1px solid #000000; font-weight: bold; background: #f2f2f2; text-align: center;">Frentes</td>
+          <td style="width: 34%; border: 1px solid #000000; padding-left: 8px; font-weight: bold;">${nomesEquipesStr}</td>
         </tr>
       </table>
 
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 1.5px solid #000000; font-size: 9pt;">
+      <table style="width: 100%; border-collapse: collapse; border: 2px solid #000000; font-family: 'Calibri', Arial;">
         <thead>
-          <tr style="background: #e6e6e6; height: 26px;">
-            <th rowspan="2" style="width: 8%; border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Quadra</th>
-            <th rowspan="2" style="width: 24%; border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Descrição</th>
-            <th colspan="3" style="width: 25%; border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold; text-transform: uppercase;">Medição Atual</th>
-            <th colspan="2" style="width: 15%; border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold; text-transform: uppercase;">Acumulado Anterior</th>
-            <th colspan="2" style="width: 16%; border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold; text-transform: uppercase;">Acumulado Total</th>
-            <th rowspan="2" style="width: 12%; border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Total a Ser Pago</th>
+          <tr style="background: #e6e6e6; height: 24px; font-size: 9.5pt; border-bottom: 1px solid #000000;">
+            <th rowspan="2" style="width: 8%; border: 1px solid #000000; text-align: center; vertical-align: middle;">Quadra</th>
+            <th rowspan="2" style="width: 26%; border: 1px solid #000000; text-align: center; vertical-align: middle;">Descrição dos Serviços Lançados</th>
+            <th colspan="3" style="width: 23%; border: 1px solid #000000; text-align: center; vertical-align: middle;">Medição Atual</th>
+            <th colspan="2" style="width: 17%; border: 1px solid #000000; text-align: center; vertical-align: middle;">Acumulado Anterior</th>
+            <th colspan="2" style="width: 16%; border: 1px solid #000000; text-align: center; vertical-align: middle;">Acumulado Total</th>
+            <th rowspan="2" style="width: 10%; border: 1px solid #000000; text-align: center; vertical-align: middle;">Total Líquido</th>
           </tr>
-          <tr style="background: #e6e6e6; height: 24px;">
-            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Quant. (un)</th>
-            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Valor Unitário</th>
-            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Valor Total</th>
-            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Quant. (un)</th>
-            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Acumulado Anterior</th>
-            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Quant. (un)</th>
-            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Acumulado</th>
+          <tr style="background: #e6e6e6; height: 24px; font-size: 8.5pt;">
+            <th style="border: 1px solid #000000; text-align: center;">Quant.</th>
+            <th style="border: 1px solid #000000; text-align: center;">V. Unit</th>
+            <th style="border: 1px solid #000000; text-align: center;">V. Total</th>
+            <th style="border: 1px solid #000000; text-align: center;">Quant.</th>
+            <th style="border: 1px solid #000000; text-align: center;">Valor Ant.</th>
+            <th style="border: 1px solid #000000; text-align: center;">Quant.</th>
+            <th style="border: 1px solid #000000; text-align: center;">Acumulado</th>
           </tr>
         </thead>
         <tbody>
-          ${htmlLinhasTabela}
+          ${linhasHtml}
           
-          ${totalRetencoes > 0 ? `
-          <tr style="height: 24px; background: #fafafa;">
-            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold; color: #ef4444;">-</td>
-            <td style="border: 1px solid #000000; text-align: left; vertical-align: middle; padding-left: 6px; color: #555;">Retenções comerciais e descontos cadastrados de equipes ativas</td>
-            <td colspan="7" style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px; font-weight: 500; color: #c00;">Total descontado das equipes registradas:</td>
-            <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px; color: #c00; font-weight: bold;">- R$ ${totalRetencoes.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
-          </tr>
-          ` : ''}
-
-          <tr style="height: 28px; background: #52525b; color: #ffffff; font-weight: bold;">
-            <td colspan="2" style="border: 1px solid #000000; text-align: center; vertical-align: middle; text-transform: uppercase; font-size: 9.5pt; letter-spacing: 0.5px;">Totalização Geral</td>
-            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">${totalQuantAtual.toFixed(2)}</td>
+          <tr style="height: 26px; background: #52525b; color: #ffffff; font-weight: bold; font-size: 9.5pt;">
+            <td colspan="2" style="border: 1px solid #000000; text-align: center; text-transform: uppercase;">SALDO CONSOLIDADO GERAL</td>
+            <td style="border: 1px solid #000000; text-align: center;">${somaQtdAtualTotal.toFixed(2)}</td>
             <td style="border: 1px solid #000000; background: #3f3f46;"></td>
-            <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px;">R$ ${totalValorAtual.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
-            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">0.00</td>
-            <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px;">R$ 0,00</td>
-            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">${totalQuantAtual.toFixed(2)}</td>
-            <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px;">R$ ${totalValorAtual.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
-            <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px; background: #27272a; font-size: 10pt;">R$ ${saldoLiquidoFinal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+            <td style="border: 1px solid #000000; text-align: right; padding-right: 5px;">R$ ${somaValAtualTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+            <td style="border: 1px solid #000000; text-align: center;">${somaQtdAnteriorTotal.toFixed(2)}</td>
+            <td style="border: 1px solid #000000; text-align: right; padding-right: 5px;">R$ ${somaValAnteriorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+            <td style="border: 1px solid #000000; text-align: center;">${somaQtdGeralAcumulada.toFixed(2)}</td>
+            <td style="border: 1px solid #000000; text-align: right; padding-right: 5px;">R$ ${somaValGeralAcumulada.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+            <td style="border: 1px solid #000000; text-align: right; padding-right: 5px; background: #18181b; font-size: 10pt;">R$ ${valorFinalAPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
           </tr>
         </tbody>
       </table>
 
       <div style="margin-top: 40px; width: 100%;">
-        <table style="width: 100%; border-collapse: collapse;">
+        <table style="width: 100%; border-collapse: collapse; font-family: 'Calibri', Arial;">
           <tr>
-            <td style="width: 50%; vertical-align: middle; padding: 10px; border: 1.5px solid #000000; background: #f2f2f2;">
-              <span style="font-size: 10pt; font-weight: bold; text-transform: uppercase; color: #111;">
-                Produção total do mês de ${mesNome}:
-              </span>
-              <br>
-              <span style="font-size: 14pt; font-family: monospace; font-weight: bold; color: #000000;">
-                R$ ${saldoLiquidoFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-              </span>
+            <td style="width: 50%; padding: 12px; border: 2px solid #000000; background: #e6e6e6;">
+              <span style="font-size: 9.5pt; font-weight: bold; text-transform: uppercase;">TOTAL LÍQUIDO A SER DISTRIBUÍDO:</span><br>
+              <span style="font-size: 14pt; font-weight: bold;">R$ ${valorFinalAPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
             </td>
-            
-            <td style="width: 50%; text-align: center; vertical-align: bottom; padding-bottom: 5px; padding-left: 40px;">
-              <div style="width: 100%; border-bottom: 1.5px solid #000000; margin-bottom: 5px;"></div>
-              <span style="font-size: 9pt; font-weight: bold; text-transform: uppercase; color: #333; letter-spacing: 0.5px;">
-                Assinatura do Responsável Técnico
-              </span>
-              <br>
-              <span style="font-size: 8pt; color: #666; font-style: italic;">
-                Fiscalização de Engenharia — CB Engenharia
-              </span>
+            <td style="width: 50%; text-align: center; vertical-align: bottom; padding-left: 50px;">
+              <div style="width: 100%; border-bottom: 1px solid #000000; margin-bottom: 6px;"></div>
+              <span style="font-size: 9pt; font-weight: bold; text-transform: uppercase;">Visto de Medição — Engenharia Residente</span>
             </td>
           </tr>
         </table>
@@ -753,19 +702,17 @@ function gerarRelatorioPDF() {
     </div>
   `;
 
-  // Configurações do renderizador html2pdf para folha A4 vertical corporativa
   const opt = { 
-    margin: 8, 
-    filename: `Controle_Producao_${mesNome}_${anoNome}_${servicoAtivoId}.pdf`, 
+    margin: 10, 
+    filename: `Controle_Equipes_${mNome}_${frenteTitulo}.pdf`, 
     image: { type: 'jpeg', quality: 1 }, 
-    html2canvas: { scale: 2.5, useCORS: true }, 
+    html2canvas: { scale: 3, useCORS: true }, 
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
   };
   
   html2pdf().set(opt).from(containerTemp).save();
 }
 
-function fazerLogout() { window.location.reload(); }
 document.getElementById('loginScreen').style.display = 'flex';
 </script>
 </body>
