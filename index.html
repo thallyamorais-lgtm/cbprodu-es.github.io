@@ -165,7 +165,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
   </div>
 
   <div class="top-metrics-grid">
-    <div class="metric-card"><p>Total do Loteamento</p><h3>444 <span style="font-size:14px;color:var(--text2);">UHs</span></h3></div>
+    <div class="metric-card"><p>Total do Loteamento</p><h3 id="lbl-casas-feitas">0/444 <span style="font-size:14px;color:var(--text2);">UHs</span></h3></div>
     <div class="metric-card"><p>Equipes Ativas</p><h3 id="lbl-equipes-ativas">0</h3></div>
     <div class="metric-card"><p>Status Geral da Frente</p><h3 style="font-size:18px;margin-top:12px;" id="lbl-status-frente-progresso">0% Concluído</h3></div>
     <div class="metric-card"><p>Valor Bruto Acumulado</p><h3><span id="lbl-faturamento-total">R$ 0,00</span></h3></div>
@@ -258,7 +258,7 @@ const CONFIG_JBI = [
 ];
 const CONFIG_JBII = [
   {qd: 'QD 20', lotes: 30}, {qd: 'QD 19', lotes: 30}, {qd: 'QD 18', lotes: 30},
-  {qd: 'QD 14', lotes: 30}, {qd: 'QD 13', lotes: 30}, {qd: 'QD 12', lotes: 30},
+  {qd: 'QD 14', lotes: 30}, {qd: 'QD 13', stroke: 30, lotes: 30}, {qd: 'QD 12', lotes: 30},
   {qd: 'QD 15', lotes: 10}, {qd: 'QD 16', lotes: 10}, {qd: 'QD 17', lotes: 10}
 ];
 
@@ -497,10 +497,14 @@ function recalcularTotais() {
   const concluidos = Object.keys(libroAtivo.mappedLotes || {}).length;
   const precoCasa = parseFloat(document.getElementById('cfg-valor-casa').value) || 0;
   const bruto = concluidos * precoCasa;
+  
   document.getElementById('lbl-faturamento-total').innerText = `R$ ${bruto.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
   const f = listaFrentes.find(frente => frente.id === servicoAtivoId);
   document.getElementById('lbl-status-frente-progresso').innerText = `${f ? f.progresso : 0}% Concluído`;
   document.getElementById('lbl-equipes-ativas').innerText = libroAtivo.equipes.filter(e => e.ativo).length;
+
+  // MODIFICADO: Atualiza o HTML com o formato dinâmico Casas Feitas / 444
+  document.getElementById('lbl-casas-feitas').innerHTML = `${concluidos}/444 <span style="font-size:14px;color:var(--text2);">UHs</span>`;
 }
 
 function salvarNoDispositivo() { localStorage.setItem('cb_frente_v8_' + servicoAtivoId, JSON.stringify(libroAtivo)); }
@@ -665,7 +669,6 @@ function gerarRelatorioPDF() {
   containerTemp.innerHTML = `
     <div style="border: 2px solid #000000; padding: 10px; min-height: 285mm; box-sizing: border-box; background: #ffffff;">
       
-      <!-- CABEÇALHO DO SGQ -->
       <table style="width: 100%; border-collapse: collapse; border: 3px solid #000000; margin-bottom: 12px; font-family: 'Calibri', Arial;">
         <tr style="background: #e6e6e6; height: 35px;">
           <td style="width: 15%; border: 2px solid #000000; text-align: center; vertical-align: middle; padding: 4px;">
@@ -686,7 +689,6 @@ function gerarRelatorioPDF() {
         </tr>
       </table>
 
-      <!-- INFO COMPLEMENTAR -->
       <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-family: 'Calibri', Arial; font-size: 10pt;">
         <tr style="height: 24px;">
           <td style="width: 8%; border: 1px solid #000000; font-weight: bold; background: #f2f2f2; text-align: center;">Mês</td>
@@ -698,7 +700,6 @@ function gerarRelatorioPDF() {
         </tr>
       </table>
 
-      <!-- TABELA MATRIZ EXCEL -->
       <table style="width: 100%; border-collapse: collapse; border: 2px solid #000000; font-family: 'Calibri', Arial;">
         <thead>
           <tr style="background: #e6e6e6; height: 24px; font-size: 9.5pt; border-bottom: 1px solid #000000;">
@@ -712,7 +713,6 @@ function gerarRelatorioPDF() {
         <tbody>
           ${linesHtml}
           
-          <!-- LINHA DE FECHAMENTO CONSOLIDADA -->
           <tr style="height: 26px; background: #52525b; color: #ffffff; font-weight: bold; font-size: 9.5pt;">
             <td colspan="2" style="border: 1px solid #000000; text-align: center; text-transform: uppercase;">SALDO CONSOLIDADO GERAL</td>
             <td style="border: 1px solid #000000; text-align: center;">${somaQtdAtualTotal.toFixed(2)}</td>
@@ -722,7 +722,6 @@ function gerarRelatorioPDF() {
         </tbody>
       </table>
 
-      <!-- ASSINATURAS -->
       <div style="margin-top: 40px; width: 100%;">
         <table style="width: 100%; border-collapse: collapse; font-family: 'Calibri', Arial;">
           <tr>
