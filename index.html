@@ -179,7 +179,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
     </div>
 
     <div class="loteamento-section" id="print-jbii">
-      <div class="loteamento-header"><span>José Bernardino II</span><span style="font-size:13px;color:var(--text2);">Total: 210 Casas</span></div>
+      <div class="loteamento-header"><span>José Bernardino II</span><span style="font-size:13px;color:var(--text2);">Total: 219 Casas</span></div>
       <div class="grid-quadras" id="container-jbii"></div>
     </div>
 
@@ -251,15 +251,18 @@ for (let i = 0; i < totalBlocks; i++) {
   gridContainer.appendChild(block);
 }
 
+// MODIFICADO: Distribuição exata das quadras do José Bernardino I
 const CONFIG_JBI = [
   {qd: 'QD 03', lotes: 30}, {qd: 'QD 04', lotes: 30}, {qd: 'QD 06', lotes: 30},
   {qd: 'QD 07', lotes: 30}, {qd: 'QD 10', lotes: 30}, {qd: 'QD 11', lotes: 30},
   {qd: 'QD 02', lotes: 15}, {qd: 'QD 08', lotes: 15}, {qd: 'QD 09', lotes: 15}
 ];
+
+// MODIFICADO: Distribuição exata das quadras do José Bernardino II
 const CONFIG_JBII = [
-  {qd: 'QD 20', lotes: 30}, {qd: 'QD 19', lotes: 30}, {qd: 'QD 18', lotes: 30},
-  {qd: 'QD 14', lotes: 30}, {qd: 'QD 13', stroke: 30, lotes: 30}, {qd: 'QD 12', lotes: 30},
-  {qd: 'QD 15', lotes: 10}, {qd: 'QD 16', lotes: 10}, {qd: 'QD 17', lotes: 10}
+  {qd: 'QD 18', lotes: 30}, {qd: 'QD 19', lotes: 30}, {qd: 'QD 20', lotes: 30}, 
+  {qd: 'QD 14', lotes: 30}, {qd: 'QD 13', lotes: 30}, {qd: 'QD 12', lotes: 30},
+  {qd: 'QD 15', lotes: 13}, {qd: 'QD 16', lotes: 13}, {qd: 'QD 17', lotes: 13}
 ];
 
 let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v8')) || [
@@ -334,7 +337,7 @@ function carregarEstadoLocal() {
   document.getElementById('cfg-valor-casa').value = libroAtivo.valorCasa || 0;
   
   atualizarSeletorEquipeSuperior();
-  atualizarProgressoFrenteSilencioso();
+  hybridRecalcularProgressoSilencioso(); 
   renderizarMenuLateral();
   renderizarLoteamentos();
   renderizarEquipes();
@@ -360,7 +363,7 @@ function alterouEquipeMarcacao() {
   equipeSelecionadaParaMarcacao = document.getElementById('seletorEquipeAtiva').value;
 }
 
-function atualizarProgressoFrenteSilencioso() {
+function hybridRecalcularProgressoSilencioso() {
   const concluidos = Object.keys(libroAtivo.mappedLotes || {}).length;
   const pct = Math.round((concluidos / 444) * 100);
   const f = listaFrentes.find(frente => frente.id === servicoAtivoId);
@@ -417,7 +420,7 @@ function alternarLote(loteKey) {
     libroAtivo.mappedLotes[loteKey] = { equipe: equipeSelecionadaParaMarcacao, data: new Date().toLocaleDateString('pt-BR') }; 
   }
   
-  atualizarProgressoFrenteSilencioso();
+  hybridRecalcularProgressoSilencioso();
   renderizarMenuLateral();
   renderizarLoteamentos();
   recalcularTotais();
@@ -503,7 +506,7 @@ function recalcularTotais() {
   document.getElementById('lbl-status-frente-progresso').innerText = `${f ? f.progresso : 0}% Concluído`;
   document.getElementById('lbl-equipes-ativas').innerText = libroAtivo.equipes.filter(e => e.ativo).length;
 
-  // MODIFICADO: Atualiza o HTML com o formato dinâmico Casas Feitas / 444
+  // Atualiza com a fração baseada em 444
   document.getElementById('lbl-casas-feitas').innerHTML = `${concluidos}/444 <span style="font-size:14px;color:var(--text2);">UHs</span>`;
 }
 
