@@ -148,6 +148,10 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 .status-pill { background: var(--surface); border: 1px solid var(--border); padding: 6px 14px; border-radius: var(--radius); font-size: 12px; display: inline-flex; align-items: center; gap: 8px; color: var(--text2); }
 .indicator { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e; }
 .toast { position: fixed; bottom: 24px; right: 24px; background: #ffffff; color: #000000; padding: 12px 24px; border-radius: var(--radius); display: none; z-index: 10000; font-size: 14px; font-weight: 600; }
+
+/* Estilo para a lista temporária de funcionários */
+.temp-list { background: #0c0c0e; padding: 10px; border-radius: 6px; border: 1px dashed var(--border); margin-bottom: 15px; font-size: 12px; }
+.temp-item { display: flex; justify-content: space-between; padding: 4px 0; color: var(--text2); }
 </style>
 </head>
 <body>
@@ -194,7 +198,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 
   <div class="top-metrics-grid">
     <div class="metric-card"><p>Total do Loteamento</p><h3>444 <span style="font-size:14px;color:var(--text2);">UHs</span></h3></div>
-    <div class="metric-card"><p>Funcionários Ativos</p><h3 id="lbl-equipes-ativas">0</h3></div>
+    <div class="metric-card"><p>Equipes Ativas</p><h3 id="lbl-equipes-ativas">0</h3></div>
     <div class="metric-card"><p>Status Geral da Frente</p><h3 style="font-size:18px;margin-top:12px;" id="lbl-status-frente-progresso">0% Concluído</h3></div>
     <div class="metric-card"><p>Valor Bruto Acumulado</p><h3>R$ <span id="lbl-faturamento-total">0,00</span></h3></div>
   </div>
@@ -213,7 +217,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 
     <div class="management-container">
       <div class="manage-box">
-        <h4>Fechamento de Produção Mensal</h4>
+        <h4>Fechamento de Production Mensal</h4>
         <div class="form-row">
           <label style="font-size: 12px; width: 100%;">Mês Vigente / Valor por Unidade Comercializada</label>
           <input type="text" id="cfg-mes" placeholder="Mês Ativo (Ex: Junho/2026)" onchange="salvarConfigMensal()">
@@ -222,14 +226,34 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
       </div>
 
       <div class="manage-box">
-        <h4>Cadastro Individual de Funcionários / Equipe</h4>
-        <div class="form-row">
-          <input type="text" id="nome-equipe" placeholder="Identificação (Ex: Equipe 1 - José)">
-          <input type="number" step="0.01" id="nomes-integrantes" placeholder="Valor do Desconto (Ex: 1254.00 ou 254.10)">
-          <button class="btn-web btn-web-primary" onclick="cadastrarEquipe()">Adicionar</button>
+        <h4>Cadastro de Participantes</h4>
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 11px; color: var(--text2); display: block; margin-bottom: 4px;">1. Nome / Identificação Geral da Equipe</label>
+          <input type="text" id="nome-equipe" placeholder="Ex: Equipe 1" style="background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 6px; font-size: 13px; width: 100%;">
         </div>
-        <table class="team-list-table">
-          <thead><tr><th>Identificação / Nome</th><th>Desconto Retido</th><th>Status Mensal</th><th>Ações</th></tr></thead>
+        
+        <div class="form-row" style="margin-bottom: 8px;">
+          <div style="flex: 2; min-width: 150px;">
+            <label style="font-size: 11px; color: var(--text2); display: block; margin-bottom: 4px;">2. Funcionário</label>
+            <input type="text" id="nome-funcionario" placeholder="Ex: José">
+          </div>
+          <div style="flex: 1; min-width: 100px;">
+            <label style="font-size: 11px; color: var(--text2); display: block; margin-bottom: 4px;">3. Desconto (R$)</label>
+            <input type="number" step="0.01" id="desconto-funcionario" placeholder="Ex: 150.00">
+          </div>
+        </div>
+        
+        <button class="btn-web" onclick="adicionarFuncionarioTemporario()" style="width:100%; justify-content:center; margin-bottom: 12px; background: #27272a;">+ Adicionar Funcionário à Lista</button>
+
+        <div id="lista-temporaria-container" style="display: none;">
+          <div style="font-size: 11px; color: var(--accent); margin-bottom: 4px; font-weight: 600;">Funcionários na equipe atual:</div>
+          <div class="temp-list" id="lista-temporaria-itens"></div>
+        </div>
+
+        <button class="btn-web btn-web-primary" onclick="fecharEquipeGeral()" style="width:100%; justify-content:center; background: #22c55e; color: #000; font-weight: 700;">🔒 Salvar e Fechar Equipe</button>
+
+        <table class="team-list-table" style="margin-top: 25px;">
+          <thead><tr><th>Equipe Registrada</th><th>Nº Integrantes</th><th>Total Descontos</th><th>Status Mensal</th><th>Ações</th></tr></thead>
           <tbody id="lista-equipes-corpo"></tbody>
         </table>
       </div>
@@ -260,12 +284,18 @@ const CONFIG_JBII = [
   {qd: 'QD 15', lotes: 10}, {qd: 'QD 16', lotes: 10}, {qd: 'QD 17', lotes: 10}
 ];
 
+// 🛠️ TODAS AS 15 FRENTES DE SERVIÇO RESTAURADAS
 let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v4')) || [
+  { id: "gabarito", nome: "Gabarito", progresso: 0 },
+  { id: "escavacao", nome: "Escavação", progresso: 0 },
   { id: "contencao", nome: "Contenção", progresso: 0 },
   { id: "inst_radier", nome: "Instalações de Radier", progresso: 0 },
   { id: "lona_malha", nome: "Lona, Espaçador e Malha", progresso: 0 },
   { id: "conc_radier", nome: "Concretagem de Radier", progresso: 0 },
   { id: "alvenaria", nome: "Alvenaria", progresso: 0 },
+  { id: "verga_vergalhao", nome: "Verga e Vergalhão", progresso: 0 },
+  { id: "respaldo", nome: "Respaldo", progresso: 0 },
+  { id: "reboque", nome: "Reboque", progresso: 0 },
   { id: "telhado", nome: "Telhado", progresso: 0 },
   { id: "acabamento", nome: "Acabamento", progresso: 0 },
   { id: "gesso", nome: "Gesso", progresso: 0 },
@@ -275,6 +305,9 @@ let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v4')) || [
 
 let servicoAtivoId = '';
 let libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Junho/2026', equipes: [] };
+
+// Array temporário para segurar os funcionários antes de fechar a equipe de vez
+let funcionariosTemporarios = [];
 
 function fazerLogin() {
   document.getElementById('loginScreen').style.display = 'none';
@@ -304,6 +337,8 @@ function alternarFrenteDeServico(id, nome) {
   servicoAtivoId = id;
   document.getElementById('tituloFrenteAtiva').innerText = nome;
   document.getElementById('conteudoDoApp').style.display = 'block';
+  funcionariosTemporarios = []; // Limpa lista temporária ao mudar de frente
+  atualizarVisualListaTemporaria();
   carregarEstadoLocal();
 }
 
@@ -312,6 +347,7 @@ function carregarEstadoLocal() {
   if (local) {
     libroAtivo = JSON.parse(local);
     if (!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
+    if (!libroAtivo.equipes) libroAtivo.equipes = [];
   } else {
     libroAtivo = {
       mappedLotes: {},
@@ -323,7 +359,6 @@ function carregarEstadoLocal() {
   document.getElementById('cfg-mes').value = libroAtivo.mesAtivo || '';
   document.getElementById('cfg-valor-casa').value = libroAtivo.valorCasa || 0;
   
-  // Sincroniza a barra lateral com o progresso real calculado de acordo com os marcados
   atualizarProgressoFrenteSilencioso();
   renderizarMenuLateral();
   renderizarLoteamentos();
@@ -387,15 +422,76 @@ function salvarConfigMensal() {
   salvarNoDispositivo();
 }
 
-function cadastrarEquipe() {
-  const nome = document.getElementById('nome-equipe').value.trim();
-  const descontoVal = parseFloat(document.getElementById('nomes-integrantes').value) || 0;
-  if(!nome) return;
+// ETAPA 1: Vai adicionando os funcionários na lista temporária da equipe atual
+function adicionarFuncionarioTemporario() {
+  const funcNome = document.getElementById('nome-funcionario').value.trim();
+  const descVal = parseFloat(document.getElementById('desconto-funcionario').value) || 0;
   
-  libroAtivo.equipes.push({ nome: nome, descontoIndividual: descontoVal, ativo: true });
+  if(!funcNome) {
+    alert("Por favor, digite o nome do funcionário.");
+    return;
+  }
+  
+  funcionariosTemporarios.push({ nome: funcNome, desconto: descVal });
+  
+  // Limpa apenas os campos de funcionário para o próximo
+  document.getElementById('nome-funcionario').value = '';
+  document.getElementById('desconto-funcionario').value = '';
+  
+  atualizarVisualListaTemporaria();
+}
+
+function atualizarVisualListaTemporaria() {
+  const container = document.getElementById('lista-temporaria-container');
+  const itensDiv = document.getElementById('lista-temporaria-itens');
+  
+  if(funcionariosTemporarios.length === 0) {
+    container.style.display = 'none';
+    return;
+  }
+  
+  container.style.display = 'block';
+  itensDiv.innerHTML = '';
+  funcionariosTemporarios.forEach(f => {
+    itensDiv.innerHTML += `
+      <div class="temp-item">
+        <span>👤 ${f.nome}</span>
+        <span>R$ ${f.desconto.toFixed(2)}</span>
+      </div>
+    `;
+  });
+}
+
+// ETAPA 2: Fecha a equipe de vez e joga para o sistema principal
+function fecharEquipeGeral() {
+  const equipeNome = document.getElementById('nome-equipe').value.trim();
+  
+  if(!equipeNome) {
+    alert("Por favor, dê um nome para a equipe (Ex: Equipe 1) antes de fechar.");
+    return;
+  }
+  if(funcionariosTemporarios.length === 0) {
+    alert("Adicione pelo menos um funcionário nesta equipe antes de fechá-la.");
+    return;
+  }
+  
+  // Calcula totais da equipe fechada
+  let totalDescontoTime = funcionariosTemporarios.reduce((acc, f) => acc + f.desconto, 0);
+  
+  // Salva no objeto oficial
+  libroAtivo.equipes.push({
+    nome: equipeNome,
+    integrantesCount: funcionariosTemporarios.length,
+    descontoTotal: totalDescontoTime,
+    detalhesFuncionarios: [...funcionariosTemporarios], // guarda cópia dos nomes e descontos para o relatório PDF
+    ativo: true
+  });
+  
+  // Limpa tudo para permitir cadastrar uma NOVA equipe
+  funcionariosTemporarios = [];
   document.getElementById('nome-equipe').value = '';
-  document.getElementById('nomes-integrantes').value = '';
   
+  atualizarVisualListaTemporaria();
   renderizarEquipes();
   recalcularTotais();
   salvarNoDispositivo();
@@ -420,13 +516,14 @@ function renderizarEquipes() {
   corpo.innerHTML = '';
   
   libroAtivo.equipes.forEach((eq, idx) => {
-    const descontoEfetivo = eq.ativo ? eq.descontoIndividual : 0;
+    const descontoEfetivo = eq.ativo ? eq.descontoTotal : 0;
     
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td style="font-weight:600;">${eq.nome}</td>
+      <td style="font-weight:600;">👑 ${eq.nome}</td>
+      <td style="color:var(--text2); text-align: center;">${eq.integrantesCount} funcionário(s)</td>
       <td>R$ ${descontoEfetivo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-      <td><span class="badge-status ${eq.ativo ? 'status-active' : 'status-inactive'}" onclick="alternarStatusEquipe(${idx})">${eq.ativo ? 'Ativo' : 'Inativo'}</span></td>
+      <td><span class="badge-status ${eq.ativo ? 'status-active' : 'status-inactive'}" onclick="alternarStatusEquipe(${idx})">${eq.ativo ? 'Ativa' : 'Inativa'}</span></td>
       <td><button onclick="removerEquipe(${idx})" style="background:transparent;color:#ef4444;border:none;cursor:pointer;font-weight:600;">Remover</button></td>
     `;
     corpo.appendChild(row);
@@ -472,12 +569,18 @@ function gerarRelatorioPDF() {
   let htmlEquipesRows = '';
 
   libroAtivo.equipes.forEach(eq => {
-    const descEquipe = eq.ativo ? eq.descontoIndividual : 0;
+    const descEquipe = eq.ativo ? eq.descontoTotal : 0;
     totalDescontosGeral += descEquipe;
+    
+    // Lista os integrantes por extenso dentro do relatório de descontos
+    let listaNomes = (eq.detalhesFuncionarios || []).map(f => `${f.nome} (R$ ${f.desconto.toFixed(2)})`).join(', ');
+    if(!listaNomes) listaNomes = "Sem detalhes informados";
+
     htmlEquipesRows += `
       <tr>
-        <td style="border:1px solid #000;padding:8px;font-size:12px;"><strong>${eq.nome}</strong></td>
-        <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:center;">${eq.ativo ? 'ATIVO' : 'INATIVO'}</td>
+        <td style="border:1px solid #000;padding:8px;font-size:12px;"><strong>${eq.nome.toUpperCase()}</strong><br><span style="font-size:10px;color:#555;">Integrantes: ${listaNomes}</span></td>
+        <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:center;">${eq.integrantesCount} UHs</td>
+        <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:center;">${eq.ativo ? 'ATIVA' : 'INATIVA'}</td>
         <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:right;">R$ ${descEquipe.toFixed(2)}</td>
       </tr>
     `;
@@ -503,19 +606,20 @@ function gerarRelatorioPDF() {
         </tbody>
       </table>
 
-      <h3 style="font-size:13px;text-transform:uppercase;margin-bottom:8px;font-weight:bold;">Demonstrativo de Retenções e Descontos</h3>
+      <h3 style="font-size:13px;text-transform:uppercase;margin-bottom:8px;font-weight:bold;">Demonstrativo de Equipes Fechadas e Retenções</h3>
       <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
         <thead style="background:#e6e6e6;">
           <tr>
-            <th style="border:1px solid #000;padding:8px;text-align:left;font-size:12px;">Colaborador / Identificação</th>
-            <th style="border:1px solid #000;padding:8px;text-align:center;font-size:12px;width:20%;">Status Mensal</th>
-            <th style="border:1px solid #000;padding:8px;text-align:right;font-size:12px;width:30%;">Desconto Aplicado</th>
+            <th style="border:1px solid #000;padding:8px;text-align:left;font-size:12px;">Identificação do Grupo / Equipe</th>
+            <th style="border:1px solid #000;padding:8px;text-align:center;font-size:12px;width:15%;">Tamanho</th>
+            <th style="border:1px solid #000;padding:8px;text-align:center;font-size:12px;width:15%;">Status</th>
+            <th style="border:1px solid #000;padding:8px;text-align:right;font-size:12px;width:25%;">Desconto Acumulado</th>
           </tr>
         </thead>
         <tbody>
           ${htmlEquipesRows}
           <tr style="background:#f2f2f2;font-weight:bold;">
-            <td colspan="2" style="border:1px solid #000;padding:8px;text-align:right;font-size:12px;">Total Retido no Mês:</td>
+            <td colspan="3" style="border:1px solid #000;padding:8px;text-align:right;font-size:12px;">Total Retido de Todas as Equipes:</td>
             <td style="border:1px solid #000;padding:8px;text-align:right;font-size:12px;color:#c00;">R$ ${totalDescontosGeral.toFixed(2)}</td>
           </tr>
         </tbody>
@@ -523,7 +627,7 @@ function gerarRelatorioPDF() {
 
       <table style="width:100%;border-collapse:collapse;margin-top:10px;">
         <tr style="background:#000;color:#fff;font-weight:bold;">
-          <td style="border:1px solid #000;padding:12px;font-size:14px;text-transform:uppercase;">SALDO LÍQUIDO DISPONÍVEL PARA REPASSE:</td>
+          <td style="border:1px solid #000;padding:12px;font-size:14px;text-transform:uppercase;">SALDO LÍQUIDO REPASSE FINAL:</td>
           <td style="border:1px solid #000;padding:12px;font-size:16px;text-align:right;font-family:monospace;">R$ ${saldoLiquido.toFixed(2)}</td>
         </tr>
       </table>
