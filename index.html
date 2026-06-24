@@ -150,8 +150,9 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
     </div>
     <div class="nav-actions">
       <div class="status-pill"><div class="indicator"></div><span>Online</span></div>
-      <button class="btn-web btn-web-success" onclick="gerarRelatorioRapidoMensal()">Produção do Mês</button>
-      <button class="btn-web" onclick="gerarRelatorioPDF()">Planilha Excel PDF</button>
+      <button class="btn-web btn-web-success" onclick="gerarRelatorioPDFGeralConsolidado()">PDF do Geral (Todas as Frentes)</button>
+      <button class="btn-web" onclick="exportarPlanilhaExcelFrenteAtiva()">Planilha Excel (Frente Ativa)</button>
+      <button class="btn-web" onclick="gerarRelatorioPDFFrenteAtiva()">Visualizar PDF (Frente Ativa)</button>
       <button class="btn-web btn-web-primary" onclick="forcarSalvarTudo()">Atualizar Dados</button>
       <button class="btn-web" onclick="fazerLogout()" style="border-color:#ef4444; color:#ef4444;">Sair</button>
     </div>
@@ -165,10 +166,10 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
   </div>
 
   <div class="top-metrics-grid">
-    <div class="metric-card"><p>Total do Loteamento</p><h3 id="lbl-casas-feitas">0/444 <span style="font-size:14px;color:var(--text2);">UHs</span></h3></div>
-    <div class="metric-card"><p>Equipes Ativas</p><h3 id="lbl-equipes-ativas">0</h3></div>
-    <div class="metric-card"><p>Status Geral da Frente</p><h3 style="font-size:18px;margin-top:12px;" id="lbl-status-frente-progresso">0% Concluído</h3></div>
-    <div class="metric-card"><p>Valor Bruto Acumulado</p><h3><span id="lbl-faturamento-total">R$ 0,00</span></h3></div>
+    <div class="metric-card"><p>Produção da Frente</p><h3 id="lbl-casas-feitas">0/444 <span style="font-size:14px;color:var(--text2);">UHs</span></h3></div>
+    <div class="metric-card"><p>Equipes Ativas (Frente)</p><h3 id="lbl-equipes-ativas">0</h3></div>
+    <div class="metric-card"><p>Progresso da Frente</p><h3 style="font-size:18px;margin-top:12px;" id="lbl-status-frente-progresso">0% Concluído</h3></div>
+    <div class="metric-card"><p>Faturamento Bruto Frente</p><h3><span id="lbl-faturamento-total">R$ 0,00</span></h3></div>
   </div>
 
   <div id="conteudoDoApp" style="display:none;">
@@ -185,7 +186,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 
     <div class="management-container">
       <div class="manage-box">
-        <h4>Fechamento de Produção Mensal</h4>
+        <h4>Fechamento de Production Mensal</h4>
         <div class="form-row">
           <div class="input-wrapper">
             <label>Mês Vigente</label>
@@ -251,21 +252,19 @@ for (let i = 0; i < totalBlocks; i++) {
   gridContainer.appendChild(block);
 }
 
-// MODIFICADO: Distribuição exata das quadras do José Bernardino I
 const CONFIG_JBI = [
   {qd: 'QD 03', lotes: 30}, {qd: 'QD 04', lotes: 30}, {qd: 'QD 06', lotes: 30},
   {qd: 'QD 07', lotes: 30}, {qd: 'QD 10', lotes: 30}, {qd: 'QD 11', lotes: 30},
   {qd: 'QD 02', lotes: 15}, {qd: 'QD 08', lotes: 15}, {qd: 'QD 09', lotes: 15}
 ];
 
-// MODIFICADO: Distribuição exata das quadras do José Bernardino II
 const CONFIG_JBII = [
   {qd: 'QD 18', lotes: 30}, {qd: 'QD 19', lotes: 30}, {qd: 'QD 20', lotes: 30}, 
   {qd: 'QD 14', lotes: 30}, {qd: 'QD 13', lotes: 30}, {qd: 'QD 12', lotes: 30},
   {qd: 'QD 15', lotes: 13}, {qd: 'QD 16', lotes: 13}, {qd: 'QD 17', lotes: 13}
 ];
 
-let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v8')) || [
+let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v9')) || [
   { id: "contencao", nome: "Contenção", progresso: 0 },
   { id: "inst_radier", nome: "Instalação de Radier", progresso: 0 },
   { id: "lona_malha", nome: "Lona/Malha/Conc. Radier", progresso: 0 },
@@ -325,7 +324,7 @@ function alternarFrenteDeServico(id, nome) {
 }
 
 function carregarEstadoLocal() {
-  const local = localStorage.getItem('cb_frente_v8_' + servicoAtivoId);
+  const local = localStorage.getItem('cb_frente_v9_' + servicoAtivoId);
   if (local) {
     libroAtivo = JSON.parse(local);
     if (!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
@@ -368,7 +367,7 @@ function hybridRecalcularProgressoSilencioso() {
   const pct = Math.round((concluidos / 444) * 100);
   const f = listaFrentes.find(frente => frente.id === servicoAtivoId);
   if(f) f.progresso = pct;
-  localStorage.setItem('cb_lista_frentes_v8', JSON.stringify(listaFrentes));
+  localStorage.setItem('cb_lista_frentes_v9', JSON.stringify(listaFrentes));
 }
 
 function renderizarLoteamentos() {
@@ -503,90 +502,65 @@ function recalcularTotais() {
   
   document.getElementById('lbl-faturamento-total').innerText = `R$ ${bruto.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
   const f = listaFrentes.find(frente => frente.id === servicoAtivoId);
-  document.getElementById('lbl-status-frente-progresso').innerText = `${f ? f.progresso : 0}% Concluído`;
+  document.getElementById('lbl-status-frente-progresso').innerText = `${f ? f.progresso : 0}%`;
   document.getElementById('lbl-equipes-ativas').innerText = libroAtivo.equipes.filter(e => e.ativo).length;
-
-  // Atualiza com a fração baseada em 444
   document.getElementById('lbl-casas-feitas').innerHTML = `${concluidos}/444 <span style="font-size:14px;color:var(--text2);">UHs</span>`;
 }
 
-function salvarNoDispositivo() { localStorage.setItem('cb_frente_v8_' + servicoAtivoId, JSON.stringify(libroAtivo)); }
+function salvarNoDispositivo() { localStorage.setItem('cb_frente_v9_' + servicoAtivoId, JSON.stringify(libroAtivo)); }
 function forcarSalvarTudo() { salvarNoDispositivo(); const toast = document.getElementById('toast'); toast.style.display = 'block'; setTimeout(() => toast.style.display = 'none', 2000); }
 function fazerLogout() { window.location.reload(); }
 
-function gerarRelatorioRapidoMensal() {
-  const containerTemp = document.createElement('div');
-  containerTemp.style.padding = '20px';
-  containerTemp.style.background = '#ffffff';
-  containerTemp.style.color = '#000000';
-  containerTemp.style.fontFamily = 'Arial, sans-serif';
-
+/* ==========================================================================
+   NOVA FUNÇÃO: EXPORTAR PLANILHA EXCEL (.CSV REAL) DA FRENTE ATIVA
+   ========================================================================== */
+function exportarPlanilhaExcelFrenteAtiva() {
   const frenteTitulo = document.getElementById('tituloFrenteAtiva').innerText;
-  const txtMesAno = libroAtivo.mesAtivo || "Mês Ativo";
+  const txtMesAno = libroAtivo.mesAtivo || "Maio-2026";
   const vUnit = libroAtivo.valorCasa || 0;
-  const totalCasasMes = Object.keys(libroAtivo.mappedLotes || {}).length;
-  const totalBrutoMes = totalCasasMes * vUnit;
-  const totalDeducoes = libroAtivo.equipes.filter(e => e.ativo).reduce((acc, e) => acc + e.descontoTotal, 0);
-  const totalLiquidoMes = totalBrutoMes - totalDeducoes;
 
-  containerTemp.innerHTML = `
-    <div style="border: 1px solid #ccc; padding: 25px; border-radius: 8px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #000; padding-bottom:15px; margin-bottom:20px;">
-        <div>
-          <h1 style="font-size:20px; margin:0; text-transform:uppercase;">CB ENGENHARIA</h1>
-          <p style="font-size:12px; color:#555; margin:3px 0 0 0;">Relatório de Fechamento Financeiro de Produção</p>
-        </div>
-        <img src="Logo-01.png" style="max-height:45px;" onerror="this.style.display='none'">
-      </div>
+  let csvContent = "\uFEFF"; // UTF-8 BOM para abrir acentos corretamente no Excel
+  csvContent += "LOTEAMENTO;QUADRA;LOTE;SITUACAO;RESPONSAVEL;VALOR UNITARIO;VALOR TOTAL\n";
 
-      <p style="font-size:14px; margin-bottom:8px;"><strong>Frente de Trabalho:</strong> ${frenteTitulo}</p>
-      <p style="font-size:14px; margin-bottom:20px;"><strong>Período de Apuração:</strong> ${txtMesAno}</p>
+  // Mapear JBI
+  CONFIG_JBI.forEach(q => {
+    for(let i = 1; i <= q.lotes; i++) {
+      const loteKey = `JBI-${q.qd}-L${String(i).padStart(2,'0')}`;
+      const dado = libroAtivo.mappedLotes[loteKey];
+      const status = dado ? "CONCLUIDO" : "PENDENTE";
+      const resp = dado ? (dado.equipe || "Equipe Geral") : "-";
+      const total = dado ? vUnit : 0;
+      csvContent += `Jose Bernardino I;${q.qd};Lote ${String(i).padStart(2,'0')};${status};${resp};${vUnit};${total}\n";`;
+    }
+  });
 
-      <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:13px;">
-        <thead>
-          <tr style="background:#f4f4f5; text-align:left; border-bottom:1px solid #ddd;">
-            <th style="padding:10px;">Item / Descrição</th>
-            <th style="padding:10px; text-align:center;">Quantidade</th>
-            <th style="padding:10px; text-align:right;">Valor</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom:1px solid #eee;">
-            <td style="padding:10px;">Produção Bruta Registrada no Mês (Casas Executadas)</td>
-            <td style="padding:10px; text-align:center;">${totalCasasMes} UHs</td>
-            <td style="padding:10px; text-align:right;">R$ ${totalBrutoMes.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
-          </tr>
-          <tr style="border-bottom:1px solid #eee; color:#a00000;">
-            <td style="padding:10px;">(-) Retenções Internas e Descontos de Equipes Ativas</td>
-            <td style="padding:10px; text-align:center;">-</td>
-            <td style="padding:10px; text-align:right;">- R$ ${totalDeducoes.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
-          </tr>
-          <tr style="background:#fafafa; font-weight:bold; font-size:15px; border-top:2px solid #000;">
-            <td style="padding:12px;" colspan="2">VALOR TOTAL LÍQUIDO DO MÊS</td>
-            <td style="padding:12px; text-align:right; color:#16a34a;">R$ ${totalLiquidoMes.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
-          </tr>
-        </tbody>
-      </table>
+  // Mapear JBII
+  CONFIG_JBII.forEach(q => {
+    for(let i = 1; i <= q.lotes; i++) {
+      const loteKey = `JBII-${q.qd}-L${String(i).padStart(2,'0')}`;
+      const dado = libroAtivo.mappedLotes[loteKey];
+      const status = dado ? "CONCLUIDO" : "PENDENTE";
+      const resp = dado ? (dado.equipe || "Equipe Geral") : "-";
+      const total = dado ? vUnit : 0;
+      csvContent += `Jose Bernardino II;${q.qd};Lote ${String(i).padStart(2,'0')};${status};${resp};${vUnit};${total}\n`;
+    }
+  });
 
-      <div style="margin-top:50px; text-align:center; font-size:12px; color:#666;">
-        <div style="width:250px; border-bottom:1px solid #000; margin:0 auto 5px auto;"></div>
-        <p>Departamento de Controladoria e Custos</p>
-        <p style="font-size:10px; margin-top:2px;">Gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
-      </div>
-    </div>
-  `;
-
-  const opt = { 
-    margin: 15, 
-    filename: `Resumo_Mensal_Valor_${txtMesAno.replace('/','-')}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-  html2pdf().set(opt).from(containerTemp).save();
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute("download", `Planilha_Producao_${frenteTitulo.replace(/ /g, '_')}_${txtMesAno.replace(/\//g,'-')}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
-function gerarRelatorioPDF() {
+/* ==========================================================================
+   FUNÇÃO ATUALIZADA: PDF DETALHADO ESTILO MATRIZ DA FRENTE ATIVA
+   ========================================================================== */
+function gerarRelatorioPDFFrenteAtiva() {
   const containerTemp = document.createElement('div');
   containerTemp.style.padding = '0mm';
   containerTemp.style.background = '#ffffff';
@@ -600,7 +574,6 @@ function gerarRelatorioPDF() {
   const vUnit = libroAtivo.valorCasa || 0;
 
   let dadosAgrupados = {};
-
   Object.keys(libroAtivo.mappedLotes || {}).forEach(k => {
     const p = k.split('-');
     if(p.length >= 2) {
@@ -611,14 +584,11 @@ function gerarRelatorioPDF() {
 
       if (!dadosAgrupados[eqNome]) dadosAgrupados[eqNome] = {};
       if (!dadosAgrupados[eqNome][quadra]) dadosAgrupados[eqNome][quadra] = { atual: 0, ref: localRef };
-      
       dadosAgrupados[eqNome][quadra].atual++;
     }
   });
 
-  if(Object.keys(dadosAgrupados).length === 0) {
-    dadosAgrupados['Equipe Geral'] = {};
-  }
+  if(Object.keys(dadosAgrupados).length === 0) dadosAgrupados['Equipe Geral'] = {};
 
   let linesHtml = '';
   let somaQtdAtualTotal = 0;
@@ -626,10 +596,9 @@ function gerarRelatorioPDF() {
 
   Object.keys(dadosAgrupados).forEach(eqKey => {
     const quadrasDaEquipe = dadosAgrupados[eqKey];
-    
     linesHtml += `
       <tr style="height: 24px; background: #f2f2f2; font-weight: bold; font-size: 9.5pt;">
-        <td colspan="5" style="border: 1px solid #000000; text-align: left; padding-left: 8px; color: #000;">PRODUÇÃO INTEGRADA: ${eqKey.toUpperCase()}</td>
+        <td colspan="5" style="border: 1px solid #000000; text-align: left; padding-left: 8px;">PRODUÇÃO INTEGRADA: ${eqKey.toUpperCase()}</td>
       </tr>
     `;
 
@@ -655,10 +624,10 @@ function gerarRelatorioPDF() {
     const dadosEquipePainel = libroAtivo.equipes.find(e => e.nome === eqKey);
     if(dadosEquipePainel && dadosEquipePainel.descontoTotal > 0 && dadosEquipePainel.ativo) {
       linesHtml += `
-        <tr style="height: 22px; font-size: 9pt; background: #fff;">
+        <tr style="height: 22px; font-size: 9pt;">
           <td style="border: 1px solid #000000; text-align: center; color: red; font-weight:bold;">-</td>
-          <td style="border: 1px solid #000000; text-align: left; padding-left: 5px; color: #a00000; font-style: italic;">(-) Retenções / Descontos Comerciais da equipe (${eqKey})</td>
-          <td colspan="2" style="border: 1px solid #000000; text-align: right; padding-right: 5px; font-weight: bold; color: #a00000;">Deduções da Equipe:</td>
+          <td style="border: 1px solid #000000; text-align: left; padding-left: 5px; color: #a00000; font-style: italic;">(-) Retenções / Descontos da equipe (${eqKey})</td>
+          <td colspan="2" style="border: 1px solid #000000; text-align: right; padding-right: 5px; font-weight: bold; color: #a00000;">Deduções:</td>
           <td style="border: 1px solid #000000; text-align: right; padding-right: 5px; font-weight: bold; color: #a00000;">- R$ ${dadosEquipePainel.descontoTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
         </tr>
       `;
@@ -671,84 +640,198 @@ function gerarRelatorioPDF() {
 
   containerTemp.innerHTML = `
     <div style="border: 2px solid #000000; padding: 10px; min-height: 285mm; box-sizing: border-box; background: #ffffff;">
-      
-      <table style="width: 100%; border-collapse: collapse; border: 3px solid #000000; margin-bottom: 12px; font-family: 'Calibri', Arial;">
+      <table style="width: 100%; border-collapse: collapse; border: 3px solid #000000; margin-bottom: 12px;">
         <tr style="background: #e6e6e6; height: 35px;">
-          <td style="width: 15%; border: 2px solid #000000; text-align: center; vertical-align: middle; padding: 4px;">
-            <img src="Logo-01.png" style="max-height:28px; display:block; margin:0 auto;" onerror="this.style.display='none';">
-            <div style="font-weight: bold; font-size: 9pt; margin-top:2px;">CB ENGENHARIA</div>
+          <td style="width: 15%; border: 2px solid #000000; text-align: center; padding: 4px;">
+            <div style="font-weight: bold; font-size: 10pt;">CB ENGENHARIA</div>
           </td>
-          <td style="width: 40%; border: 2px solid #000000; font-size: 10.5pt; font-weight: bold; text-align: center; vertical-align: middle; text-transform: uppercase;">
-            Sistema de Gestão da Qualidade – Loteamento José Bernardino I
+          <td style="width: 40%; border: 2px solid #000000; font-size: 10pt; font-weight: bold; text-align: center; text-transform: uppercase;">
+            Sistema de Gestão da Qualidade – Loteamento José Bernardino
           </td>
-          <td style="width: 30%; border: 2px solid #000000; font-size: 11pt; font-weight: bold; text-align: center; vertical-align: middle; text-transform: uppercase;">
-            CONTROLE DE PRODUÇÃO POR EQUIPE –<br>${frenteTitulo}
+          <td style="width: 30%; border: 2px solid #000000; font-size: 10pt; font-weight: bold; text-align: center; text-transform: uppercase;">
+            MEDIÇÃO DA FRENTE –<br>${frenteTitulo}
           </td>
-          <td style="width: 15%; border: 2px solid #000000; font-size: 8.5pt; padding: 4px; vertical-align: top;">
-            <strong>Identificação:</strong> CP-EXCEL-V2<br>
-            <strong>Anexo:</strong> VI<br>
-            <strong>Revisão:</strong> 04
+          <td style="width: 15%; border: 2px solid #000000; font-size: 8.5pt; padding: 4px;">
+            <strong>Identificação:</strong> CP-FRENTE-V9<br>
+            <strong>Revisão:</strong> 05
           </td>
         </tr>
       </table>
 
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-family: 'Calibri', Arial; font-size: 10pt;">
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 10pt;">
         <tr style="height: 24px;">
           <td style="width: 8%; border: 1px solid #000000; font-weight: bold; background: #f2f2f2; text-align: center;">Mês</td>
           <td style="width: 20%; border: 1px solid #000000; text-align: center;">${mNome}</td>
           <td style="width: 8%; border: 1px solid #000000; font-weight: bold; background: #f2f2f2; text-align: center;">Ano</td>
           <td style="width: 20%; border: 1px solid #000000; text-align: center;">${aNome}</td>
-          <td style="width: 10%; border: 1px solid #000000; font-weight: bold; background: #f2f2f2; text-align: center;">Frentes</td>
+          <td style="width: 10%; border: 1px solid #000000; font-weight: bold; background: #f2f2f2; text-align: center;">Equipes</td>
           <td style="width: 34%; border: 1px solid #000000; padding-left: 8px; font-weight: bold;">${nomesEquipesStr}</td>
         </tr>
       </table>
 
-      <table style="width: 100%; border-collapse: collapse; border: 2px solid #000000; font-family: 'Calibri', Arial;">
+      <table style="width: 100%; border-collapse: collapse; border: 2px solid #000000;">
         <thead>
-          <tr style="background: #e6e6e6; height: 24px; font-size: 9.5pt; border-bottom: 1px solid #000000;">
-            <th style="width: 10%; border: 1px solid #000000; text-align: center;">Quadra</th>
-            <th style="width: 45%; border: 1px solid #000000; text-align: center;">Descrição dos Serviços Lançados</th>
-            <th style="width: 12%; border: 1px solid #000000; text-align: center;">Quant. Mês</th>
-            <th style="width: 15%; border: 1px solid #000000; text-align: center;">V. Unit</th>
-            <th style="width: 18%; border: 1px solid #000000; text-align: center;">Total Líquido</th>
+          <tr style="background: #e6e6e6; height: 24px; font-size: 9.5pt;">
+            <th style="width: 10%; border: 1px solid #000000;">Quadra</th>
+            <th style="width: 45%; border: 1px solid #000000;">Descrição dos Serviços Lançados</th>
+            <th style="width: 12%; border: 1px solid #000000;">Quant. Mês</th>
+            <th style="width: 15%; border: 1px solid #000000;">V. Unit</th>
+            <th style="width: 18%; border: 1px solid #000000;">Total Líquido</th>
           </tr>
         </thead>
         <tbody>
           ${linesHtml}
-          
           <tr style="height: 26px; background: #52525b; color: #ffffff; font-weight: bold; font-size: 9.5pt;">
-            <td colspan="2" style="border: 1px solid #000000; text-align: center; text-transform: uppercase;">SALDO CONSOLIDADO GERAL</td>
+            <td colspan="2" style="border: 1px solid #000000; text-align: center;">SALDO CONSOLIDADO DA FRENTE</td>
             <td style="border: 1px solid #000000; text-align: center;">${somaQtdAtualTotal.toFixed(2)}</td>
             <td style="border: 1px solid #000000; background: #3f3f46;"></td>
-            <td style="border: 1px solid #000000; text-align: right; padding-right: 5px; background: #18181b; font-size: 10pt;">R$ ${valorFinalAPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+            <td style="border: 1px solid #000000; text-align: right; padding-right: 5px; background: #18181b;">R$ ${valorFinalAPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
           </tr>
         </tbody>
       </table>
 
       <div style="margin-top: 40px; width: 100%;">
-        <table style="width: 100%; border-collapse: collapse; font-family: 'Calibri', Arial;">
+        <table style="width: 100%; border-collapse: collapse;">
           <tr>
             <td style="width: 50%; padding: 12px; border: 2px solid #000000; background: #e6e6e6;">
-              <span style="font-size: 9.5pt; font-weight: bold; text-transform: uppercase;">TOTAL LÍQUIDO A SER DISTRIBUÍDO:</span><br>
+              <span style="font-size: 9.5pt; font-weight: bold;">TOTAL LÍQUIDO DA FRENTE:</span><br>
               <span style="font-size: 14pt; font-weight: bold;">R$ ${valorFinalAPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
             </td>
             <td style="width: 50%; text-align: center; vertical-align: bottom; padding-left: 50px;">
               <div style="width: 100%; border-bottom: 1px solid #000000; margin-bottom: 6px;"></div>
-              <span style="font-size: 9pt; font-weight: bold; text-transform: uppercase;">Visto de Medição — Engenharia Residente</span>
+              <span style="font-size: 9pt; font-weight: bold;">Visto de Medição — Engenharia Residente</span>
             </td>
           </tr>
         </table>
       </div>
-
     </div>
   `;
 
   const opt = { 
     margin: 10, 
-    filename: `Controle_Equipes_${mNome}_${frenteTitulo}.pdf`, 
+    filename: `Medicao_Frente_${frenteTitulo}_${mNome}.pdf`, 
     image: { type: 'jpeg', quality: 1 }, 
     html2canvas: { scale: 3, useCORS: true }, 
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+  };
+  html2pdf().set(opt).from(containerTemp).save();
+}
+
+/* ==========================================================================
+   NOVA FUNÇÃO: PDF DO GERAL CONSOLIDADO (VARRE E SOMA TODAS AS 18 FRENTES)
+   ========================================================================== */
+function gerarRelatorioPDFGeralConsolidado() {
+  const containerTemp = document.createElement('div');
+  containerTemp.style.padding = '15px';
+  containerTemp.style.background = '#ffffff';
+  containerTemp.style.color = '#000000';
+  containerTemp.style.fontFamily = 'Arial, sans-serif';
+
+  let totalGeralBrutoLoteamento = 0;
+  let totalGeralDescontosLoteamento = 0;
+  let totalCasasExecutadasTodasFrentes = 0;
+  let tabelaFrentesHtml = '';
+
+  // Varre o localStorage procurando dados de todas as frentes cadastradas
+  listaFrentes.forEach((frente, index) => {
+    const local = localStorage.getItem('cb_frente_v9_' + frente.id);
+    let nCasas = 0;
+    let vUnit = 0;
+    let descFrente = 0;
+
+    if (local) {
+      const obj = JSON.parse(local);
+      nCasas = Object.keys(obj.mappedLotes || {}).length;
+      vUnit = parseFloat(obj.valorCasa) || 0;
+      if (obj.equipes) {
+        descFrente = obj.equipes.filter(e => e.ativo).reduce((acc, e) => acc + (parseFloat(e.descontoTotal) || 0), 0);
+      }
+    }
+
+    let brutoFrente = nCasas * vUnit;
+    let liquidoFrente = brutoFrente - descFrente;
+
+    totalGeralBrutoLoteamento += brutoFrente;
+    totalGeralDescontosLoteamento += descFrente;
+    totalCasasExecutadasTodasFrentes += nCasas;
+
+    tabelaFrentesHtml += `
+      <tr style="border-bottom: 1px solid #ddd; font-size: 11px; height: 22px;">
+        <td style="padding: 6px;"><strong>${String(index+1).padStart(2,'0')}. ${frente.nome}</strong></td>
+        <td style="padding: 6px; text-align: center;">${nCasas} / 444 UHs</td>
+        <td style="padding: 6px; text-align: center;">${frente.progresso}%</td>
+        <td style="padding: 6px; text-align: right;">R$ ${brutoFrente.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+        <td style="padding: 6px; text-align: right; color: #a00000;">R$ ${descFrente.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+        <td style="padding: 6px; text-align: right; font-weight: bold; background: #fafafa;">R$ ${liquidoFrente.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+      </tr>
+    `;
+  });
+
+  let totalGeralLiquidoAbonar = totalGeralBrutoLoteamento - totalGeralDescontosLoteamento;
+  const mesVigenteGeral = libroAtivo.mesAtivo || "Maio/2026";
+
+  containerTemp.innerHTML = `
+    <div style="border: 2px solid #000; padding: 20px; border-radius: 6px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:15px;">
+        <div>
+          <h1 style="font-size:22px; margin:0; font-weight:800; letter-spacing:1px;">CB ENGENHARIA</h1>
+          <p style="font-size:11px; color:#555; margin:2px 0 0 0;">Relatório Consolidado de Fechamento Financeiro — Todas as Frentes</p>
+        </div>
+        <div style="text-align:right; font-size:10px;">
+          <strong>SGQ - ANEXO GERAL X</strong><br>
+          Período: ${mesVigenteGeral}
+        </div>
+      </div>
+
+      <div style="background:#f4f4f5; padding:10px; border-radius:4px; margin-bottom:15px; font-size:12px; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div><strong>Empreendimento:</strong> Residencial José Bernardino I e II</div>
+        <div><strong>Total de UHs Ativas no Mês:</strong> ${totalCasasExecutadasTodasFrentes} Lançamentos Gerados</div>
+      </div>
+
+      <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+        <thead>
+          <tr style="background:#000000; color:#ffffff; text-align:left; font-size:11px; height:26px;">
+            <th style="padding:6px;">Frente de Serviço</th>
+            <th style="padding:6px; text-align:center;">Produção</th>
+            <th style="padding:6px; text-align:center;">Status</th>
+            <th style="padding:6px; text-align:right;">Valor Bruto</th>
+            <th style="padding:6px; text-align:right;">Retenções</th>
+            <th style="padding:6px; text-align:right;">Total Líquido</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tabelaFrentesHtml}
+          <tr style="background:#e6e6e6; font-weight:bold; font-size:12px; border-top:2px solid #000; height:28px;">
+            <td style="padding:8px;">BALANÇO CONSOLIDADO TOTAL</td>
+            <td style="padding:8px; text-align:center;">-</td>
+            <td style="padding:8px; text-align:center;">-</td>
+            <td style="padding:8px; text-align:right;">R$ ${totalGeralBrutoLoteamento.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+            <td style="padding:8px; text-align:right; color:#a00000;">R$ ${totalGeralDescontosLoteamento.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+            <td style="padding:8px; text-align:right; color:#16a34a; font-size:13px;">R$ ${totalGeralLiquidoAbonar.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:40px; display:flex; justify-content:space-between; align-items:flex-end; font-size:11px;">
+        <div style="border:1px solid #ccc; padding:10px; border-radius:4px; background:#fafafa; width:45%;">
+          <strong>RESUMO FINANCEIRO FINAL:</strong><br>
+          <span style="font-size:16px; font-weight:bold; color:#16a34a;">R$ ${totalGeralLiquidoAbonar.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
+        </div>
+        <div style="text-align:center; width:45%;">
+          <div style="border-bottom:1px solid #000; margin-bottom:4px;"></div>
+          <p>Auditoria de Custos e Planejamento</p>
+          <p style="font-size:9px; color:#777;">Gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const opt = { 
+    margin: 12, 
+    filename: `Fechamento_Geral_Loteamento_${mesVigenteGeral.replace('/','-')}.pdf`,
+    image: { type: 'jpeg', quality: 1 },
+    html2canvas: { scale: 2.5 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
   html2pdf().set(opt).from(containerTemp).save();
 }
