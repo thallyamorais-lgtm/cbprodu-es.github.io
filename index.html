@@ -58,12 +58,24 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 }
 
 .logo-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+.logo-img {
+  max-width: 140px;
+  height: auto;
+  object-fit: contain;
+}
+.logo-text {
   font-family: var(--sans);
   font-size: 26px;
   font-weight: 800;
   letter-spacing: 2px;
   color: #000000;
-  margin-bottom: 2px;
   text-transform: uppercase;
 }
 
@@ -87,8 +99,9 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 
 /* 🏢 BARRA LATERAL CORPORATIVA */
 .sidebar { width: 290px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0; }
-.sidebar-header { padding: 30px 20px; border-bottom: 1px solid var(--border); text-align: center; }
-.sidebar-logo { font-size: 20px; font-weight: 800; letter-spacing: 1.5px; color: var(--accent); text-transform: uppercase; }
+.sidebar-header { padding: 25px 20px; border-bottom: 1px solid var(--border); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.sidebar-logo-img { max-width: 90px; height: auto; object-fit: contain; margin-bottom: 4px; }
+.sidebar-logo { font-size: 18px; font-weight: 800; letter-spacing: 1.5px; color: var(--accent); text-transform: uppercase; }
 .sidebar-title-section { background: #0c0c0e; padding: 12px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text2); font-weight: 700; }
 
 .menu-frentes { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
@@ -159,15 +172,18 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 <div class="login-screen" id="loginScreen">
   <div class="grid-container" id="gridContainer"></div>
   <div class="login-box">
-    <div class="logo-box">CB ENGENHARIA</div>
+    <div class="logo-box">
+      <img src="logo.png" alt="CB Engenharia" class="logo-img" onerror="this.style.display='none'">
+      <div class="logo-text">CB ENGENHARIA</div>
+    </div>
     <p>Plataforma de Controle de Produções</p>
     <div class="input-group">
       <label>Login Empresarial</label>
-      <input type="email" id="email" placeholder="usuario@cbengenharia.com" value="usuario@cbengenharia.com">
+      <input type="email" id="email" placeholder="usuario@cbengenharia.com">
     </div>
     <div class="input-group">
       <label>Senha</label>
-      <input type="password" id="password" placeholder="••••••••" value="123456">
+      <input type="password" id="password" placeholder="••••••••">
     </div>
     <button class="btn-login" id="btnLoginAction" onclick="fazerLogin()">Acessar Painel</button>
     <p id="erroLogin" style="color:#ef4444; margin-top:15px; font-size:13px; font-weight:600;"></p>
@@ -176,6 +192,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 
 <div class="sidebar" id="appSidebar" style="display:none;">
   <div class="sidebar-header">
+    <img src="logo.png" alt="CB" class="sidebar-logo-img" onerror="this.style.display='none'">
     <div class="sidebar-logo">CB ENGENHARIA</div>
   </div>
   <div class="sidebar-title-section">Frentes de Serviço</div>
@@ -284,11 +301,11 @@ const CONFIG_JBII = [
   {qd: 'QD 15', lotes: 10}, {qd: 'QD 16', lotes: 10}, {qd: 'QD 17', lotes: 10}
 ];
 
-// 🛠️ AS 18 FRENTES DE SERVIÇO ATUALIZADAS E OFICIAIS:
-let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v5')) || [
+// 🛠️ AS 18 FRENTES DE SERVIÇO ATUALIZADAS COM IDS COMPATÍVEIS COM O SEU INICIAR.BAT/SERVIDOR PYTHON:
+let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v6')) || [
   { id: "contencao", nome: "Contenção", progresso: 0 },
   { id: "inst_radier", nome: "Instalação de Radier", progresso: 0 },
-  { id: "lona_malha_conc", nome: "Lona/Malha/Conc. Radier", progresso: 0 },
+  { id: "lona_malha", nome: "Lona/Malha/Conc. Radier", progresso: 0 }, // Unificado visualmente, id igual do .bat
   { id: "inst_reg", nome: "Instalações de Registros", progresso: 0 },
   { id: "graute_inf", nome: "Graute Inferior", progresso: 0 },
   { id: "graute_sup", nome: "Graute Superior", progresso: 0 },
@@ -308,8 +325,6 @@ let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v5')) || [
 
 let servicoAtivoId = '';
 let libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Junho/2026', equipes: [] };
-
-// Array temporário para segurar os funcionários antes de fechar a equipe de vez
 let funcionariosTemporarios = [];
 
 function fazerLogin() {
@@ -340,24 +355,19 @@ function alternarFrenteDeServico(id, nome) {
   servicoAtivoId = id;
   document.getElementById('tituloFrenteAtiva').innerText = nome;
   document.getElementById('conteudoDoApp').style.display = 'block';
-  funcionariosTemporarios = []; // Limpa lista temporária ao mudar de frente
+  funcionariosTemporarios = []; 
   atualizarVisualListaTemporaria();
   carregarEstadoLocal();
 }
 
 function carregarEstadoLocal() {
-  const local = localStorage.getItem('cb_frente_v5_' + servicoAtivoId);
+  const local = localStorage.getItem('cb_frente_v6_' + servicoAtivoId);
   if (local) {
     libroAtivo = JSON.parse(local);
     if (!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
     if (!libroAtivo.equipes) libroAtivo.equipes = [];
   } else {
-    libroAtivo = {
-      mappedLotes: {},
-      valorCasa: 1250,
-      mesAtivo: 'Junho/2026',
-      equipes: []
-    };
+    libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Junho/2026', equipes: [] };
   }
   document.getElementById('cfg-mes').value = libroAtivo.mesAtivo || '';
   document.getElementById('cfg-valor-casa').value = libroAtivo.valorCasa || 0;
@@ -374,7 +384,7 @@ function atualizarProgressoFrenteSilencioso() {
   const pct = Math.round((concluidos / 444) * 100);
   const f = listaFrentes.find(frente => frente.id === servicoAtivoId);
   if(f) f.progresso = pct;
-  localStorage.setItem('cb_lista_frentes_v5', JSON.stringify(listaFrentes));
+  localStorage.setItem('cb_lista_frentes_v6', JSON.stringify(listaFrentes));
 }
 
 function renderizarLoteamentos() {
@@ -425,7 +435,6 @@ function salvarConfigMensal() {
   salvarNoDispositivo();
 }
 
-// ETAPA 1: Vai adicionando os funcionários na lista temporária da equipe atual
 function adicionarFuncionarioTemporario() {
   const funcNome = document.getElementById('nome-funcionario').value.trim();
   const descVal = parseFloat(document.getElementById('desconto-funcionario').value) || 0;
@@ -436,10 +445,8 @@ function adicionarFuncionarioTemporario() {
   }
   
   funcionariosTemporarios.push({ nome: funcNome, desconto: descVal });
-  
   document.getElementById('nome-funcionario').value = '';
   document.getElementById('desconto-funcionario').value = '';
-  
   atualizarVisualListaTemporaria();
 }
 
@@ -464,12 +471,11 @@ function atualizarVisualListaTemporaria() {
   });
 }
 
-// ETAPA 2: Fecha a equipe de vez e joga para o sistema principal
 function fecharEquipeGeral() {
   const equipeNome = document.getElementById('nome-equipe').value.trim();
   
   if(!equipeNome) {
-    alert("Por favor, dê um nome para a equipe (Ex: Equipe 1) antes de fechar.");
+    alert("Por favor, dê um nome para a equipe antes de fechar.");
     return;
   }
   if(funcionariosTemporarios.length === 0) {
@@ -516,7 +522,6 @@ function renderizarEquipes() {
   
   libroAtivo.equipes.forEach((eq, idx) => {
     const descontoEfetivo = eq.ativo ? eq.descontoTotal : 0;
-    
     const row = document.createElement('tr');
     row.innerHTML = `
       <td style="font-weight:600;">👑 ${eq.nome}</td>
@@ -545,7 +550,7 @@ function recalcularTotais() {
 }
 
 function salvarNoDispositivo() {
-  localStorage.setItem('cb_frente_v5_' + servicoAtivoId, JSON.stringify(libroAtivo));
+  localStorage.setItem('cb_frente_v6_' + servicoAtivoId, JSON.stringify(libroAtivo));
 }
 
 function forcarSalvarTudo() {
@@ -570,9 +575,8 @@ function gerarRelatorioPDF() {
   libroAtivo.equipes.forEach(eq => {
     const descEquipe = eq.ativo ? eq.descontoTotal : 0;
     totalDescontosGeral += descEquipe;
-    
     let listaNomes = (eq.detalhesFuncionarios || []).map(f => `${f.nome} (R$ ${f.desconto.toFixed(2)})`).join(', ');
-    if(!listaNomes) listaNomes = "Sem detalhes informados";
+    if(!listaNomes) listaNomes = "Sem detalhes";
 
     htmlEquipesRows += `
       <tr>
