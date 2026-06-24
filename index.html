@@ -57,6 +57,16 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
   transform: rotateY(180deg);
 }
 
+.logo-box {
+  font-family: var(--sans);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #000000;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+}
+
 .login-box {
   position: relative;
   background: #ffffff;
@@ -69,7 +79,6 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
   box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.9);
   z-index: 10;
 }
-.login-box h2 { font-size: 20px; font-weight: 700; color: #000; letter-spacing: -0.5px; margin-bottom: 4px; }
 .login-box p { color: #666; font-size: 13px; margin-bottom: 25px; }
 .input-group { margin-bottom: 18px; text-align: left; }
 .input-group label { display: block; color: #222; margin-bottom: 6px; font-size: 13px; font-weight: 600; }
@@ -79,7 +88,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 /* 🏢 BARRA LATERAL CORPORATIVA */
 .sidebar { width: 280px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0; }
 .sidebar-header { padding: 30px 20px; border-bottom: 1px solid var(--border); text-align: center; }
-.sidebar-header h1 { font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+.sidebar-logo { font-size: 20px; font-weight: 800; letter-spacing: 1.5px; color: var(--accent); text-transform: uppercase; }
 .sidebar-title-section { background: #0c0c0e; padding: 12px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text2); font-weight: 700; }
 
 .menu-frentes { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
@@ -100,7 +109,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 .btn-web-primary { background: var(--accent); border: 1px solid var(--accent); color: #000; }
 .btn-web-primary:hover { background: #e4e4e7; }
 
-/* 📈 GRID DE MÉTRICAS DO TOPO */
+/* 📈 GRID DE MÉTRICAS */
 .top-metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 25px; }
 .metric-card { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: var(--radius); }
 .metric-card p { font-size: 12px; color: var(--text2); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
@@ -119,7 +128,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 .btn-lote-box:hover { border-color: var(--text2); }
 .btn-lote-box.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
 
-/* 📑 CONTAINER DE DETALHES DE GESTÃO DE EQUIPES */
+/* 📑 CONTAINER DE GESTÃO */
 .management-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 25px; }
 .manage-box { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: var(--radius); }
 .manage-box h4 { font-size: 14px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
@@ -146,7 +155,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 <div class="login-screen" id="loginScreen">
   <div class="grid-container" id="gridContainer"></div>
   <div class="login-box">
-    <h2>CB Engenharia</h2>
+    <div class="logo-box">CB ENGENHARIA</div>
     <p>Plataforma de Controle de Produções</p>
     <div class="input-group">
       <label>Login Empresarial</label>
@@ -163,7 +172,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 
 <div class="sidebar" id="appSidebar" style="display:none;">
   <div class="sidebar-header">
-    <h1>CB ENGENHARIA</h1>
+    <div class="sidebar-logo">CB ENGENHARIA</div>
   </div>
   <div class="sidebar-title-section">Frentes de Serviço</div>
   <div class="menu-frentes" id="menuFrentes"></div>
@@ -172,7 +181,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 <div class="main-content" id="appMain" style="display:none;">
   <div class="nav-header">
     <div>
-      <h2 style="font-size:22px; font-weight:700;">Dashboard de Produção</h2>
+      <h2 style="font-size:22px; font-weight:700;">Dashboard de Production</h2>
       <p style="font-size:13px; color:var(--text2); margin-top:2px;">Frente ativa: <span id="tituloFrenteAtiva" style="color:#fff; font-weight:700; text-decoration:underline;">Nenhuma</span></p>
     </div>
     <div class="nav-actions">
@@ -215,12 +224,12 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
       <div class="manage-box">
         <h4>Cadastro de Equipes da Frente</h4>
         <div class="form-row">
-          <input type="text" id="nome-equipe" placeholder="Nome da Equipe (Ex: Equipe Alfa)">
-          <input type="number" id="qtd-integrantes" placeholder="Nº Integrantes" min="1">
+          <input type="text" id="nome-equipe" placeholder="Nome da Equipe (Ex: Equipe 1)">
+          <input type="text" id="nomes-integrantes" placeholder="Nomes separados por vírgula (Ex: jose, joao, pedro)">
           <button class="btn-web btn-web-primary" onclick="cadastrarEquipe()">Cadastrar</button>
         </div>
         <table class="team-list-table">
-          <thead><tr><th>Equipe</th><th>Integrantes</th><th>Desconto Total</th><th>Status</th><th>Ações</th></tr></thead>
+          <thead><tr><th>Equipe</th><th>Integrantes</th><th>Qtd</th><th>Desconto Total</th><th>Status</th><th>Ações</th></tr></thead>
           <tbody id="lista-equipes-corpo"></tbody>
         </table>
       </div>
@@ -232,7 +241,6 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 <div class="toast" id="toast">Dados salvos com sucesso!</div>
 
 <script>
-// Geração automática dos blocos de fundo interativos
 const gridContainer = document.getElementById('gridContainer');
 const totalBlocks = Math.ceil(window.innerWidth / 60) * Math.ceil(window.innerHeight / 60);
 for (let i = 0; i < totalBlocks; i++) {
@@ -266,7 +274,7 @@ let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes')) || [
 ];
 
 let servicoAtivoId = '';
-let livroAtivo = { mappedLotes: {}, valorCasa: 250, descontoPessoa: 0, mesAtivo: 'Junho/2026', equipes: [] };
+let livroAtivo = { mappedLotes: {}, valorCasa: 1250, descontoPessoa: 0, mesAtivo: 'Junho/2026', equipes: [] };
 
 function fazerLogin() {
   document.getElementById('loginScreen').style.display = 'none';
@@ -302,19 +310,17 @@ function alternarFrenteDeServico(id, nome) {
 }
 
 function carregarEstadoLocal() {
-  const local = localStorage.getItem('cb_frente_v2_' + servicoAtivoId);
+  const local = localStorage.getItem('cb_frente_v3_' + servicoAtivoId);
   if (local) {
     livroAtivo = JSON.parse(local);
   } else {
-    // Cadastro de equipes pré-definido como base fixa inicial configurada persistente
     livroAtivo = {
       mappedLotes: {},
       valorCasa: 1250,
       descontoPessoa: 50,
       mesAtivo: 'Junho/2026',
       equipes: [
-        { nome: 'Equipe Alfa (Pedreiros)', integrantes: 4, ativo: true },
-        { nome: 'Equipe Beta (Auxiliares)', integrantes: 3, ativo: true }
+        { nome: 'Equipe 1', integrantes: ['jose', 'joao', 'pedro'], ativo: true }
       ]
     };
   }
@@ -382,12 +388,14 @@ function salvarConfigMensal() {
 
 function cadastrarEquipe() {
   const nome = document.getElementById('nome-equipe').value.trim();
-  const qtd = parseInt(document.getElementById('qtd-integrantes').value) || 1;
+  const integrantesTexto = document.getElementById('nomes-integrantes').value;
   if(!nome) return;
   
-  livroAtivo.equipes.push({ nome, integrantes: qtd, ativo: true });
+  const listaNomes = integrantesTexto.split(',').map(n => n.trim()).filter(n => n.length > 0);
+  
+  livroAtivo.equipes.push({ nome, integrantes: listaNomes, ativo: true });
   document.getElementById('nome-equipe').value = '';
-  document.getElementById('qtd-integrantes').value = '';
+  document.getElementById('nomes-integrantes').value = '';
   
   renderizarEquipes();
   recalcularTotais();
@@ -395,6 +403,7 @@ function cadastrarEquipe() {
 }
 
 function alternarStatusEquipe(idx) {
+  livroAtivo.equipes[idx].active_status = !livroAtivo.equipes[idx].ativo;
   livroAtivo.equipes[idx].ativo = !livroAtivo.equipes[idx].ativo;
   renderizarEquipes();
   recalcularTotais();
@@ -414,11 +423,15 @@ function renderizarEquipes() {
   const descPessoa = parseFloat(document.getElementById('cfg-desconto-pessoa').value) || 0;
   
   livroAtivo.equipes.forEach((eq, idx) => {
-    const descTotalEquipe = eq.ativo ? (eq.integrantes * descPessoa) : 0;
+    const qtdPessoas = eq.integrantes ? eq.integrantes.length : 0;
+    const nomesLista = eq.integrantes ? eq.integrantes.join(', ') : '';
+    const descTotalEquipe = eq.ativo ? (qtdPessoas * descPessoa) : 0;
+    
     const row = document.createElement('tr');
     row.innerHTML = `
       <td style="font-weight:600;">${eq.nome}</td>
-      <td>${eq.integrantes} pessoas</td>
+      <td style="color:var(--text2); font-size:12px; max-width: 180px; overflow:hidden; text-overflow:ellipsis;">${nomesLista}</td>
+      <td>${qtdPessoas}</td>
       <td>R$ ${descTotalEquipe.toFixed(2)}</td>
       <td><span class="badge-status ${eq.ativo ? 'status-active' : 'status-inactive'}" onclick="alternarStatusEquipe(${idx})">${eq.ativo ? 'Ativa' : 'Inativa'}</span></td>
       <td><button onclick="removerEquipe(${idx})" style="background:transparent;color:#ef4444;border:none;cursor:pointer;font-weight:600;">Remover</button></td>
@@ -439,7 +452,7 @@ function recalcularTotais() {
 }
 
 function salvarNoDispositivo() {
-  localStorage.setItem('cb_frente_v2_' + servicoAtivoId, JSON.stringify(livroAtivo));
+  localStorage.setItem('cb_frente_v3_' + servicoAtivoId, JSON.stringify(livroAtivo));
 }
 
 function forcarSalvarTudo() {
@@ -462,12 +475,14 @@ function gerarRelatorioPDF() {
   let htmlEquipesRows = '';
 
   livroAtivo.equipes.forEach(eq => {
-    const descEquipe = eq.ativo ? (eq.integrantes * livroAtivo.descontoPessoa) : 0;
+    const qtd = eq.integrantes ? eq.integrantes.length : 0;
+    const descEquipe = eq.ativo ? (qtd * livroAtivo.descontoPessoa) : 0;
+    const nomesLista = eq.integrantes ? eq.integrantes.join(', ') : '';
     totalDescontosGeral += descEquipe;
     htmlEquipesRows += `
       <tr>
-        <td style="border:1px solid #000;padding:8px;font-size:12px;">${eq.nome}</td>
-        <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:center;">${eq.integrantes}</td>
+        <td style="border:1px solid #000;padding:8px;font-size:12px;"><strong>${eq.nome}</strong><br><span style="color:#555;font-size:11px;">(${nomesLista})</span></td>
+        <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:center;">${qtd}</td>
         <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:center;">${eq.ativo ? 'ATIVA' : 'INATIVA'}</td>
         <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:right;">R$ ${descEquipe.toFixed(2)}</td>
       </tr>
@@ -490,7 +505,7 @@ function gerarRelatorioPDF() {
         <tbody>
           <tr><td style="border:1px solid #000;padding:8px;font-size:12px;width:60%;">Casas Produzidas (Concluídas):</td><td style="border:1px solid #000;padding:8px;font-size:12px;font-weight:bold;text-align:right;">${concluidos} UHs</td></tr>
           <tr><td style="border:1px solid #000;padding:8px;font-size:12px;">Valor de Repasse por Unidade:</td><td style="border:1px solid #000;padding:8px;font-size:12px;text-align:right;">R$ ${livroAtivo.valorCasa.toFixed(2)}</td></tr>
-          <tr style="background:#f9f9f9;"><td style="border:1px solid #000;padding:8px;font-size:12px;font-weight:bold;">VALOR BRUTO ACUMULADO:</td><td style="border:1px solid #000;padding:8px;font-size:12px;font-weight:bold;text-align:right;color:#000;">R$ ${totalBruto.toFixed(2)}</td></tr>
+          <tr style="background:#f9f9f9;"><td style="border:1px solid #000;padding:8px;font-size:12px;font-weight:bold;">VALOR BRUTO ACUMULADO:</td><td style="border:1px solid #000;padding:8px;font-size:12px;font-weight:bold;text-align:right;">R$ ${totalBruto.toFixed(2)}</td></tr>
         </tbody>
       </table>
 
@@ -499,7 +514,7 @@ function gerarRelatorioPDF() {
         <thead style="background:#e6e6e6;">
           <tr>
             <th style="border:1px solid #000;padding:8px;text-align:left;font-size:12px;">Identificação da Equipe</th>
-            <th style="border:1px solid #000;padding:8px;text-align:center;font-size:12px;width:15%;">Integrantes</th>
+            <th style="border:1px solid #000;padding:8px;text-align:center;font-size:12px;width:12%;">Qtd</th>
             <th style="border:1px solid #000;padding:8px;text-align:center;font-size:12px;width:15%;">Status</th>
             <th style="border:1px solid #000;padding:8px;text-align:right;font-size:12px;width:25%;">Desconto Retido</th>
           </tr>
