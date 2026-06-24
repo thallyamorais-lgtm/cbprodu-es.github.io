@@ -145,12 +145,12 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 <div class="main-content" id="appMain" style="display:none;">
   <div class="nav-header">
     <div>
-      <h2 style="font-size:22px; font-weight:700;">Dashboard de Produção</h2>
+      <h2 style="font-size:22px; font-weight:700;">Dashboard de Production</h2>
       <p style="font-size:13px; color:var(--text2); margin-top:2px;">Frente ativa: <span id="tituloFrenteAtiva" style="color:#fff; font-weight:700; text-decoration:underline;">Nenhuma</span></p>
     </div>
     <div class="nav-actions">
       <div class="status-pill"><div class="indicator"></div><span>Online</span></div>
-      <button class="btn-web btn-web-success" onclick="gerarRelatorioRapidoMensal()">Produção do Mês</button>
+      <button class="btn-web btn-web-success" onclick="gerarRelatorioRapidoMensal()">Produção Rápida do Mês</button>
       <button class="btn-web" onclick="gerarRelatorioPDF()">Planilha Excel PDF</button>
       <button class="btn-web btn-web-primary" onclick="forcarSalvarTudo()">Atualizar Dados</button>
       <button class="btn-web" onclick="fazerLogout()" style="border-color:#ef4444; color:#ef4444;">Sair</button>
@@ -185,7 +185,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 
     <div class="management-container">
       <div class="manage-box">
-        <h4>Fechamento de Produção Mensal</h4>
+        <h4>Fechamento de Production Mensal</h4>
         <div class="form-row">
           <div class="input-wrapper">
             <label>Mês Vigente</label>
@@ -198,10 +198,6 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
               <input type="number" id="cfg-valor-casa" placeholder="0.00" onchange="salvarConfigMensal()">
             </div>
           </div>
-        </div>
-        <div style="margin-top: 15px;">
-          <label style="font-size: 12px; display:block; margin-bottom:5px; color: var(--text2);">Simulação de Lotes Prontos em Meses Anteriores (para cálculo de Acumulado)</label>
-          <input type="number" id="cfg-lotes-anteriores" placeholder="Quantidade de UHs de meses passados" value="0" style="background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 6px; font-size: 13px; width: 100%;" onchange="salvarConfigMensal()">
         </div>
       </div>
 
@@ -288,7 +284,7 @@ let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v8')) || [
 ];
 
 let servicoAtivoId = '';
-let libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', lotesAnteriores: 0, equipes: [] };
+let libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', equipes: [] };
 let funcionariosTemporarios = [];
 let equipeSelecionadaParaMarcacao = "";
 
@@ -331,13 +327,11 @@ function carregarEstadoLocal() {
     libroAtivo = JSON.parse(local);
     if (!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
     if (!libroAtivo.equipes) libroAtivo.equipes = [];
-    if (libroAtivo.lotesAnteriores === undefined) libroAtivo.lotesAnteriores = 0;
   } else {
-    libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', lotesAnteriores: 0, equipes: [] };
+    libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', equipes: [] };
   }
   document.getElementById('cfg-mes').value = libroAtivo.mesAtivo || '';
   document.getElementById('cfg-valor-casa').value = libroAtivo.valorCasa || 0;
-  document.getElementById('cfg-lotes-anteriores').value = libroAtivo.lotesAnteriores || 0;
   
   atualizarSeletorEquipeSuperior();
   atualizarProgressoFrenteSilencioso();
@@ -433,7 +427,6 @@ function alternarLote(loteKey) {
 function salvarConfigMensal() {
   libroAtivo.mesAtivo = document.getElementById('cfg-mes').value;
   libroAtivo.valorCasa = parseFloat(document.getElementById('cfg-valor-casa').value) || 0;
-  libroAtivo.lotesAnteriores = parseFloat(document.getElementById('cfg-lotes-anteriores').value) || 0;
   renderizarEquipes();
   recalcularTotais();
   salvarNoDispositivo();
@@ -514,9 +507,6 @@ function salvarNoDispositivo() { localStorage.setItem('cb_frente_v8_' + servicoA
 function forcarSalvarTudo() { salvarNoDispositivo(); const toast = document.getElementById('toast'); toast.style.display = 'block'; setTimeout(() => toast.style.display = 'none', 2000); }
 function fazerLogout() { window.location.reload(); }
 
-/* ==========================================================================
-   💰 NOVO BOTÃO: GERADOR DE PDF DE VALOR TOTAL MENSAL (FORMATO LIVRE RÁPIDO)
-   ========================================================================== */
 function gerarRelatorioRapidoMensal() {
   const containerTemp = document.createElement('div');
   containerTemp.style.padding = '20px';
@@ -589,9 +579,6 @@ function gerarRelatorioRapidoMensal() {
   html2pdf().set(opt).from(containerTemp).save();
 }
 
-/* ==========================================================================
-   📊 MOTOR DE IMPRESSÃO EXCEL - SEPARADO POR EQUIPE E POR QUADRA
-   ========================================================================== */
 function gerarRelatorioPDF() {
   const containerTemp = document.createElement('div');
   containerTemp.style.padding = '0mm';
@@ -604,7 +591,6 @@ function gerarRelatorioPDF() {
   const mNome = txtMesAno.split('/')[0] || "Maio";
   const aNome = txtMesAno.split('/')[1] || "2026";
   const vUnit = libroAtivo.valorCasa || 0;
-  const quantAntFixo = parseFloat(libroAtivo.lotesAnteriores) || 0;
 
   let dadosAgrupados = {};
 
@@ -630,32 +616,20 @@ function gerarRelatorioPDF() {
   let linesHtml = '';
   let somaQtdAtualTotal = 0;
   let somaValAtualTotal = 0;
-  let distribuicaoAnt = quantAntFixo;
 
   Object.keys(dadosAgrupados).forEach(eqKey => {
     const quadrasDaEquipe = dadosAgrupados[eqKey];
     
     linesHtml += `
       <tr style="height: 24px; background: #f2f2f2; font-weight: bold; font-size: 9.5pt;">
-        <td colspan="10" style="border: 1px solid #000000; text-align: left; padding-left: 8px; color: #000;">PRODUÇÃO INTEGRADA: ${eqKey.toUpperCase()}</td>
+        <td colspan="5" style="border: 1px solid #000000; text-align: left; padding-left: 8px; color: #000;">PRODUÇÃO INTEGRADA: ${eqKey.toUpperCase()}</td>
       </tr>
     `;
 
     Object.keys(quadrasDaEquipe).forEach(qd => {
       const q = quadrasDaEquipe[qd];
-      
-      let qAnt = 0;
-      if (distribuicaoAnt > 0) {
-        qAnt = Math.min(distribuicaoAnt, 30 - q.atual);
-        distribuicaoAnt -= qAnt;
-      }
-
       const qAtu = q.atual;
-      const qTot = qAnt + qAtu;
-      
       const valTotAtu = qAtu * vUnit;
-      const valTotAnt = qAnt * vUnit;
-      const valTotGeral = qTot * vUnit;
 
       somaQtdAtualTotal += qAtu;
       somaValAtualTotal += valTotAtu;
@@ -666,11 +640,6 @@ function gerarRelatorioPDF() {
           <td style="border: 1px solid #000000; text-align: left; padding-left: 5px;">Serviço na ${qd} (${q.ref}) - Resp: ${eqKey}</td>
           <td style="border: 1px solid #000000; text-align: center;">${qAtu.toFixed(2)}</td>
           <td style="border: 1px solid #000000; text-align: right; padding-right: 5px;">R$ ${vUnit.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-          <td style="border: 1px solid #000000; text-align: right; padding-right: 5px;">R$ ${valTotAtu.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-          <td style="border: 1px solid #000000; text-align: center;">${qAnt.toFixed(2)}</td>
-          <td style="border: 1px solid #000000; text-align: right; padding-right: 5px;">R$ ${valTotAnt.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-          <td style="border: 1px solid #000000; text-align: center;">${qTot.toFixed(2)}</td>
-          <td style="border: 1px solid #000000; text-align: right; padding-right: 5px;">R$ ${valTotGeral.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
           <td style="border: 1px solid #000000; text-align: right; padding-right: 5px; font-weight: bold; background: #fafafa;">R$ ${valTotAtu.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
         </tr>
       `;
@@ -682,7 +651,7 @@ function gerarRelatorioPDF() {
         <tr style="height: 22px; font-size: 9pt; background: #fff;">
           <td style="border: 1px solid #000000; text-align: center; color: red; font-weight:bold;">-</td>
           <td style="border: 1px solid #000000; text-align: left; padding-left: 5px; color: #a00000; font-style: italic;">(-) Retenções / Descontos Comerciais da equipe (${eqKey})</td>
-          <td colspan="7" style="border: 1px solid #000000; text-align: right; padding-right: 5px; font-weight: bold; color: #a00000;">Deduções da Equipe:</td>
+          <td colspan="2" style="border: 1px solid #000000; text-align: right; padding-right: 5px; font-weight: bold; color: #a00000;">Deduções da Equipe:</td>
           <td style="border: 1px solid #000000; text-align: right; padding-right: 5px; font-weight: bold; color: #a00000;">- R$ ${dadosEquipePainel.descontoTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
         </tr>
       `;
@@ -691,15 +660,12 @@ function gerarRelatorioPDF() {
 
   let totalDescontosGeral = libroAtivo.equipes.filter(e => e.ativo).reduce((acc, e) => acc + e.descontoTotal, 0);
   let valorFinalAPagar = somaValAtualTotal - totalDescontosGeral;
-  let somaQtdAnteriorTotal = quantAntFixo;
-  let somaValAnteriorTotal = quantAntFixo * vUnit;
-  let somaQtdGeralAcumulada = somaQtdAtualTotal + somaQtdAnteriorTotal;
-  let somaValGeralAcumulada = somaValAtualTotal + somaValAnteriorTotal;
   let nomesEquipesStr = libroAtivo.equipes.filter(e => e.ativo).map(e => e.nome).join(', ') || 'Equipe Geral';
 
   containerTemp.innerHTML = `
     <div style="border: 2px solid #000000; padding: 10px; min-height: 285mm; box-sizing: border-box; background: #ffffff;">
       
+      <!-- CABEÇALHO DO SGQ -->
       <table style="width: 100%; border-collapse: collapse; border: 3px solid #000000; margin-bottom: 12px; font-family: 'Calibri', Arial;">
         <tr style="background: #e6e6e6; height: 35px;">
           <td style="width: 15%; border: 2px solid #000000; text-align: center; vertical-align: middle; padding: 4px;">
@@ -720,6 +686,7 @@ function gerarRelatorioPDF() {
         </tr>
       </table>
 
+      <!-- INFO COMPLEMENTAR -->
       <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-family: 'Calibri', Arial; font-size: 10pt;">
         <tr style="height: 24px;">
           <td style="width: 8%; border: 1px solid #000000; font-weight: bold; background: #f2f2f2; text-align: center;">Mês</td>
@@ -731,43 +698,31 @@ function gerarRelatorioPDF() {
         </tr>
       </table>
 
+      <!-- TABELA MATRIZ EXCEL -->
       <table style="width: 100%; border-collapse: collapse; border: 2px solid #000000; font-family: 'Calibri', Arial;">
         <thead>
           <tr style="background: #e6e6e6; height: 24px; font-size: 9.5pt; border-bottom: 1px solid #000000;">
-            <th rowspan="2" style="width: 8%; border: 1px solid #000000; text-align: center; vertical-align: middle;">Quadra</th>
-            <th rowspan="2" style="width: 26%; border: 1px solid #000000; text-align: center; vertical-align: middle;">Descrição dos Serviços Lançados</th>
-            <th colspan="3" style="width: 23%; border: 1px solid #000000; text-align: center; vertical-align: middle;">Medição Atual</th>
-            <th colspan="2" style="width: 17%; border: 1px solid #000000; text-align: center; vertical-align: middle;">Acumulado Anterior</th>
-            <th colspan="2" style="width: 16%; border: 1px solid #000000; text-align: center; vertical-align: middle;">Acumulado Total</th>
-            <th rowspan="2" style="width: 10%; border: 1px solid #000000; text-align: center; vertical-align: middle;">Total Líquido</th>
-          </tr>
-          <tr style="background: #e6e6e6; height: 24px; font-size: 8.5pt;">
-            <th style="border: 1px solid #000000; text-align: center;">Quant.</th>
-            <th style="border: 1px solid #000000; text-align: center;">V. Unit</th>
-            <th style="border: 1px solid #000000; text-align: center;">V. Total</th>
-            <th style="border: 1px solid #000000; text-align: center;">Quant.</th>
-            <th style="border: 1px solid #000000; text-align: center;">Valor Ant.</th>
-            <th style="border: 1px solid #000000; text-align: center;">Quant.</th>
-            <th style="border: 1px solid #000000; text-align: center;">Acumulado</th>
+            <th style="width: 10%; border: 1px solid #000000; text-align: center;">Quadra</th>
+            <th style="width: 45%; border: 1px solid #000000; text-align: center;">Descrição dos Serviços Lançados</th>
+            <th style="width: 12%; border: 1px solid #000000; text-align: center;">Quant. Mês</th>
+            <th style="width: 15%; border: 1px solid #000000; text-align: center;">V. Unit</th>
+            <th style="width: 18%; border: 1px solid #000000; text-align: center;">Total Líquido</th>
           </tr>
         </thead>
         <tbody>
           ${linesHtml}
           
+          <!-- LINHA DE FECHAMENTO CONSOLIDADA -->
           <tr style="height: 26px; background: #52525b; color: #ffffff; font-weight: bold; font-size: 9.5pt;">
             <td colspan="2" style="border: 1px solid #000000; text-align: center; text-transform: uppercase;">SALDO CONSOLIDADO GERAL</td>
             <td style="border: 1px solid #000000; text-align: center;">${somaQtdAtualTotal.toFixed(2)}</td>
             <td style="border: 1px solid #000000; background: #3f3f46;"></td>
-            <td style="border: 1px solid #000000; text-align: right; padding-right: 5px;">R$ ${somaValAtualTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-            <td style="border: 1px solid #000000; text-align: center;">${somaQtdAnteriorTotal.toFixed(2)}</td>
-            <td style="border: 1px solid #000000; text-align: right; padding-right: 5px;">R$ ${somaValAnteriorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-            <td style="border: 1px solid #000000; text-align: center;">${somaQtdGeralAcumulada.toFixed(2)}</td>
-            <td style="border: 1px solid #000000; text-align: right; padding-right: 5px;">R$ ${somaValGeralAcumulada.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
             <td style="border: 1px solid #000000; text-align: right; padding-right: 5px; background: #18181b; font-size: 10pt;">R$ ${valorFinalAPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
           </tr>
         </tbody>
       </table>
 
+      <!-- ASSINATURAS -->
       <div style="margin-top: 40px; width: 100%;">
         <table style="width: 100%; border-collapse: collapse; font-family: 'Calibri', Arial;">
           <tr>
