@@ -86,7 +86,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 .btn-login { background: #000000; color: #ffffff; padding: 14px; border: none; width: 100%; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 15px; }
 
 /* 🏢 BARRA LATERAL CORPORATIVA */
-.sidebar { width: 280px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0; }
+.sidebar { width: 290px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0; }
 .sidebar-header { padding: 30px 20px; border-bottom: 1px solid var(--border); text-align: center; }
 .sidebar-logo { font-size: 20px; font-weight: 800; letter-spacing: 1.5px; color: var(--accent); text-transform: uppercase; }
 .sidebar-title-section { background: #0c0c0e; padding: 12px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text2); font-weight: 700; }
@@ -284,22 +284,25 @@ const CONFIG_JBII = [
   {qd: 'QD 15', lotes: 10}, {qd: 'QD 16', lotes: 10}, {qd: 'QD 17', lotes: 10}
 ];
 
-// 🛠️ TODAS AS 15 FRENTES DE SERVIÇO RESTAURADAS
-let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v4')) || [
-  { id: "gabarito", nome: "Gabarito", progresso: 0 },
-  { id: "escavacao", nome: "Escavação", progresso: 0 },
+// 🛠️ AS 18 FRENTES DE SERVIÇO ATUALIZADAS E OFICIAIS:
+let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v5')) || [
   { id: "contencao", nome: "Contenção", progresso: 0 },
-  { id: "inst_radier", nome: "Instalações de Radier", progresso: 0 },
-  { id: "lona_malha", nome: "Lona, Espaçador e Malha", progresso: 0 },
-  { id: "conc_radier", nome: "Concretagem de Radier", progresso: 0 },
-  { id: "alvenaria", nome: "Alvenaria", progresso: 0 },
-  { id: "verga_vergalhao", nome: "Verga e Vergalhão", progresso: 0 },
-  { id: "respaldo", nome: "Respaldo", progresso: 0 },
-  { id: "reboque", nome: "Reboque", progresso: 0 },
+  { id: "inst_radier", nome: "Instalação de Radier", progresso: 0 },
+  { id: "lona_malha_conc", nome: "Lona/Malha/Conc. Radier", progresso: 0 },
+  { id: "inst_reg", nome: "Instalações de Registros", progresso: 0 },
+  { id: "graute_inf", nome: "Graute Inferior", progresso: 0 },
+  { id: "graute_sup", nome: "Graute Superior", progresso: 0 },
   { id: "telhado", nome: "Telhado", progresso: 0 },
+  { id: "inst_hidro", nome: "Instalações Hidrossanitárias", progresso: 0 },
+  { id: "alvenaria", nome: "Alvenaria", progresso: 0 },
   { id: "acabamento", nome: "Acabamento", progresso: 0 },
   { id: "gesso", nome: "Gesso", progresso: 0 },
   { id: "contrapiso", nome: "Contrapiso", progresso: 0 },
+  { id: "caixinha", nome: "Caixinha", progresso: 0 },
+  { id: "peitoril", nome: "Peitoril", progresso: 0 },
+  { id: "esquadrias", nome: "Esquadrias", progresso: 0 },
+  { id: "cabeamento", nome: "Cabeamento", progresso: 0 },
+  { id: "impermea", nome: "Impermeabilização", progresso: 0 },
   { id: "ceramica", nome: "Cerâmica", progresso: 0 }
 ];
 
@@ -343,7 +346,7 @@ function alternarFrenteDeServico(id, nome) {
 }
 
 function carregarEstadoLocal() {
-  const local = localStorage.getItem('cb_frente_v4_' + servicoAtivoId);
+  const local = localStorage.getItem('cb_frente_v5_' + servicoAtivoId);
   if (local) {
     libroAtivo = JSON.parse(local);
     if (!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
@@ -371,7 +374,7 @@ function atualizarProgressoFrenteSilencioso() {
   const pct = Math.round((concluidos / 444) * 100);
   const f = listaFrentes.find(frente => frente.id === servicoAtivoId);
   if(f) f.progresso = pct;
-  localStorage.setItem('cb_lista_frentes_v4', JSON.stringify(listaFrentes));
+  localStorage.setItem('cb_lista_frentes_v5', JSON.stringify(listaFrentes));
 }
 
 function renderizarLoteamentos() {
@@ -434,7 +437,6 @@ function adicionarFuncionarioTemporario() {
   
   funcionariosTemporarios.push({ nome: funcNome, desconto: descVal });
   
-  // Limpa apenas os campos de funcionário para o próximo
   document.getElementById('nome-funcionario').value = '';
   document.getElementById('desconto-funcionario').value = '';
   
@@ -475,19 +477,16 @@ function fecharEquipeGeral() {
     return;
   }
   
-  // Calcula totais da equipe fechada
   let totalDescontoTime = funcionariosTemporarios.reduce((acc, f) => acc + f.desconto, 0);
   
-  // Salva no objeto oficial
   libroAtivo.equipes.push({
     nome: equipeNome,
     integrantesCount: funcionariosTemporarios.length,
     descontoTotal: totalDescontoTime,
-    detalhesFuncionarios: [...funcionariosTemporarios], // guarda cópia dos nomes e descontos para o relatório PDF
+    detalhesFuncionarios: [...funcionariosTemporarios],
     ativo: true
   });
   
-  // Limpa tudo para permitir cadastrar uma NOVA equipe
   funcionariosTemporarios = [];
   document.getElementById('nome-equipe').value = '';
   
@@ -546,7 +545,7 @@ function recalcularTotais() {
 }
 
 function salvarNoDispositivo() {
-  localStorage.setItem('cb_frente_v4_' + servicoAtivoId, JSON.stringify(libroAtivo));
+  localStorage.setItem('cb_frente_v5_' + servicoAtivoId, JSON.stringify(libroAtivo));
 }
 
 function forcarSalvarTudo() {
@@ -572,14 +571,13 @@ function gerarRelatorioPDF() {
     const descEquipe = eq.ativo ? eq.descontoTotal : 0;
     totalDescontosGeral += descEquipe;
     
-    // Lista os integrantes por extenso dentro do relatório de descontos
     let listaNomes = (eq.detalhesFuncionarios || []).map(f => `${f.nome} (R$ ${f.desconto.toFixed(2)})`).join(', ');
     if(!listaNomes) listaNomes = "Sem detalhes informados";
 
     htmlEquipesRows += `
       <tr>
         <td style="border:1px solid #000;padding:8px;font-size:12px;"><strong>${eq.nome.toUpperCase()}</strong><br><span style="font-size:10px;color:#555;">Integrantes: ${listaNomes}</span></td>
-        <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:center;">${eq.integrantesCount} UHs</td>
+        <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:center;">${eq.integrantesCount} Colaboradores</td>
         <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:center;">${eq.ativo ? 'ATIVA' : 'INATIVA'}</td>
         <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:right;">R$ ${descEquipe.toFixed(2)}</td>
       </tr>
