@@ -301,11 +301,10 @@ const CONFIG_JBII = [
   {qd: 'QD 15', lotes: 10}, {qd: 'QD 16', lotes: 10}, {qd: 'QD 17', lotes: 10}
 ];
 
-// 🛠️ AS 18 FRENTES DE SERVIÇO ATUALIZADAS COM IDS COMPATÍVEIS COM O SEU INICIAR.BAT/SERVIDOR PYTHON:
 let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v6')) || [
   { id: "contencao", nome: "Contenção", progresso: 0 },
   { id: "inst_radier", nome: "Instalação de Radier", progresso: 0 },
-  { id: "lona_malha", nome: "Lona/Malha/Conc. Radier", progresso: 0 }, // Unificado visualmente, id igual do .bat
+  { id: "lona_malha", nome: "Lona/Malha/Conc. Radier", progresso: 0 },
   { id: "inst_reg", nome: "Instalações de Registros", progresso: 0 },
   { id: "graute_inf", nome: "Graute Inferior", progresso: 0 },
   { id: "graute_sup", nome: "Graute Superior", progresso: 0 },
@@ -324,7 +323,7 @@ let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v6')) || [
 ];
 
 let servicoAtivoId = '';
-let libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Junho/2026', equipes: [] };
+let libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', equipes: [] };
 let funcionariosTemporarios = [];
 
 function fazerLogin() {
@@ -367,7 +366,7 @@ function carregarEstadoLocal() {
     if (!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
     if (!libroAtivo.equipes) libroAtivo.equipes = [];
   } else {
-    libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Junho/2026', equipes: [] };
+    libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', equipes: [] };
   }
   document.getElementById('cfg-mes').value = libroAtivo.mesAtivo || '';
   document.getElementById('cfg-valor-casa').value = libroAtivo.valorCasa || 0;
@@ -560,83 +559,209 @@ function forcarSalvarTudo() {
   setTimeout(() => toast.style.display = 'none', 2000);
 }
 
+/* 📑 REESTRUTURAÇÃO COMPLETA DO MOTOR DE PDF EXIGIDO PELO SGQ DA CONSTRUÇÃO CIVIL */
 function gerarRelatorioPDF() {
   const containerTemp = document.createElement('div');
-  containerTemp.style.padding = '24px';
+  containerTemp.style.padding = '0';
   containerTemp.style.color = '#000000';
   containerTemp.style.background = '#ffffff';
-  containerTemp.style.fontFamily = 'Arial, sans-serif';
+  containerTemp.style.fontFamily = '"Calibri", "Arial", sans-serif';
+  containerTemp.style.fontSize = '10pt';
 
-  const concluidos = Object.keys(libroAtivo.mappedLotes || {}).length;
-  const totalBruto = concluidos * libroAtivo.valorCasa;
-  let totalDescontosGeral = 0;
-  let htmlEquipesRows = '';
+  const frenteNomeVisual = document.getElementById('tituloFrenteAtiva').innerText.toUpperCase();
+  const mesAnoInput = libroAtivo.mesAtivo || "Maio/2026";
+  const partesData = mesAnoInput.split('/');
+  const mesNome = partesData[0] || "Maio";
+  const anoNome = partesData[1] || "2026";
 
-  libroAtivo.equipes.forEach(eq => {
-    const descEquipe = eq.ativo ? eq.descontoTotal : 0;
-    totalDescontosGeral += descEquipe;
-    let listaNomes = (eq.detalhesFuncionarios || []).map(f => `${f.nome} (R$ ${f.desconto.toFixed(2)})`).join(', ');
-    if(!listaNomes) listaNomes = "Sem detalhes";
+  const precoUnidade = libroAtivo.valorCasa || 0;
+  
+  // Agrupar contagens por Quadra com base no mapeamento ativo
+  let quadrasMapeadas = {};
+  CONFIG_JBI.forEach(q => quadrasMapeadas[q.qd] = { concluidos: 0, total: q.lotes, prefix: 'JBI' });
+  CONFIG_JBII.forEach(q => quadrasMapeadas[q.qd] = { concluidos: 0, total: q.lotes, prefix: 'JBII' });
 
-    htmlEquipesRows += `
-      <tr>
-        <td style="border:1px solid #000;padding:8px;font-size:12px;"><strong>${eq.nome.toUpperCase()}</strong><br><span style="font-size:10px;color:#555;">Integrantes: ${listaNomes}</span></td>
-        <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:center;">${eq.integrantesCount} Colaboradores</td>
-        <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:center;">${eq.ativo ? 'ATIVA' : 'INATIVA'}</td>
-        <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:right;">R$ ${descEquipe.toFixed(2)}</td>
-      </tr>
-    `;
+  Object.keys(libroAtivo.mappedLotes || {}).forEach(loteKey => {
+    // Ex: JBI-QD 03-L02
+    const parts = loteKey.split('-');
+    if(parts.length >= 2) {
+      const qdKey = parts[1];
+      if(quadrasMapeadas[qdKey]) {
+        quadrasMapeadas[qdKey].concluidos++;
+      }
+    }
   });
 
-  const saldoLiquido = totalBruto - totalDescontosGeral;
+  // Geração das linhas de descrição da tabela principal
+  let htmlLinhasTabela = '';
+  let totalQuantAtual = 0;
+  let totalValorAtual = 0;
+  let totalRetencoes = libroAtivo.equipes.filter(e => e.ativo).reduce((acc, e) => acc + e.descontoTotal, 0);
+
+  // Lista de equipes separada por vírgula para o metadado
+  let nomesEquipes = libroAtivo.equipes.filter(e => e.ativo).map(e => e.nome).join(', ') || 'Nenhuma Equipe Ativa';
+
+  Object.keys(quadrasMapeadas).forEach(qd => {
+    const qData = quadrasMapeadas[qd];
+    if(qData.concluidos > 0) {
+      const qutAtu = qData.concluidos;
+      const valTot = qutAtu * precoUnidade;
+      
+      totalQuantAtual += qutAtu;
+      totalValorAtual += valTot;
+
+      htmlLinhasTabela += `
+        <tr style="height: 24px;">
+          <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">${qd}</td>
+          <td style="border: 1px solid #000000; text-align: left; vertical-align: middle; padding-left: 6px; white-space: normal; word-wrap: break-word;">Execução de unidades habitacionais no loteamento ${qData.prefix}</td>
+          <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">${qutAtu.toFixed(2)}</td>
+          <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px;">R$ ${precoUnidade.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+          <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px;">R$ ${valTot.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+          <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">0.00</td>
+          <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px;">R$ 0,00</td>
+          <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">${qutAtu.toFixed(2)}</td>
+          <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px;">R$ ${valTot.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+          <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px; font-weight: bold;">R$ ${valTot.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+        </tr>
+      `;
+    }
+  });
+
+  // Caso não existam lançamentos na planilha
+  if(htmlLinhasTabela === '') {
+    htmlLinhasTabela = `
+      <tr style="height: 28px;">
+        <td colspan="10" style="border: 1px solid #000000; text-align: center; vertical-align: middle; color: #555; font-style: italic;">Nenhuma produção computada nesta frente de serviço para o relatório.</td>
+      </tr>
+    `;
+  }
+
+  const saldoLiquidoFinal = totalValorAtual - totalRetencoes;
 
   containerTemp.innerHTML = `
-    <div style="border:2px solid #000;padding:16px;">
-      <h2 style="text-align:center;margin-bottom:4px;text-transform:uppercase;font-weight:bold;letter-spacing:1px;">CB ENGENHARIA</h2>
-      <p style="text-align:center;font-size:14px;margin-bottom:20px;font-weight:bold;">FECHAMENTO DE PRODUÇÃO MENSAL — ${libroAtivo.mesAtivo.toUpperCase()}</p>
+    <div style="border: 2px solid #000000; padding: 12px; background: #ffffff; min-height: 280mm; position: relative;">
       
-      <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
-        <thead>
-          <tr style="background:#e6e6e6;">
-            <th colspan="2" style="border:1px solid #000;padding:8px;text-align:left;font-size:13px;">DETALHES DA FRENTE: ${document.getElementById('tituloFrenteAtiva').innerText.toUpperCase()}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td style="border:1px solid #000;padding:8px;font-size:12px;width:60%;">Casas Produzidas (Concluídas):</td><td style="border:1px solid #000;padding:8px;font-size:12px;font-weight:bold;text-align:right;">${concluidos} UHs</td></tr>
-          <tr><td style="border:1px solid #000;padding:8px;font-size:12px;">Valor de Repasse por Unidade:</td><td style="border:1px solid #000;padding:8px;font-size:12px;text-align:right;">R$ ${libroAtivo.valorCasa.toFixed(2)}</td></tr>
-          <tr style="background:#f9f9f9;"><td style="border:1px solid #000;padding:8px;font-size:12px;font-weight:bold;">VALOR BRUTO ACUMULADO:</td><td style="border:1px solid #000;padding:8px;font-size:12px;font-weight:bold;text-align:right;">R$ ${totalBruto.toFixed(2)}</td></tr>
-        </tbody>
-      </table>
-
-      <h3 style="font-size:13px;text-transform:uppercase;margin-bottom:8px;font-weight:bold;">Demonstrativo de Equipes Fechadas e Retenções</h3>
-      <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
-        <thead style="background:#e6e6e6;">
-          <tr>
-            <th style="border:1px solid #000;padding:8px;text-align:left;font-size:12px;">Identificação do Grupo / Equipe</th>
-            <th style="border:1px solid #000;padding:8px;text-align:center;font-size:12px;width:15%;">Tamanho</th>
-            <th style="border:1px solid #000;padding:8px;text-align:center;font-size:12px;width:15%;">Status</th>
-            <th style="border:1px solid #000;padding:8px;text-align:right;font-size:12px;width:25%;">Desconto Acumulado</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${htmlEquipesRows}
-          <tr style="background:#f2f2f2;font-weight:bold;">
-            <td colspan="3" style="border:1px solid #000;padding:8px;text-align:right;font-size:12px;">Total Retido de Todas as Equipes:</td>
-            <td style="border:1px solid #000;padding:8px;text-align:right;font-size:12px;color:#c00;">R$ ${totalDescontosGeral.toFixed(2)}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <table style="width:100%;border-collapse:collapse;margin-top:10px;">
-        <tr style="background:#000;color:#fff;font-weight:bold;">
-          <td style="border:1px solid #000;padding:12px;font-size:14px;text-transform:uppercase;">SALDO LÍQUIDO REPASSE FINAL:</td>
-          <td style="border:1px solid #000;padding:12px;font-size:16px;text-align:right;font-family:monospace;">R$ ${saldoLiquido.toFixed(2)}</td>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; border: 2.5px solid #000000;">
+        <tr>
+          <td rowspan="2" style="width: 18%; border: 2px solid #000000; background: #f2f2f2; text-align: center; vertical-align: middle; padding: 6px;">
+            <img src="logo.png" style="max-width: 75px; height: auto;" onerror="this.style.display='none'">
+            <div style="font-size: 8pt; font-weight: bold; margin-top: 4px; font-family: sans-serif;">CB ENGENHARIA</div>
+          </td>
+          <td style="width: 42%; border: 2px solid #000000; background: #f2f2f2; font-size: 10pt; font-weight: bold; text-align: center; vertical-align: middle; padding: 6px; text-transform: uppercase;">
+            Sistema de Gestão da Qualidade – Loteamento José Bernardino I
+          </td>
+          <td rowspan="2" style="width: 25%; border: 2px solid #000000; background: #f2f2f2; font-size: 11pt; font-weight: bold; text-align: center; vertical-align: middle; padding: 6px; letter-spacing: 0.5px;">
+            CONTROLE DE PRODUÇÃO –<br>${frenteNomeVisual}
+          </td>
+          <td rowspan="2" style="width: 15%; border: 2px solid #000000; background: #f2f2f2; font-size: 8pt; padding: 4px; vertical-align: top; line-height: 1.4;">
+            <strong>Identificação:</strong> CP-044<br>
+            <strong>Anexo:</strong> VII<br>
+            <strong>Revisão:</strong> 02
+          </td>
+        </tr>
+        <tr>
+          <td style="border: 2px solid #000000; background: #f2f2f2; font-size: 8.5pt; text-align: center; vertical-align: middle; color: #333; font-weight: 500;">
+            Formulário Padrão de Medição Física de Serviços Terceirizados
+          </td>
         </tr>
       </table>
+
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr>
+          <td style="width: 10%; border: 1px solid #000000; padding: 6px; background: #f9f9f9; font-weight: bold; font-size: 9.5pt;">Mês:</td>
+          <td style="width: 23%; border: 1px solid #000000; padding: 6px; font-size: 10pt;">${mesNome}</td>
+          <td style="width: 10%; border: 1px solid #000000; padding: 6px; background: #f9f9f9; font-weight: bold; font-size: 9.5pt;">Ano:</td>
+          <td style="width: 23%; border: 1px solid #000000; padding: 6px; font-size: 10pt;">${anoNome}</td>
+          <td style="width: 10%; border: 1px solid #000000; padding: 6px; background: #f9f9f9; font-weight: bold; font-size: 9.5pt;">Equipe:</td>
+          <td style="width: 24%; border: 1px solid #000000; padding: 6px; font-size: 9.5pt; font-weight: 500;">${nomesEquipes}</td>
+        </tr>
+      </table>
+
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; border: 1.5px solid #000000; font-size: 9pt;">
+        <thead>
+          <tr style="background: #e6e6e6; height: 26px;">
+            <th rowspan="2" style="width: 8%; border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Quadra</th>
+            <th rowspan="2" style="width: 24%; border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Descrição</th>
+            <th colspan="3" style="width: 25%; border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold; text-transform: uppercase;">Medição Atual</th>
+            <th colspan="2" style="width: 15%; border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold; text-transform: uppercase;">Acumulado Anterior</th>
+            <th colspan="2" style="width: 16%; border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold; text-transform: uppercase;">Acumulado Total</th>
+            <th rowspan="2" style="width: 12%; border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Total a Ser Pago</th>
+          </tr>
+          <tr style="background: #e6e6e6; height: 24px;">
+            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Quant. (un)</th>
+            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Valor Unitário</th>
+            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Valor Total</th>
+            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Quant. (un)</th>
+            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Acumulado Anterior</th>
+            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Quant. (un)</th>
+            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">Acumulado</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${htmlLinhasTabela}
+          
+          ${totalRetencoes > 0 ? `
+          <tr style="height: 24px; background: #fafafa;">
+            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold; color: #ef4444;">-</td>
+            <td style="border: 1px solid #000000; text-align: left; vertical-align: middle; padding-left: 6px; color: #555;">Retenções comerciais e descontos cadastrados de equipes ativas</td>
+            <td colspan="7" style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px; font-weight: 500; color: #c00;">Total descontado das equipes registradas:</td>
+            <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px; color: #c00; font-weight: bold;">- R$ ${totalRetencoes.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+          </tr>
+          ` : ''}
+
+          <tr style="height: 28px; background: #52525b; color: #ffffff; font-weight: bold;">
+            <td colspan="2" style="border: 1px solid #000000; text-align: center; vertical-align: middle; text-transform: uppercase; font-size: 9.5pt; letter-spacing: 0.5px;">Totalização Geral</td>
+            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">${totalQuantAtual.toFixed(2)}</td>
+            <td style="border: 1px solid #000000; background: #3f3f46;"></td>
+            <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px;">R$ ${totalValorAtual.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">0.00</td>
+            <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px;">R$ 0,00</td>
+            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">${totalQuantAtual.toFixed(2)}</td>
+            <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px;">R$ ${totalValorAtual.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+            <td style="border: 1px solid #000000; text-align: right; vertical-align: middle; padding-right: 4px; background: #27272a; font-size: 10pt;">R$ ${saldoLiquidoFinal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top: 40px; width: 100%;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="width: 50%; vertical-align: middle; padding: 10px; border: 1.5px solid #000000; background: #f2f2f2;">
+              <span style="font-size: 10pt; font-weight: bold; text-transform: uppercase; color: #111;">
+                Produção total do mês de ${mesNome}:
+              </span>
+              <br>
+              <span style="font-size: 14pt; font-family: monospace; font-weight: bold; color: #000000;">
+                R$ ${saldoLiquidoFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+              </span>
+            </td>
+            
+            <td style="width: 50%; text-align: center; vertical-align: bottom; padding-bottom: 5px; padding-left: 40px;">
+              <div style="width: 100%; border-bottom: 1.5px solid #000000; margin-bottom: 5px;"></div>
+              <span style="font-size: 9pt; font-weight: bold; text-transform: uppercase; color: #333; letter-spacing: 0.5px;">
+                Assinatura do Responsável Técnico
+              </span>
+              <br>
+              <span style="font-size: 8pt; color: #666; font-style: italic;">
+                Fiscalização de Engenharia — CB Engenharia
+              </span>
+            </td>
+          </tr>
+        </table>
+      </div>
+
     </div>
   `;
 
-  const opt = { margin: 10, filename: `Fechamento_${libroAtivo.mesAtivo}_${servicoAtivoId}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+  // Configurações do renderizador html2pdf para folha A4 vertical corporativa
+  const opt = { 
+    margin: 8, 
+    filename: `Controle_Producao_${mesNome}_${anoNome}_${servicoAtivoId}.pdf`, 
+    image: { type: 'jpeg', quality: 1 }, 
+    html2canvas: { scale: 2.5, useCORS: true }, 
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+  };
+  
   html2pdf().set(opt).from(containerTemp).save();
 }
 
