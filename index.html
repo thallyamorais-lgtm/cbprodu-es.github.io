@@ -25,7 +25,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; overflow-x: hidden; }
 
-/* 🟥 TELA DE LOGIN COM MALHA DE QUADRADOS INTERATIVOS REVERSÍVEIS */
+/* 🟥 TELA DE LOGIN */
 .login-screen {
   position: fixed;
   inset: 0;
@@ -181,7 +181,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 <div class="main-content" id="appMain" style="display:none;">
   <div class="nav-header">
     <div>
-      <h2 style="font-size:22px; font-weight:700;">Dashboard de Production</h2>
+      <h2 style="font-size:22px; font-weight:700;">Dashboard de Produção</h2>
       <p style="font-size:13px; color:var(--text2); margin-top:2px;">Frente ativa: <span id="tituloFrenteAtiva" style="color:#fff; font-weight:700; text-decoration:underline;">Nenhuma</span></p>
     </div>
     <div class="nav-actions">
@@ -194,8 +194,8 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 
   <div class="top-metrics-grid">
     <div class="metric-card"><p>Total do Loteamento</p><h3>444 <span style="font-size:14px;color:var(--text2);">UHs</span></h3></div>
-    <div class="metric-card"><p>Equipes Ativas</p><h3 id="lbl-equipes-ativas">0</h3></div>
-    <div class="metric-card"><p>Mais Avançada</p><h3 style="font-size:18px;margin-top:12px;">Contenção (45.5%)</h3></div>
+    <div class="metric-card"><p>Funcionários Ativos</p><h3 id="lbl-equipes-ativas">0</h3></div>
+    <div class="metric-card"><p>Status Geral da Frente</p><h3 style="font-size:18px;margin-top:12px;" id="lbl-status-frente-progresso">0% Concluído</h3></div>
     <div class="metric-card"><p>Valor Bruto Acumulado</p><h3>R$ <span id="lbl-faturamento-total">0,00</span></h3></div>
   </div>
 
@@ -215,21 +215,21 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
       <div class="manage-box">
         <h4>Fechamento de Produção Mensal</h4>
         <div class="form-row">
+          <label style="font-size: 12px; width: 100%;">Mês Vigente / Valor por Unidade Comercializada</label>
           <input type="text" id="cfg-mes" placeholder="Mês Ativo (Ex: Junho/2026)" onchange="salvarConfigMensal()">
           <input type="number" id="cfg-valor-casa" placeholder="Valor por casa (R$)" onchange="salvarConfigMensal()">
-          <input type="number" id="cfg-desconto-pessoa" placeholder="Desconto por pessoa (R$)" onchange="salvarConfigMensal()">
         </div>
       </div>
 
       <div class="manage-box">
-        <h4>Cadastro de Equipes da Frente</h4>
+        <h4>Cadastro Individual de Funcionários / Equipe</h4>
         <div class="form-row">
-          <input type="text" id="nome-equipe" placeholder="Nome da Equipe (Ex: Equipe 1)">
-          <input type="text" id="nomes-integrantes" placeholder="Nomes separados por vírgula (Ex: jose, joao, pedro)">
-          <button class="btn-web btn-web-primary" onclick="cadastrarEquipe()">Cadastrar</button>
+          <input type="text" id="nome-equipe" placeholder="Identificação (Ex: Equipe 1 - José)">
+          <input type="number" step="0.01" id="nomes-integrantes" placeholder="Valor do Desconto (Ex: 1254.00 ou 254.10)">
+          <button class="btn-web btn-web-primary" onclick="cadastrarEquipe()">Adicionar</button>
         </div>
         <table class="team-list-table">
-          <thead><tr><th>Equipe</th><th>Integrantes</th><th>Qtd</th><th>Desconto Total</th><th>Status</th><th>Ações</th></tr></thead>
+          <thead><tr><th>Identificação / Nome</th><th>Desconto Retido</th><th>Status Mensal</th><th>Ações</th></tr></thead>
           <tbody id="lista-equipes-corpo"></tbody>
         </table>
       </div>
@@ -260,8 +260,8 @@ const CONFIG_JBII = [
   {qd: 'QD 15', lotes: 10}, {qd: 'QD 16', lotes: 10}, {qd: 'QD 17', lotes: 10}
 ];
 
-let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes')) || [
-  { id: "contencao", nome: "Contenção", progresso: 45 },
+let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v4')) || [
+  { id: "contencao", nome: "Contenção", progresso: 0 },
   { id: "inst_radier", nome: "Instalações de Radier", progresso: 0 },
   { id: "lona_malha", nome: "Lona, Espaçador e Malha", progresso: 0 },
   { id: "conc_radier", nome: "Concretagem de Radier", progresso: 0 },
@@ -274,7 +274,7 @@ let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes')) || [
 ];
 
 let servicoAtivoId = '';
-let livroAtivo = { mappedLotes: {}, valorCasa: 1250, descontoPessoa: 0, mesAtivo: 'Junho/2026', equipes: [] };
+let libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Junho/2026', equipes: [] };
 
 function fazerLogin() {
   document.getElementById('loginScreen').style.display = 'none';
@@ -304,32 +304,39 @@ function alternarFrenteDeServico(id, nome) {
   servicoAtivoId = id;
   document.getElementById('tituloFrenteAtiva').innerText = nome;
   document.getElementById('conteudoDoApp').style.display = 'block';
-  renderizarMenuLateral();
   carregarEstadoLocal();
-  renderizarLoteamentos();
 }
 
 function carregarEstadoLocal() {
-  const local = localStorage.getItem('cb_frente_v3_' + servicoAtivoId);
+  const local = localStorage.getItem('cb_frente_v4_' + servicoAtivoId);
   if (local) {
-    livroAtivo = JSON.parse(local);
+    libroAtivo = JSON.parse(local);
+    if (!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
   } else {
-    livroAtivo = {
+    libroAtivo = {
       mappedLotes: {},
       valorCasa: 1250,
-      descontoPessoa: 50,
       mesAtivo: 'Junho/2026',
-      equipes: [
-        { nome: 'Equipe 1', integrantes: ['jose', 'joao', 'pedro'], ativo: true }
-      ]
+      equipes: []
     };
   }
-  document.getElementById('cfg-mes').value = livroAtivo.mesAtivo || '';
-  document.getElementById('cfg-valor-casa').value = livroAtivo.valorCasa || 0;
-  document.getElementById('cfg-desconto-pessoa').value = livroAtivo.descontoPessoa || 0;
+  document.getElementById('cfg-mes').value = libroAtivo.mesAtivo || '';
+  document.getElementById('cfg-valor-casa').value = libroAtivo.valorCasa || 0;
   
+  // Sincroniza a barra lateral com o progresso real calculado de acordo com os marcados
+  atualizarProgressoFrenteSilencioso();
+  renderizarMenuLateral();
+  renderizarLoteamentos();
   renderizarEquipes();
   recalcularTotais();
+}
+
+function atualizarProgressoFrenteSilencioso() {
+  const concluidos = Object.keys(libroAtivo.mappedLotes || {}).length;
+  const pct = Math.round((concluidos / 444) * 100);
+  const f = listaFrentes.find(frente => frente.id === servicoAtivoId);
+  if(f) f.progresso = pct;
+  localStorage.setItem('cb_lista_frentes_v4', JSON.stringify(listaFrentes));
 }
 
 function renderizarLoteamentos() {
@@ -348,7 +355,7 @@ function renderizarBloco(elementId, config, prefix) {
     flexGrid.className = "lotes-flex-grid";
     for(let i = 1; i <= q.lotes; i++) {
       const loteKey = `${prefix}-${q.qd}-L${String(i).padStart(2,'0')}`;
-      const isDone = livroAtivo.mappedLotes && livroAtivo.mappedLotes[loteKey];
+      const isDone = libroAtivo.mappedLotes && libroAtivo.mappedLotes[loteKey];
       const btn = document.createElement('div');
       btn.className = `btn-lote-box ${isDone ? 'active' : ''}`;
       btn.innerText = String(i).padStart(2, '0');
@@ -361,16 +368,11 @@ function renderizarBloco(elementId, config, prefix) {
 }
 
 function alternarLote(loteKey) {
-  if(!livroAtivo.mappedLotes) livroAtivo.mappedLotes = {};
-  if(livroAtivo.mappedLotes[loteKey]) { delete livroAtivo.mappedLotes[loteKey]; } 
-  else { livroAtivo.mappedLotes[loteKey] = true; }
+  if(!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
+  if(libroAtivo.mappedLotes[loteKey]) { delete libroAtivo.mappedLotes[loteKey]; } 
+  else { libroAtivo.mappedLotes[loteKey] = true; }
   
-  const concluidos = Object.keys(livroAtivo.mappedLotes).length;
-  const pct = Math.round((concluidos / 444) * 100);
-  const f = listaFrentes.find(frente => frente.id === servicoAtivoId);
-  if(f) f.progresso = pct;
-  
-  localStorage.setItem('cb_lista_frentes', JSON.stringify(listaFrentes));
+  atualizarProgressoFrenteSilencioso();
   renderizarMenuLateral();
   renderizarLoteamentos();
   recalcularTotais();
@@ -378,9 +380,8 @@ function alternarLote(loteKey) {
 }
 
 function salvarConfigMensal() {
-  livroAtivo.mesAtivo = document.getElementById('cfg-mes').value;
-  livroAtivo.valorCasa = parseFloat(document.getElementById('cfg-valor-casa').value) || 0;
-  livroAtivo.descontoPessoa = parseFloat(document.getElementById('cfg-desconto-pessoa').value) || 0;
+  libroAtivo.mesAtivo = document.getElementById('cfg-mes').value;
+  libroAtivo.valorCasa = parseFloat(document.getElementById('cfg-valor-casa').value) || 0;
   renderizarEquipes();
   recalcularTotais();
   salvarNoDispositivo();
@@ -388,12 +389,10 @@ function salvarConfigMensal() {
 
 function cadastrarEquipe() {
   const nome = document.getElementById('nome-equipe').value.trim();
-  const integrantesTexto = document.getElementById('nomes-integrantes').value;
+  const descontoVal = parseFloat(document.getElementById('nomes-integrantes').value) || 0;
   if(!nome) return;
   
-  const listaNomes = integrantesTexto.split(',').map(n => n.trim()).filter(n => n.length > 0);
-  
-  livroAtivo.equipes.push({ nome, integrantes: listaNomes, ativo: true });
+  libroAtivo.equipes.push({ nome: nome, descontoIndividual: descontoVal, ativo: true });
   document.getElementById('nome-equipe').value = '';
   document.getElementById('nomes-integrantes').value = '';
   
@@ -403,15 +402,14 @@ function cadastrarEquipe() {
 }
 
 function alternarStatusEquipe(idx) {
-  livroAtivo.equipes[idx].active_status = !livroAtivo.equipes[idx].ativo;
-  livroAtivo.equipes[idx].ativo = !livroAtivo.equipes[idx].ativo;
+  libroAtivo.equipes[idx].ativo = !libroAtivo.equipes[idx].ativo;
   renderizarEquipes();
   recalcularTotais();
   salvarNoDispositivo();
 }
 
 function removerEquipe(idx) {
-  livroAtivo.equipes.splice(idx, 1);
+  libroAtivo.equipes.splice(idx, 1);
   renderizarEquipes();
   recalcularTotais();
   salvarNoDispositivo();
@@ -420,20 +418,15 @@ function removerEquipe(idx) {
 function renderizarEquipes() {
   const corpo = document.getElementById('lista-equipes-corpo');
   corpo.innerHTML = '';
-  const descPessoa = parseFloat(document.getElementById('cfg-desconto-pessoa').value) || 0;
   
-  livroAtivo.equipes.forEach((eq, idx) => {
-    const qtdPessoas = eq.integrantes ? eq.integrantes.length : 0;
-    const nomesLista = eq.integrantes ? eq.integrantes.join(', ') : '';
-    const descTotalEquipe = eq.ativo ? (qtdPessoas * descPessoa) : 0;
+  libroAtivo.equipes.forEach((eq, idx) => {
+    const descontoEfetivo = eq.ativo ? eq.descontoIndividual : 0;
     
     const row = document.createElement('tr');
     row.innerHTML = `
       <td style="font-weight:600;">${eq.nome}</td>
-      <td style="color:var(--text2); font-size:12px; max-width: 180px; overflow:hidden; text-overflow:ellipsis;">${nomesLista}</td>
-      <td>${qtdPessoas}</td>
-      <td>R$ ${descTotalEquipe.toFixed(2)}</td>
-      <td><span class="badge-status ${eq.ativo ? 'status-active' : 'status-inactive'}" onclick="alternarStatusEquipe(${idx})">${eq.ativo ? 'Ativa' : 'Inativa'}</span></td>
+      <td>R$ ${descontoEfetivo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+      <td><span class="badge-status ${eq.ativo ? 'status-active' : 'status-inactive'}" onclick="alternarStatusEquipe(${idx})">${eq.ativo ? 'Ativo' : 'Inativo'}</span></td>
       <td><button onclick="removerEquipe(${idx})" style="background:transparent;color:#ef4444;border:none;cursor:pointer;font-weight:600;">Remover</button></td>
     `;
     corpo.appendChild(row);
@@ -441,18 +434,22 @@ function renderizarEquipes() {
 }
 
 function recalcularTotais() {
-  const concluidos = Object.keys(livroAtivo.mappedLotes || {}).length;
+  const concluidos = Object.keys(libroAtivo.mappedLotes || {}).length;
   const precoCasa = parseFloat(document.getElementById('cfg-valor-casa').value) || 0;
   const bruto = concluidos * precoCasa;
   
   document.getElementById('lbl-faturamento-total').innerText = bruto.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
   
-  const equipesAtivas = livroAtivo.equipes.filter(e => e.ativo).length;
-  document.getElementById('lbl-equipes-ativas').innerText = equipesAtivas;
+  const f = listaFrentes.find(frente => frente.id === servicoAtivoId);
+  const pctGeral = f ? f.progresso : 0;
+  document.getElementById('lbl-status-frente-progresso').innerText = `${pctGeral}% Concluído`;
+
+  const ativosCount = libroAtivo.equipes.filter(e => e.ativo).length;
+  document.getElementById('lbl-equipes-ativas').innerText = ativosCount;
 }
 
 function salvarNoDispositivo() {
-  localStorage.setItem('cb_frente_v3_' + servicoAtivoId, JSON.stringify(livroAtivo));
+  localStorage.setItem('cb_frente_v4_' + servicoAtivoId, JSON.stringify(libroAtivo));
 }
 
 function forcarSalvarTudo() {
@@ -469,21 +466,18 @@ function gerarRelatorioPDF() {
   containerTemp.style.background = '#ffffff';
   containerTemp.style.fontFamily = 'Arial, sans-serif';
 
-  const concluidos = Object.keys(livroAtivo.mappedLotes || {}).length;
-  const totalBruto = concluidos * livroAtivo.valorCasa;
+  const concluidos = Object.keys(libroAtivo.mappedLotes || {}).length;
+  const totalBruto = concluidos * libroAtivo.valorCasa;
   let totalDescontosGeral = 0;
   let htmlEquipesRows = '';
 
-  livroAtivo.equipes.forEach(eq => {
-    const qtd = eq.integrantes ? eq.integrantes.length : 0;
-    const descEquipe = eq.ativo ? (qtd * livroAtivo.descontoPessoa) : 0;
-    const nomesLista = eq.integrantes ? eq.integrantes.join(', ') : '';
+  libroAtivo.equipes.forEach(eq => {
+    const descEquipe = eq.ativo ? eq.descontoIndividual : 0;
     totalDescontosGeral += descEquipe;
     htmlEquipesRows += `
       <tr>
-        <td style="border:1px solid #000;padding:8px;font-size:12px;"><strong>${eq.nome}</strong><br><span style="color:#555;font-size:11px;">(${nomesLista})</span></td>
-        <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:center;">${qtd}</td>
-        <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:center;">${eq.ativo ? 'ATIVA' : 'INATIVA'}</td>
+        <td style="border:1px solid #000;padding:8px;font-size:12px;"><strong>${eq.nome}</strong></td>
+        <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:center;">${eq.ativo ? 'ATIVO' : 'INATIVO'}</td>
         <td style="border:1px solid #000;padding:8px;font-size:12px;text-align:right;">R$ ${descEquipe.toFixed(2)}</td>
       </tr>
     `;
@@ -494,7 +488,7 @@ function gerarRelatorioPDF() {
   containerTemp.innerHTML = `
     <div style="border:2px solid #000;padding:16px;">
       <h2 style="text-align:center;margin-bottom:4px;text-transform:uppercase;font-weight:bold;letter-spacing:1px;">CB ENGENHARIA</h2>
-      <p style="text-align:center;font-size:14px;margin-bottom:20px;font-weight:bold;">FECHAMENTO DE PRODUÇÃO MENSAL — ${livroAtivo.mesAtivo.toUpperCase()}</p>
+      <p style="text-align:center;font-size:14px;margin-bottom:20px;font-weight:bold;">FECHAMENTO DE PRODUÇÃO MENSAL — ${libroAtivo.mesAtivo.toUpperCase()}</p>
       
       <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
         <thead>
@@ -504,25 +498,24 @@ function gerarRelatorioPDF() {
         </thead>
         <tbody>
           <tr><td style="border:1px solid #000;padding:8px;font-size:12px;width:60%;">Casas Produzidas (Concluídas):</td><td style="border:1px solid #000;padding:8px;font-size:12px;font-weight:bold;text-align:right;">${concluidos} UHs</td></tr>
-          <tr><td style="border:1px solid #000;padding:8px;font-size:12px;">Valor de Repasse por Unidade:</td><td style="border:1px solid #000;padding:8px;font-size:12px;text-align:right;">R$ ${livroAtivo.valorCasa.toFixed(2)}</td></tr>
+          <tr><td style="border:1px solid #000;padding:8px;font-size:12px;">Valor de Repasse por Unidade:</td><td style="border:1px solid #000;padding:8px;font-size:12px;text-align:right;">R$ ${libroAtivo.valorCasa.toFixed(2)}</td></tr>
           <tr style="background:#f9f9f9;"><td style="border:1px solid #000;padding:8px;font-size:12px;font-weight:bold;">VALOR BRUTO ACUMULADO:</td><td style="border:1px solid #000;padding:8px;font-size:12px;font-weight:bold;text-align:right;">R$ ${totalBruto.toFixed(2)}</td></tr>
         </tbody>
       </table>
 
-      <h3 style="font-size:13px;text-transform:uppercase;margin-bottom:8px;font-weight:bold;">Demonstrativo Financeiro por Equipe</h3>
+      <h3 style="font-size:13px;text-transform:uppercase;margin-bottom:8px;font-weight:bold;">Demonstrativo de Retenções e Descontos</h3>
       <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
         <thead style="background:#e6e6e6;">
           <tr>
-            <th style="border:1px solid #000;padding:8px;text-align:left;font-size:12px;">Identificação da Equipe</th>
-            <th style="border:1px solid #000;padding:8px;text-align:center;font-size:12px;width:12%;">Qtd</th>
-            <th style="border:1px solid #000;padding:8px;text-align:center;font-size:12px;width:15%;">Status</th>
-            <th style="border:1px solid #000;padding:8px;text-align:right;font-size:12px;width:25%;">Desconto Retido</th>
+            <th style="border:1px solid #000;padding:8px;text-align:left;font-size:12px;">Colaborador / Identificação</th>
+            <th style="border:1px solid #000;padding:8px;text-align:center;font-size:12px;width:20%;">Status Mensal</th>
+            <th style="border:1px solid #000;padding:8px;text-align:right;font-size:12px;width:30%;">Desconto Aplicado</th>
           </tr>
         </thead>
         <tbody>
           ${htmlEquipesRows}
           <tr style="background:#f2f2f2;font-weight:bold;">
-            <td colspan="3" style="border:1px solid #000;padding:8px;text-align:right;font-size:12px;">Total de Descontos no Mês:</td>
+            <td colspan="2" style="border:1px solid #000;padding:8px;text-align:right;font-size:12px;">Total Retido no Mês:</td>
             <td style="border:1px solid #000;padding:8px;text-align:right;font-size:12px;color:#c00;">R$ ${totalDescontosGeral.toFixed(2)}</td>
           </tr>
         </tbody>
@@ -530,14 +523,14 @@ function gerarRelatorioPDF() {
 
       <table style="width:100%;border-collapse:collapse;margin-top:10px;">
         <tr style="background:#000;color:#fff;font-weight:bold;">
-          <td style="border:1px solid #000;padding:12px;font-size:14px;text-transform:uppercase;">SALDO LÍQUIDO DISPONÍVEL PARA PAGAMENTO:</td>
+          <td style="border:1px solid #000;padding:12px;font-size:14px;text-transform:uppercase;">SALDO LÍQUIDO DISPONÍVEL PARA REPASSE:</td>
           <td style="border:1px solid #000;padding:12px;font-size:16px;text-align:right;font-family:monospace;">R$ ${saldoLiquido.toFixed(2)}</td>
         </tr>
       </table>
     </div>
   `;
 
-  const opt = { margin: 10, filename: `Fechamento_${livroAtivo.mesAtivo}_${servicoAtivoId}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+  const opt = { margin: 10, filename: `Fechamento_${libroAtivo.mesAtivo}_${servicoAtivoId}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
   html2pdf().set(opt).from(containerTemp).save();
 }
 
