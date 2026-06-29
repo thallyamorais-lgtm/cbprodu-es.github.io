@@ -557,39 +557,196 @@ function fazerLogout() { window.location.reload(); }
 
 function exportarPlanilhaExcelFrenteAtiva() {
   const frenteTitulo = document.getElementById('tituloFrenteAtiva').innerText;
-  const txtMesAno = libroAtivo.mesAtivo || "Maio-2026";
+  const txtMesAno = libroAtivo.mesAtivo || "Maio/2026";
+  const mNome = (txtMesAno.split('/')[0] || "MAIO").toUpperCase();
+  const aNome = txtMesAno.split('/')[1] || "2026";
   const vUnit = libroAtivo.valorCasa || 0;
 
-  let csvContent = "\uFEFF"; 
-  csvContent += "LOTEAMENTO;QUADRA;LOTE;SITUACAO;RESPONSAVEL;VALOR UNITARIO;VALOR TOTAL\n";
+  // Agrupar os lotes por Equipe -> Quadra para consolidar a descrição igual ao modelo (Ex: "UH: 01, 02, 03")
+  let dadosAgrupados = {};
+  Object.keys(libroAtivo.mappedLotes || {}).forEach(k => {
+    const p = k.split('-');
+    if(p.length >= 2) {
+      const localRef = k.startsWith('JBI') ? 'JB I' : 'JB II';
+      const quadraNum = p[1].replace('QD ', 'Q');
+      const quadraChave = `${localRef}: ${quadraNum}`;
+      const loteNum = p[2].replace('L', '');
+      const objLote = libroAtivo.mappedLotes[k];
+      const eqNome = (typeof objLote === 'string') ? objLote : (objLote.equipe || 'Equipe Geral');
 
-  CONFIG_JBI.forEach(q => {
-    for(let i = 1; i <= q.lotes; i++) {
-      const loteKey = `JBI-${q.qd}-L${String(i).padStart(2,'0')}`;
-      const dado = libroAtivo.mappedLotes[loteKey];
-      const status = dado ? "CONCLUIDO" : "PENDENTE";
-      const resp = dado ? (dado.equipe || "Equipe Geral") : "-";
-      const total = dado ? vUnit : 0;
-      csvContent += `Jose Bernardino I;${q.qd};Lote ${String(i).padStart(2,'0')};${status};${resp};${vUnit};${total}\n`;
+      if (!dadosAgrupados[eqNome]) dadosAgrupados[eqNome] = {};
+      if (!dadosAgrupados[eqNome][quadraChave]) dadosAgrupados[eqNome][quadraChave] = [];
+      dadosAgrupados[eqNome][quadraChave].push(loteNum);
     }
   });
 
-  CONFIG_JBII.forEach(q => {
-    for(let i = 1; i <= q.lotes; i++) {
-      const loteKey = `JBII-${q.qd}-L${String(i).padStart(2,'0')}`;
-      const dado = libroAtivo.mappedLotes[loteKey];
-      const status = dado ? "CONCLUIDO" : "PENDENTE";
-      const resp = dado ? (dado.equipe || "Equipe Geral") : "-";
-      const total = dado ? vUnit : 0;
-      csvContent += `Jose Bernardino II;${q.qd};Lote ${String(i).padStart(2,'0')};${status};${resp};${vUnit};${total}\n`;
+  // Construção do arquivo XML compatível com Excel para manter formatação e colunas
+  let xml = `<?xml version="1.0" encoding="utf-8"?>
+  <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+    <Styles>
+      <Style ss:ID="headerBg"><Font ss:Bold="1" ss:Size="10"/><Interior ss:Color="#E6E6E6" ss:Pattern="Solid"/><Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/><Borders><Border ss:Position="All" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>
+      <Style ss:ID="titleSection"><Font ss:Bold="1" ss:Size="11"/><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Interior ss:Color="#F4F4F5" ss:Pattern="Solid"/><Borders><Border ss:Position="All" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>
+      <Style ss:ID="tableHeader"><Font ss:Bold="1" ss:Color="#FFFFFF" ss:Size="10"/><Interior ss:Color="#000000" ss:Pattern="Solid"/><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Borders><Border ss:Position="All" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>
+      <Style ss:ID="borderCell"><Alignment ss:Vertical="Center"/><Borders><Border ss:Position="All" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>
+      <Style ss:ID="borderCellCenter"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Borders><Border ss:Position="All" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>
+      <Style ss:ID="borderCellRight"><Alignment ss:Horizontal="Right" ss:Vertical="Center"/><Borders><Border ss:Position="All" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>
+      <Style ss:ID="totalRow"><Font ss:Bold="1"/><Interior ss:Color="#F4F4F5" ss:Pattern="Solid"/><Borders><Border ss:Position="All" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>
+    </Styles>
+    <Worksheet ss:Name="Produção">
+      <Table>
+        <Column ss:Width="100"/>
+        <Column ss:Width="200"/>
+        <Column ss:Width="80"/>
+        <Column ss:Width="90"/>
+        <Column ss:Width="100"/>
+        <Column ss:Width="110"/>
+        
+        <Row ss:Height="30">
+          <Cell ss:StyleID="headerBg" ss:MergeAcross="1"><Data ss:Type="String">Sistema de Gestão da Qualidade\nLOTEAMENTO JOSÉ BERNARDINO I e II</Data></Cell>
+          <Cell ss:StyleID="headerBg" ss:MergeAcross="2"><Data ss:Type="String">CONTROLE DE PRODUÇÃO\n${frenteTitulo.toUpperCase()}</Data></Cell>
+          <Cell ss:StyleID="headerBg"><Data ss:Type="String">Identificação:\nPQO - Anexo A</Data></Cell>
+        </Row>
+        <Row>
+          <Cell ss:Index="6" ss:StyleID="borderCellCenter"><Data ss:Type="String">Revisão: 02</Data></Cell>
+        </Row>
+        
+        <Row>
+          <Cell ss:StyleID="borderCell"><Data ss:Type="String">Mês: ${mNome}</Data></Cell>
+          <Cell ss:Index="4" ss:StyleID="borderCell"><Data ss:Type="String">Ano: ${aNome}</Data></Cell>
+        </Row>
+        <Row><Cell><Data ss:Type="String"></Data></Cell></Row>
+
+        <Row><Cell ss:MergeAcross="5" ss:StyleID="titleSection"><Data ss:Type="String">EQUIPE DE TRABALHO REGISTRADA</Data></Cell></Row>
+        <Row ss:StyleID="totalRow">
+          <Cell ss:StyleID="borderCell" ss:MergeAcross="1"><Data ss:Type="String">Nome do Funcionário</Data></Cell>
+          <Cell ss:StyleID="borderCellCenter" ss:MergeAcross="1"><Data ss:Type="String">Retenções / Descontos</Data></Cell>
+          <Cell ss:StyleID="borderCellRight" ss:MergeAcross="1"><Data ss:Type="String">Status Cadastral</Data></Cell>
+        </Row>`;
+
+  let totalDescontosGeral = 0;
+  let temEquipes = false;
+
+  libroAtivo.equipes.forEach((eq, idx) => {
+    if(eq.ativo) {
+      temEquipes = true;
+      totalDescontosGeral += eq.descontoTotal;
+      if(eq.detalhesFuncionarios && eq.detalhesFuncionarios.length > 0) {
+        eq.detalhesFuncionarios.forEach(f => {
+          xml += `
+          <Row>
+            <Cell ss:StyleID="borderCell" ss:MergeAcross="1"><Data ss:Type="String">${f.nome.toUpperCase()}</Data></Cell>
+            <Cell ss:StyleID="borderCellCenter" ss:MergeAcross="1"><Data ss:Type="Number">${f.desconto}</Data></Cell>
+            <Cell ss:StyleID="borderCellRight" ss:MergeAcross="1"><Data ss:Type="String">Integrante de ${eq.nome}</Data></Cell>
+          </Row>`;
+        });
+      } else {
+        xml += `
+        <Row>
+          <Cell ss:StyleID="borderCell" ss:MergeAcross="1"><Data ss:Type="String">${eq.nome.toUpperCase()}</Data></Cell>
+          <Cell ss:StyleID="borderCellCenter" ss:MergeAcross="1"><Data ss:Type="Number">${eq.descontoTotal}</Data></Cell>
+          <Cell ss:StyleID="borderCellRight" ss:MergeAcross="1"><Data ss:Type="String">Equipe Geral</Data></Cell>
+        </Row>`;
+      }
     }
   });
 
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  if(!temEquipes) {
+    xml += `
+    <Row>
+      <Cell ss:StyleID="borderCell" ss:MergeAcross="1"><Data ss:Type="String">NENHUMA EQUIPE ATIVA CADASTRADA</Data></Cell>
+      <Cell ss:StyleID="borderCellCenter" ss:MergeAcross="1"><Data ss:Type="Number">0</Data></Cell>
+      <Cell ss:StyleID="borderCellRight" ss:MergeAcross="1"><Data ss:Type="String">-</Data></Cell>
+    </Row>`;
+  }
+
+  xml += `
+        <Row><Cell><Data ss:Type="String"></Data></Cell></Row>
+        <Row><Cell ss:MergeAcross="5" ss:StyleID="titleSection"><Data ss:Type="String">MEDIÇÃO ATUAL / DETALHADA DO MÊS</Data></Cell></Row>
+        
+        <Row ss:Height="22">
+          <Cell ss:StyleID="tableHeader"><Data ss:Type="String">Quadra</Data></Cell>
+          <Cell ss:StyleID="tableHeader"><Data ss:Type="String">Descrição</Data></Cell>
+          <Cell ss:StyleID="tableHeader"><Data ss:Type="String">Quant. (un)</Data></Cell>
+          <Cell ss:StyleID="tableHeader"><Data ss:Type="String">Valor unitário (un)</Data></Cell>
+          <Cell ss:StyleID="tableHeader"><Data ss:Type="String">Valor total</Data></Cell>
+          <Cell ss:StyleID="tableHeader"><Data ss:Type="String">Total a Ser Pago</Data></Cell>
+        </Row>`;
+
+  let somaQtdTotal = 0;
+  let somaValorTotalBruto = 0;
+
+  if (Object.keys(dadosAgrupados).length === 0) dadosAgrupados['Equipe Geral'] = {};
+
+  Object.keys(dadosAgrupados).forEach(eqKey => {
+    const quadrasDaEquipe = dadosAgrupados[eqKey];
+    
+    // Linha divisória identificando a produção da equipe
+    xml += `
+    <Row ss:StyleID="totalRow">
+      <Cell ss:StyleID="borderCell" ss:MergeAcross="5"><Data ss:Type="String">PRODUÇÃO: ${eqKey.toUpperCase()}</Data></Cell>
+    </Row>`;
+
+    Object.keys(quadrasDaEquipe).forEach(qd => {
+      const listaLotes = quadrasDaEquipe[qd].sort((a,b) => a-b);
+      const qtdUnidades = listaLotes.length;
+      const totalBrutoQuadra = qtdUnidades * vUnit;
+
+      somaQtdTotal += qtdUnidades;
+      somaValorTotalBruto += totalBrutoQuadra;
+
+      xml += `
+      <Row>
+        <Cell ss:StyleID="borderCellCenter"><Data ss:Type="String">${qd}</Data></Cell>
+        <Cell ss:StyleID="borderCell"><Data ss:Type="String">UH: ${listaLotes.join(', ')}</Data></Cell>
+        <Cell ss:StyleID="borderCellCenter"><Data ss:Type="Number">${qtdUnidades}</Data></Cell>
+        <Cell ss:StyleID="borderCellRight"><Data ss:Type="Number">${vUnit}</Data></Cell>
+        <Cell ss:StyleID="borderCellRight"><Data ss:Type="Number">${totalBrutoQuadra}</Data></Cell>
+        <Cell ss:StyleID="borderCellRight"><Data ss:Type="Number">${totalBrutoQuadra}</Data></Cell>
+      </Row>`;
+    });
+
+    // Se a equipe ativa contiver descontos lançados no painel, adiciona a linha de desconto logo abaixo
+    const dadosEquipePainel = libroAtivo.equipes.find(e => e.nome === eqKey);
+    if(dadosEquipePainel && dadosEquipePainel.descontoTotal > 0 && dadosEquipePainel.ativo) {
+      xml += `
+      <Row>
+        <Cell ss:StyleID="borderCellCenter"><Data ss:Type="String">-</Data></Cell>
+        <Cell ss:StyleID="borderCell" ss:StyleID="borderCell"><Data ss:Type="String">DESCONTO / RETENÇÃO DA EQUIPE</Data></Cell>
+        <Cell ss:StyleID="borderCellCenter"><Data ss:Type="Number">1</Data></Cell>
+        <Cell ss:StyleID="borderCellRight"><Data ss:Type="Number">-${dadosEquipePainel.descontoTotal}</Data></Cell>
+        <Cell ss:StyleID="borderCellRight"><Data ss:Type="Number">-${dadosEquipePainel.descontoTotal}</Data></Cell>
+        <Cell ss:StyleID="borderCellRight"><Data ss:Type="Number">-${dadosEquipePainel.descontoTotal}</Data></Cell>
+      </Row>`;
+    }
+  });
+
+  let liquidoFinalAPagar = somaValorTotalBruto - totalDescontosGeral;
+
+  // Linhas de Totais Consolidados (Fim da Planilha)
+  xml += `
+        <Row ss:StyleID="totalRow">
+          <Cell ss:StyleID="borderCell"><Data ss:Type="String">Total</Data></Cell>
+          <Cell ss:StyleID="borderCell"><Data ss:Type="String"></Data></Cell>
+          <Cell ss:StyleID="borderCellCenter"><Data ss:Type="Number">${somaQtdTotal}</Data></Cell>
+          <Cell ss:StyleID="borderCell"><Data ss:Type="String"></Data></Cell>
+          <Cell ss:StyleID="borderCellRight"><Data ss:Type="Number">${somaValorTotalBruto}</Data></Cell>
+          <Cell ss:StyleID="borderCellRight"><Data ss:Type="Number">${somaValorTotalBruto}</Data></Cell>
+        </Row>
+        <Row><Cell><Data ss:Type="String"></Data></Cell></Row>
+        <Row ss:Height="24" ss:StyleID="totalRow">
+          <Cell ss:MergeAcross="4" ss:StyleID="borderCell"><Data ss:Type="String">Produção total líquida do mês de ${mNome}</Data></Cell>
+          <Cell ss:StyleID="borderCellRight"><Data ss:Type="Number">${liquidoFinalAPagar}</Data></Cell>
+        </Row>
+      </Table>
+    </Worksheet>
+  </Workbook>`;
+
+  // Executar download do arquivo gerado estruturado
+  const blob = new Blob([xml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
   const link = document.createElement("a");
   const url = URL.createObjectURL(blob);
   link.setAttribute("href", url);
-  link.setAttribute("download", `Planilha_Producao_${frenteTitulo.replace(/ /g, '_')}_${txtMesAno.replace(/\//g,'-')}.csv`);
+  link.setAttribute("download", `Planilha_Producao_${frenteTitulo.replace(/ /g, '_')}_${mNome}.xls`);
   link.style.visibility = 'hidden';
   document.body.appendChild(link);
   link.click();
