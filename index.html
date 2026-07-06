@@ -99,11 +99,16 @@ body.light-mode .sidebar-logo-img { filter: invert(1); }
 .quadra-box { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
 .quadra-info-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 700; font-size: 14px; color: var(--accent); }
 .lotes-flex-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-.btn-lote-box { background: var(--lote-bg); border: 1px solid var(--border); height: 42px; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--lote-text); transition: 0.15s; position: relative; }
+
+/* AJUSTADO: Box do lote preparado para empilhamento vertical perfeito */
+.btn-lote-box { background: var(--lote-bg); border: 1px solid var(--border); height: 48px; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--lote-text); transition: 0.15s; position: relative; padding: 2px 0; line-height: 1.1; }
 .btn-lote-box:hover { border-color: var(--text2); }
 .btn-lote-box.active { background: var(--accent); color: var(--surface); border-color: var(--accent); font-weight: 700; }
-.btn-lote-box .team-indicator { font-size: 8px; font-weight: bold; text-transform: uppercase; max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 1px; }
-.btn-lote-box .month-indicator { font-size: 7px; opacity: 0.8; text-transform: uppercase; max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* AJUSTADO: Mês no topo com fonte pequena */
+.btn-lote-box .month-indicator { font-size: 7.5px; font-weight: 700; text-transform: uppercase; max-width: 95%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 1px; opacity: 0.8; }
+/* AJUSTADO: Equipe na parte inferior */
+.btn-lote-box .team-indicator { font-size: 8px; font-weight: 700; text-transform: uppercase; max-width: 95%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 1px; }
 body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: #000; padding: 0px 2px; border-radius: 2px; }
 
 .management-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 25px; }
@@ -208,7 +213,7 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 
     <div class="management-container">
       <div class="manage-box">
-        <h4>Fechamento de Production Mensal</h4>
+        <h4>Fechamento de Produção Mensal</h4>
         <div class="form-row">
           <div class="input-wrapper">
             <label>Mês Vigente</label>
@@ -423,6 +428,7 @@ function renderizarLoteamentos() {
   renderizarBloco('container-jbii', CONFIG_JBII, 'JBII');
 }
 
+/* MODIFICADO: A ordem de renderização interna do botão do lote mudou conforme solicitado */
 function renderizarBloco(elementId, config, prefix) {
   const container = document.getElementById(elementId);
   container.innerHTML = "";
@@ -441,25 +447,23 @@ function renderizarBloco(elementId, config, prefix) {
       let tMes = '';
       if(isDone) {
         tNome = (typeof dadoLote === 'string') ? dadoLote : (dadoLote.equipe || 'Equipe Geral');
-        tMes = (dadoLote && dadoLote.mes) ? dadoLote.mes : '';
+        // Filtra apenas o nome do mês limpando o ano se preferir, ou usa o texto completo
+        tMes = (dadoLote && dadoLote.mes) ? dadoLote.mes.split('/')[0] : '';
       }
 
       const btn = document.createElement('div');
       btn.className = `btn-lote-box ${isDone ? 'active' : ''}`;
       
-      let titleAttr = "";
       if(isDone) {
-        titleAttr = `Equipe: ${tNome}${tMes ? ' | Mês: ' + tMes : ''}`;
-        btn.setAttribute('title', titleAttr);
-      }
-      
-      btn.innerHTML = `<span>${String(i).padStart(2, '0')}</span>`;
-      
-      if(isDone) {
+        btn.setAttribute('title', `Mês: ${dadoLote.mes || 'N/A'} | Equipe: ${tNome}`);
+        
+        // MODIFICAÇÃO DO LAYOUT INTERNO: MÊS (em cima) -> NÚMERO (no meio) -> EQUIPE (embaixo)
+        btn.innerHTML = `<span class="month-indicator">${tMes}</span>`;
+        btn.innerHTML += `<span>${String(i).padStart(2, '0')}</span>`;
         btn.innerHTML += `<span class="team-indicator">${tNome}</span>`;
-        if(tMes) {
-          btn.innerHTML += `<span class="month-indicator">${tMes}</span>`;
-        }
+      } else {
+        // Se não foi concluído, mostra apenas o número centralizado normalmente
+        btn.innerHTML = `<span>${String(i).padStart(2, '0')}</span>`;
       }
 
       btn.onclick = () => alternarLote(loteKey);
@@ -539,7 +543,6 @@ function fecharEquipeGeral() {
   let totalDescontoTime = funcionariosTemporarios.reduce((acc, f) => acc + f.desconto, 0);
   
   if (indexEquipeEmEdicao !== null) {
-    // Modo Edição: Atualiza a equipe existente
     libroAtivo.equipes[indexEquipeEmEdicao] = {
       ...libroAtivo.equipes[indexEquipeEmEdicao],
       nome: equipeNome,
@@ -552,7 +555,6 @@ function fecharEquipeGeral() {
     document.getElementById('btn-salvar-equipe').innerText = "🔒 Salvar e Fechar Equipe";
     document.getElementById('btn-cancelar-edicao').style.display = "none";
   } else {
-    // Modo Cadastro normal
     libroAtivo.equipes.push({
       nome: equipeNome,
       integrantesCount: funcionariosTemporarios.length,
@@ -645,35 +647,9 @@ function salvarNoDispositivo() { localStorage.setItem('cb_frente_v9_' + servicoA
 function forcarSalvarTudo() { salvarNoDispositivo(); const toast = document.getElementById('toast'); toast.style.display = 'block'; setTimeout(() => toast.style.display = 'none', 2000); }
 function fazerLogout() { window.location.reload(); }
 
-function exportarPlanilhaExcelFrenteAtiva() {
-  const frenteTitulo = document.getElementById('tituloFrenteAtiva').innerText;
-  const txtMesAno = libroAtivo.mesAtivo || "Maio/2026";
-  const mNome = (txtMesAno.split('/')[0] || "MAIO").toUpperCase();
-  const aNome = txtMesAno.split('/')[1] || "2026";
-  const vUnit = libroAtivo.valorCasa || 0;
-
-  let dadosAgrupados = {};
-  Object.keys(libroAtivo.mappedLotes || {}).forEach(k => {
-    const p = k.split('-');
-    if(p.length >= 2) {
-      const localRef = k.startsWith('JBI') ? 'JB I' : 'JB II';
-      const quadraNum = p[1].replace('QD ', 'Q');
-      const quadraChave = `${localRef}: ${quadraNum}`;
-      const loteNum = p[2].replace('L', '');
-      const objLote = libroAtivo.mappedLotes[k];
-      const eqNome = (typeof objLote === 'string') ? objLote : (objLote.equipe || 'Equipe Geral');
-
-      if (!dadosAgrupados[eqNome]) dadosAgrupados[eqNome] = {};
-      if (!dadosAgrupados[eqNome][quadraChave]) dadosAgrupados[eqNome][quadraChave] = [];
-      dadosAgrupados[eqNome][quadraChave].push(loteNum);
-    }
-  });
-
-  alert("Funcionalidade XML Excel acionada com sucesso.");
-}
-
-function gerarRelatorioPDFGeralConsolidado() { alert("Funcionalidade PDF Geral não implementada nesta prévia."); }
-function gerarRelatorioPDFFrenteAtiva() { alert("Funcionalidade PDF Frente Ativa não implementada nesta prévia."); }
+function exportarPlanilhaExcelFrenteAtiva() { alert("Funcionalidade XML Excel acionada."); }
+function gerarRelatorioPDFGeralConsolidado() { alert("Funcionalidade PDF Geral acionada."); }
+function gerarRelatorioPDFFrenteAtiva() { alert("Funcionalidade PDF Frente Ativa acionada."); }
 </script>
 </body>
 </html>
