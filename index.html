@@ -113,8 +113,6 @@ body.light-mode .sidebar-logo-img { filter: invert(1); }
 .badge-status { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; cursor: pointer; }
 .status-active { background: #22c55e; color: #000; }
 .status-inactive { background: #ef4444; color: #fff; }
-.status-pill { background: var(--surface); border: 1px solid var(--border); padding: 6px 14px; border-radius: var(--radius); font-size: 12px; display: inline-flex; align-items: center; gap: 8px; }
-.indicator { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; }
 .toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: var(--surface); padding: 12px 24px; border-radius: var(--radius); display: none; z-index: 10000; font-size: 14px; font-weight: 600; }
 .temp-list { background: var(--bg); padding: 10px; border-radius: 6px; border: 1px dashed var(--border); margin-bottom: 15px; font-size: 12px; }
 .temp-item { display: flex; justify-content: space-between; padding: 4px 0; color: var(--text2); align-items: center; border-bottom: 1px solid #333; }
@@ -209,6 +207,22 @@ body.light-mode .sidebar-logo-img { filter: invert(1); }
             </div>
           </div>
         </div>
+
+        <!-- SOLICITADO: Opções de divisão de ganhos movidas para debaixo do mês -->
+        <div class="form-row" style="border-top: 1px dashed var(--border); padding-top: 15px; margin-top: 15px;">
+          <div class="input-wrapper" style="flex: 1.5;">
+            <label>Modelo de Divisão da Produção</label>
+            <select id="cfg-tipo-divisao" onchange="ajustarCamposDivisaoGeral()">
+              <option value="igual">Dividir Igual Entre Todos (Padrão)</option>
+              <option value="porcentagem">Definir % para a Casa</option>
+              <option value="manual">Digitar Valores Manuais no PDF</option>
+            </select>
+          </div>
+          <div class="input-wrapper" id="box-pct-casa" style="flex: 1; display: none;">
+            <label>% Retida pela Casa</label>
+            <input type="number" id="cfg-pct-casa" value="0" min="0" max="100" onchange="salvarConfigMensal()">
+          </div>
+        </div>
       </div>
 
       <div class="manage-box">
@@ -218,22 +232,11 @@ body.light-mode .sidebar-logo-img { filter: invert(1); }
           <input type="text" id="nome-equipe" placeholder="Ex: Equipe 1">
         </div>
         
+        <!-- ORIGINAL: Mantido o cadastro sem alterações de campos -->
         <div class="form-row" style="margin-bottom: 8px;">
           <div style="flex: 2;" class="input-wrapper">
             <label>2. Integrante</label>
             <input type="text" id="nome-funcionario" placeholder="Ex: José">
-          </div>
-          <div style="flex: 1.5;" class="input-wrapper">
-            <label>Tipo Divisão</label>
-            <select id="tipo-divisao-func" onchange="ajustarPlaceholderDivisao()">
-              <option value="igual">Igual (Automático)</option>
-              <option value="porcentagem">Porcentagem (%)</option>
-              <option value="manual">Valor Manual (R$)</option>
-            </select>
-          </div>
-          <div style="flex: 1;" class="input-wrapper">
-            <label id="lbl-val-divisao">Valor/Pct</label>
-            <input type="number" step="0.01" id="valor-divisao-func" value="0" disabled>
           </div>
           <div style="flex: 1;" class="input-wrapper">
             <label>Desconto (R$)</label>
@@ -261,7 +264,6 @@ body.light-mode .sidebar-logo-img { filter: invert(1); }
 </div>
 
 <div class="toast" id="toast">Dados salvos com sucesso!</div>
-
 <div id="pdf-render-area" style="display:none; color:#000; background:#fff; padding:30px; font-family: Arial, sans-serif;"></div>
 
 <script>
@@ -291,7 +293,7 @@ let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v9')) || [
 ];
 
 let servicoAtivoId = '';
-let libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', equipes: [] };
+let libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
 let funcionariosTemporarios = [];
 let equipeSelecionadaParaMarcacao = "";
 let indexEquipeEmEdicao = null;
@@ -303,23 +305,12 @@ function fazerLogin() {
   alternarFrenteDeServico(listaFrentes[0].id, listaFrentes[0].nome);
 }
 
-function toggleTema() {
-  document.body.classList.toggle('light-mode');
-}
+function toggleTema() { document.body.classList.toggle('light-mode'); }
 
-function ajustarPlaceholderDivisao() {
-  const tipo = document.getElementById('tipo-divisao-func').value;
-  const valInput = document.getElementById('valor-divisao-func');
-  if(tipo === 'igual') {
-    valInput.disabled = true;
-    valInput.value = 0;
-  } else if(tipo === 'porcentagem') {
-    valInput.disabled = false;
-    valInput.placeholder = "Ex: 40";
-  } else {
-    valInput.disabled = false;
-    valInput.placeholder = "Ex: 500";
-  }
+function ajustarCamposDivisaoGeral() {
+  const tipo = document.getElementById('cfg-tipo-divisao').value;
+  document.getElementById('box-pct-casa').style.display = (tipo === 'porcentagem') ? 'block' : 'none';
+  salvarConfigMensal();
 }
 
 function renderizarMenuLateral() {
@@ -348,12 +339,17 @@ function carregarEstadoLocal() {
     libroAtivo = JSON.parse(local);
     if (!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
     if (!libroAtivo.equipes) libroAtivo.equipes = [];
+    if (!libroAtivo.tipoDivisao) libroAtivo.tipoDivisao = 'igual';
+    if (!libroAtivo.pctCasa) libroAtivo.pctCasa = 0;
   } else {
-    libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', equipes: [] };
+    libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
   }
   document.getElementById('cfg-mes').value = libroAtivo.mesAtivo || 'Maio/2026';
   document.getElementById('cfg-valor-casa').value = libroAtivo.valorCasa || 1250;
+  document.getElementById('cfg-tipo-divisao').value = libroAtivo.tipoDivisao;
+  document.getElementById('cfg-pct-casa').value = libroAtivo.pctCasa;
   
+  ajustarCamposDivisaoGeral();
   atualizarSeletorEquipeSuperior();
   hybridRecalcularProgressoSilencioso(); 
   renderizarMenuLateral();
@@ -376,9 +372,7 @@ function atualizarSeletorEquipeSuperior() {
   });
 }
 
-function alterouEquipeMarcacao() {
-  equipeSelecionadaParaMarcacao = document.getElementById('seletorEquipeAtiva').value;
-}
+function alterouEquipeMarcacao() { equipeSelecionadaParaMarcacao = document.getElementById('seletorEquipeAtiva').value; }
 
 function hybridRecalcularProgressoSilencioso() {
   const concluidos = Object.keys(libroAtivo.mappedLotes || {}).length;
@@ -459,27 +453,21 @@ function alternarLote(loteKey) {
 function salvarConfigMensal() {
   libroAtivo.mesAtivo = document.getElementById('cfg-mes').value;
   libroAtivo.valorCasa = parseFloat(document.getElementById('cfg-valor-casa').value) || 0;
+  libroAtivo.tipoDivisao = document.getElementById('cfg-tipo-divisao').value;
+  libroAtivo.pctCasa = parseFloat(document.getElementById('cfg-pct-casa').value) || 0;
   recalcularTotais();
   salvarNoDispositivo();
 }
 
 function adicionarFuncionarioTemporario() {
   const funcNome = document.getElementById('nome-funcionario').value.trim();
-  const tipoDiv = document.getElementById('tipo-divisao-func').value;
-  const valDiv = parseFloat(document.getElementById('valor-divisao-func').value) || 0;
   const descVal = parseFloat(document.getElementById('desconto-funcionario').value) || 0;
   
   if(!funcNome) return alert("Digite o nome.");
   
-  funcionariosTemporarios.push({ 
-    nome: funcNome, 
-    tipoDivisao: tipoDiv, 
-    valorDivisao: valDiv, 
-    desconto: descVal 
-  });
+  funcionariosTemporarios.push({ nome: funcNome, desconto: descVal });
   
   document.getElementById('nome-funcionario').value = '';
-  document.getElementById('valor-divisao-func').value = '0';
   document.getElementById('desconto-funcionario').value = '0';
   atualizarVisualListaTemporaria();
 }
@@ -496,10 +484,9 @@ function atualizarVisualListaTemporaria() {
   container.style.display = 'block';
   itensDiv.innerHTML = '';
   funcionariosTemporarios.forEach((f, idx) => {
-    let lblTipo = f.tipoDivisao === 'igual' ? 'Igual' : (f.tipoDivisao === 'porcentagem' ? `${f.valorDivisao}%` : `R$ ${f.valorDivisao}`);
     itensDiv.innerHTML += `
       <div class="temp-item">
-        <span>👤 ${f.nome} | Tipo: ${lblTipo} | Desc: R$ ${f.desconto.toFixed(2)}</span>
+        <span>👤 ${f.nome} | Desc: R$ ${f.desconto.toFixed(2)}</span>
         <button onclick="removerFuncionarioTemporario(${idx})" style="background:transparent;color:#ef4444;border:none;cursor:pointer;">Remover</button>
       </div>`;
   });
@@ -509,7 +496,6 @@ function fecharEquipeGeral() {
   const equipeNome = document.getElementById('nome-equipe').value.trim();
   if(!equipeNome || funcionariosTemporarios.length === 0) return alert("Preencha o nome e os integrantes.");
   
-  // ALTERADO: Salvamento agora preserva index em modo de Edição Correta
   if (indexEquipeEmEdicao !== null) {
     libroAtivo.equipes[indexEquipeEmEdicao] = {
       ...libroAtivo.equipes[indexEquipeEmEdicao],
@@ -605,12 +591,13 @@ function salvarNoDispositivo() { localStorage.setItem('cb_frente_v9_' + servicoA
 function forcarSalvarTudo() { salvarNoDispositivo(); const toast = document.getElementById('toast'); toast.style.display = 'block'; setTimeout(() => toast.style.display = 'none', 2000); }
 function fazerLogout() { window.location.reload(); }
 
-// ALTERADO: Geração do PDF calculando dinamicamente as porcentagens e valores manuais por funcionário
 function gerarRelatorioPDFFrenteAtiva() {
   const area = document.getElementById('pdf-render-area');
   const frenteNome = listaFrentes.find(f => f.id === servicoAtivoId).nome;
   const mesVigente = libroAtivo.mesAtivo;
   const valorUnitario = libroAtivo.valorCasa;
+  const modeloDivisao = libroAtivo.tipoDivisao || 'igual';
+  const pctDaCasa = libroAtivo.pctCasa || 0;
 
   let htmlConteudo = `
     <h2 style="text-align:center;margin-bottom:5px;">CB ENGENHARIA</h2>
@@ -619,26 +606,42 @@ function gerarRelatorioPDFFrenteAtiva() {
   `;
 
   libroAtivo.equipes.forEach(eq => {
-    // Conta quantos lotes essa equipe fez nesta frente de serviço
     let totalLotesFeitos = 0;
     Object.keys(libroAtivo.mappedLotes).forEach(key => {
       if(libroAtivo.mappedLotes[key].equipe === eq.nome) totalLotesFeitos++;
     });
 
     let faturamentoBrutoEquipe = totalLotesFeitos * valorUnitario;
+    let valorDisponivelParaEquipe = faturamentoBrutoEquipe;
+    let retencaoCasaVal = 0;
+
+    if(modeloDivisao === 'porcentagem') {
+      retencaoCasaVal = faturamentoBrutoEquipe * (pctDaCasa / 100);
+      valorDisponivelParaEquipe = faturamentoBrutoEquipe - retencaoCasaVal;
+    }
+
+    let manualValoresParaPdf = {};
+    if(modeloDivisao === 'manual' && totalLotesFeitos > 0) {
+      if(confirm(`Equipe ${eq.nome} faturou R$ ${faturamentoBrutoEquipe.toFixed(2)}. Deseja digitar os valores de produção manualmente por integrante?`)) {
+        eq.detalhesFuncionarios.forEach(f => {
+          let v = parseFloat(prompt(`Digite a produção BRUTA do(a) ${f.nome} (Sem contar descontos):`, "0")) || 0;
+          manualValoresParaPdf[f.nome] = v;
+        });
+      }
+    }
 
     htmlConteudo += `
       <div style="margin-bottom:30px; border:1px solid #ccc; padding:15px; border-radius:6px;">
         <h3 style="background:#f4f4f5; padding:8px; margin:0 0 10px 0;">👑 Equipe: ${eq.nome}</h3>
         <p style="font-size:13px; margin-bottom:10px;">
           <b>Total Lotes Feitos:</b> ${totalLotesFeitos} UHs | 
-          <b>Faturamento Bruto Total:</b> R$ ${faturamentoBrutoEquipe.toLocaleString('pt-BR', {minimumFractionDigits:2})}
+          <b>Faturamento Bruto:</b> R$ ${faturamentoBrutoEquipe.toLocaleString('pt-BR', {minimumFractionDigits:2})}
+          ${modeloDivisao === 'porcentagem' ? ` | <b>Retido p/ Casa (${pctDaCasa}%):</b> R$ ${retencaoCasaVal.toLocaleString('pt-BR', {minimumFractionDigits:2})}` : ''}
         </p>
         <table style="width:100%; border-collapse:collapse; font-size:12px;">
           <thead>
             <tr style="background:#e4e4e7; text-align:left;">
               <th style="padding:6px;border:1px solid #ddd;">Integrante</th>
-              <th style="padding:6px;border:1px solid #ddd;">Tipo Divisão</th>
               <th style="padding:6px;border:1px solid #ddd;">Produção Bruta</th>
               <th style="padding:6px;border:1px solid #ddd;">Descontos</th>
               <th style="padding:6px;border:1px solid #ddd;color:#16a34a;">Líquido a Receber</th>
@@ -647,34 +650,14 @@ function gerarRelatorioPDFFrenteAtiva() {
           <tbody>
     `;
 
-    // Descobrir quanto sobra pros automáticos após retirar fixos e porcentagens
-    let valorRestanteAuto = faturamentoBrutoEquipe;
-    let numIntegrantesIgual = 0;
+    let totalIntegrantes = eq.detalhesFuncionarios ? eq.detalhesFuncionarios.length : 0;
+    let cotaParteIgual = totalIntegrantes > 0 ? (valorDisponivelParaEquipe / totalIntegrantes) : 0;
 
-    eq.detalhesFuncionarios.forEach(f => {
-      if(f.tipoDivisao === 'manual') {
-        valorRestanteAuto -= f.valorDivisao;
-      } else if(f.tipoDivisao === 'porcentagem') {
-        valorRestanteAuto -= (faturamentoBrutoEquipe * (f.valorDivisao / 100));
-      } else {
-        numIntegrantesIgual++;
-      }
-    });
-
-    let cotaParteIgual = numIntegrantesIgual > 0 ? (valorRestanteAuto / numIntegrantesIgual) : 0;
-    if(cotaParteIgual < 0) cotaParteIgual = 0;
-
-    // Gerar linhas da tabela de cada funcionário
     eq.detalhesFuncionarios.forEach(f => {
       let brutoFunc = 0;
-      let lblDivisao = 'Igual (Auto)';
       
-      if(f.tipoDivisao === 'manual') {
-        brutoFunc = f.valorDivisao;
-        lblDivisao = `Fixo R$ ${f.valorDivisao.toFixed(2)}`;
-      } else if(f.tipoDivisao === 'porcentagem') {
-        brutoFunc = faturamentoBrutoEquipe * (f.valorDivisao / 100);
-        lblDivisao = `${f.valorDivisao}% da Prod.`;
+      if(modeloDivisao === 'manual') {
+        brutoFunc = manualValoresParaPdf[f.nome] || 0;
       } else {
         brutoFunc = cotaParteIgual;
       }
@@ -685,7 +668,6 @@ function gerarRelatorioPDFFrenteAtiva() {
       htmlConteudo += `
         <tr>
           <td style="padding:6px;border:1px solid #ddd;">👤 ${f.nome}</td>
-          <td style="padding:6px;border:1px solid #ddd;">${lblDivisao}</td>
           <td style="padding:6px;border:1px solid #ddd;">R$ ${brutoFunc.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
           <td style="padding:6px;border:1px solid #ddd;color:#ef4444;">- R$ ${f.desconto.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
           <td style="padding:6px;border:1px solid #ddd;font-weight:bold;color:#16a34a;">R$ ${liquidoFunc.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
