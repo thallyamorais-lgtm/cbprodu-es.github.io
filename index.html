@@ -192,20 +192,27 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
       📊 Central de Relatórios Mensais da Frente
     </div>
     <div class="relatorio-controls">
-      <label style="font-size:12px; font-weight:600; color:var(--text2);">Selecione o Mês:</label>
-      <select id="seletorMesRelatorio">
-        <option value="Janeiro/2026">Janeiro/2026</option>
-        <option value="Fevereiro/2026">Fevereiro/2026</option>
-        <option value="Março/2026">Março/2026</option>
-        <option value="Abril/2026">Abril/2026</option>
-        <option value="Maio/2026" selected>Maio/2026</option>
-        <option value="Junho/2026">Junho/2026</option>
-        <option value="Julho/2026">Julho/2026</option>
-        <option value="Agosto/2026">Agosto/2026</option>
-        <option value="Setembro/2026">Setembro/2026</option>
-        <option value="Outubro/2026">Outubro/2026</option>
-        <option value="Novembro/2026">Novembro/2026</option>
-        <option value="Dezembro/2026">Dezembro/2026</option>
+      <label style="font-size:12px; font-weight:600; color:var(--text2);">Período:</label>
+      <select id="seletorMesRelatorioMes">
+        <option value="Janeiro">Janeiro</option>
+        <option value="Fevereiro">Fevereiro</option>
+        <option value="Março">Março</option>
+        <option value="Abril">Abril</option>
+        <option value="Maio" selected>Maio</option>
+        <option value="Junho">Junho</option>
+        <option value="Julho">Julho</option>
+        <option value="Agosto">Agosto</option>
+        <option value="Setembro">Setembro</option>
+        <option value="Outubro">Outubro</option>
+        <option value="Novembro">Novembro</option>
+        <option value="Dezembro">Dezembro</option>
+      </select>
+      
+      <select id="seletorMesRelatorioAno">
+        <option value="2025">2025</option>
+        <option value="2026" selected>2026</option>
+        <option value="2027">2027</option>
+        <option value="2028">2028</option>
       </select>
 
       <label style="font-size:12px; font-weight:600; color:var(--text2);">Tipo de Relatório:</label>
@@ -215,7 +222,7 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
         <option value="excel">📊 Planilha Excel Mensal (.xlsx)</option>
       </select>
 
-      <button class="btn-web btn-web-success" onclick="executarEmissaoRelatorioMensal()"> Gerar Relatório</button>
+      <button class="btn-web btn-web-success" onclick="executarEmissaoRelatorioMensal()">Gerar Relatório</button>
     </div>
   </div>
 
@@ -251,20 +258,28 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
         <div class="form-row">
           <div class="input-wrapper">
             <label>Mês Vigente</label>
-            <!-- SELETOR DE MÊS EM VEZ DE DIGITAÇÃO MANUAL -->
-            <select id="cfg-mes" onchange="salvarConfigMensal()">
-              <option value="Janeiro/2026">Janeiro/2026</option>
-              <option value="Fevereiro/2026">Fevereiro/2026</option>
-              <option value="Março/2026">Março/2026</option>
-              <option value="Abril/2026">Abril/2026</option>
-              <option value="Maio/2026">Maio/2026</option>
-              <option value="Junho/2026">Junho/2026</option>
-              <option value="Julho/2026">Julho/2026</option>
-              <option value="Agosto/2026">Agosto/2026</option>
-              <option value="Setembro/2026">Setembro/2026</option>
-              <option value="Outubro/2026">Outubro/2026</option>
-              <option value="Novembro/2026">Novembro/2026</option>
-              <option value="Dezembro/2026">Dezembro/2026</option>
+            <select id="cfg-mes-nome" onchange="salvarConfigMensal()">
+              <option value="Janeiro">Janeiro</option>
+              <option value="Fevereiro">Fevereiro</option>
+              <option value="Março">Março</option>
+              <option value="Abril">Abril</option>
+              <option value="Maio" selected>Maio</option>
+              <option value="Junho">Junho</option>
+              <option value="Julho">Julho</option>
+              <option value="Agosto">Agosto</option>
+              <option value="Setembro">Setembro</option>
+              <option value="Outubro">Outubro</option>
+              <option value="Novembro">Novembro</option>
+              <option value="Dezembro">Dezembro</option>
+            </select>
+          </div>
+          <div class="input-wrapper">
+            <label>Ano Vigente</label>
+            <select id="cfg-mes-ano" onchange="salvarConfigMensal()">
+              <option value="2025">2025</option>
+              <option value="2026" selected>2026</option>
+              <option value="2027">2027</option>
+              <option value="2028">2028</option>
             </select>
           </div>
           <div class="input-wrapper">
@@ -464,7 +479,18 @@ function carregarEstadoLocal() {
   } else {
     libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
   }
-  document.getElementById('cfg-mes').value = libroAtivo.mesAtivo || 'Maio/2026';
+
+  // Decompor o Mês e Ano salvos
+  let mesPart = 'Maio';
+  let anoPart = '2026';
+  if (libroAtivo.mesAtivo && libroAtivo.mesAtivo.includes('/')) {
+    const partes = libroAtivo.mesAtivo.split('/');
+    mesPart = partes[0];
+    anoPart = partes[1];
+  }
+
+  document.getElementById('cfg-mes-nome').value = mesPart;
+  document.getElementById('cfg-mes-ano').value = anoPart;
   document.getElementById('cfg-valor-casa').value = libroAtivo.valorCasa || 0;
   document.getElementById('cfg-tipo-divisao').value = libroAtivo.tipoDivisao;
   document.getElementById('cfg-pct-casa').value = libroAtivo.pctCasa;
@@ -561,38 +587,46 @@ function alternarLote(loteKey) {
       alert("ATENÇÃO: Selecione uma 'Equipe Ativa para Marcação' no topo da página antes de lançar a produção.");
       return;
     }
-    const mesVigente = document.getElementById('cfg-mes').value || libroAtivo.mesAtivo || 'N/A';
+    const m = document.getElementById('cfg-mes-nome').value || 'Maio';
+    const a = document.getElementById('cfg-mes-ano').value || '2026';
+    const mesVigente = `${m}/${a}`;
+
     libroAtivo.mappedLotes[loteKey] = { 
       equipe: equipeSelecionadaParaMarcacao, 
       mes: mesVigente,
-      data: new Date().toLocaleDateString('pt-BR') 
-    }; 
+      data: new Date().toLocaleDateString('pt-BR')
+    };
   }
-  
-  hybridRecalcularProgressoSilencioso();
-  renderizarMenuLateral();
+  salvarEstadoLocal();
   renderizarLoteamentos();
   recalcularTotais();
-  salvarNoDispositivo();
 }
 
 function salvarConfigMensal() {
-  libroAtivo.mesAtivo = document.getElementById('cfg-mes').value;
+  const m = document.getElementById('cfg-mes-nome').value;
+  const a = document.getElementById('cfg-mes-ano').value;
+  libroAtivo.mesAtivo = `${m}/${a}`;
   libroAtivo.valorCasa = parseFloat(document.getElementById('cfg-valor-casa').value) || 0;
   libroAtivo.tipoDivisao = document.getElementById('cfg-tipo-divisao').value;
   libroAtivo.pctCasa = parseFloat(document.getElementById('cfg-pct-casa').value) || 0;
-  renderizarEquipes();
+  salvarEstadoLocal();
   recalcularTotais();
-  salvarNoDispositivo();
 }
 
 function adicionarFuncionarioTemporario() {
-  const funcNome = document.getElementById('nome-funcionario').value.trim();
-  const descVal = parseFloat(document.getElementById('desconto-funcionario').value) || 0;
-  if(!funcNome) return alert("Digite o nome do funcionário.");
-  funcionariosTemporarios.push({ nome: funcNome, desconto: descVal });
-  document.getElementById('nome-funcionario').value = '';
-  document.getElementById('desconto-funcionario').value = '';
+  const nomeInput = document.getElementById('nome-funcionario');
+  const descInput = document.getElementById('desconto-funcionario');
+  const nome = nomeInput.value.trim();
+  const desconto = parseFloat(descInput.value) || 0;
+
+  if (!nome) {
+    alert('Informe o nome do funcionário.');
+    return;
+  }
+
+  funcionariosTemporarios.push({ nome, desconto });
+  nomeInput.value = '';
+  descInput.value = '';
   atualizarVisualListaTemporaria();
 }
 
@@ -603,111 +637,132 @@ function removerFuncionarioTemporario(index) {
 
 function atualizarVisualListaTemporaria() {
   const container = document.getElementById('lista-temporaria-container');
-  const itensDiv = document.getElementById('lista-temporaria-itens');
-  if(funcionariosTemporarios.length === 0) { container.style.display = 'none'; return; }
+  const listItens = document.getElementById('lista-temporaria-itens');
+  
+  if (funcionariosTemporarios.length === 0) {
+    container.style.display = 'none';
+    listItens.innerHTML = '';
+    return;
+  }
+
   container.style.display = 'block';
-  itensDiv.innerHTML = '';
-  funcionariosTemporarios.forEach((f, idx) => {
-    itensDiv.innerHTML += `
-      <div class="temp-item">
-        <span>👤 ${f.nome} - R$ ${f.desconto.toFixed(2)}</span>
-        <button onclick="removerFuncionarioTemporario(${idx})" style="background:transparent;color:#ef4444;border:none;cursor:pointer;font-size:11px;">Remover</button>
-      </div>`;
+  listItens.innerHTML = '';
+  funcionariosTemporarios.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'temp-item';
+    div.innerHTML = `
+      <span>${item.nome} (Desc: R$ ${item.desconto.toFixed(2)})</span>
+      <button onclick="removerFuncionarioTemporario(${idx})" style="background:none; border:none; color:#ef4444; cursor:pointer; font-weight:bold;">✕</button>
+    `;
+    listItens.appendChild(div);
   });
 }
 
 function fecharEquipeGeral() {
-  const equipeNome = document.getElementById('nome-equipe').value.trim();
-  if(!equipeNome || funcionariosTemporarios.length === 0) return alert("Preencha o nome da equipe e adicione ao menos um integrante.");
-  let totalDescontoTime = funcionariosTemporarios.reduce((acc, f) => acc + f.desconto, 0);
-  
+  const nomeEquipeInput = document.getElementById('nome-equipe');
+  const nomeEquipe = nomeEquipeInput.value.trim();
+
+  if (!nomeEquipe) {
+    alert('Informe a identificação da equipe.');
+    return;
+  }
+
+  if (funcionariosTemporarios.length === 0) {
+    alert('Adicione pelo menos um funcionário à equipe.');
+    return;
+  }
+
+  const totalDescontos = funcionariosTemporarios.reduce((acc, f) => acc + f.desconto, 0);
+
   if (indexEquipeEmEdicao !== null) {
     libroAtivo.equipes[indexEquipeEmEdicao] = {
-      ...libroAtivo.equipes[indexEquipeEmEdicao],
-      nome: equipeNome,
-      integrantesCount: funcionariosTemporarios.length,
-      descontoTotal: totalDescontoTime,
-      detalhesFuncionarios: [...funcionariosTemporarios]
+      nome: nomeEquipe,
+      integrantes: [...funcionariosTemporarios],
+      descontoTotal: totalDescontos,
+      ativo: libroAtivo.equipes[indexEquipeEmEdicao].ativo
     };
     indexEquipeEmEdicao = null;
-    document.getElementById('titulo-cadastro-equipe').innerText = "Cadastro de Participantes";
-    document.getElementById('btn-salvar-equipe').innerText = "🔒 Salvar e Fechar Equipe";
-    document.getElementById('btn-cancelar-edicao').style.display = "none";
   } else {
     libroAtivo.equipes.push({
-      nome: equipeNome,
-      integrantesCount: funcionariosTemporarios.length,
-      descontoTotal: totalDescontoTime,
-      detalhesFuncionarios: [...funcionariosTemporarios],
+      nome: nomeEquipe,
+      integrantes: [...funcionariosTemporarios],
+      descontoTotal: totalDescontos,
       ativo: true
     });
   }
 
-  document.getElementById('nome-equipe').value = '';
+  nomeEquipeInput.value = '';
   funcionariosTemporarios = [];
+  cancelarEdicaoEquipe();
   atualizarVisualListaTemporaria();
+  salvarEstadoLocal();
   atualizarSeletorEquipeSuperior();
   renderizarEquipes();
-  salvarNoDispositivo();
+  recalcularTotais();
+  exibirToast('Equipe salva com sucesso!');
 }
 
 function editarEquipe(index) {
   const eq = libroAtivo.equipes[index];
-  if(!eq) return;
+  if (!eq) return;
+
   indexEquipeEmEdicao = index;
   document.getElementById('nome-equipe').value = eq.nome;
-  funcionariosTemporarios = [...(eq.detalhesFuncionarios || [])];
+  funcionariosTemporarios = JSON.parse(JSON.stringify(eq.integrantes || []));
+  
+  document.getElementById('btn-salvar-equipe').innerText = '💾 Atualizar Equipe';
+  document.getElementById('btn-cancelar-edicao').style.display = 'block';
+  document.getElementById('titulo-cadastro-equipe').innerText = 'Editando Equipe: ' + eq.nome;
+  
   atualizarVisualListaTemporaria();
-  document.getElementById('titulo-cadastro-equipe').innerText = `Editando: ${eq.nome}`;
-  document.getElementById('btn-salvar-equipe').innerText = "💾 Salvar Alterações na Equipe";
-  document.getElementById('btn-cancelar-edicao').style.display = "block";
 }
 
 function cancelarEdicaoEquipe() {
   indexEquipeEmEdicao = null;
   document.getElementById('nome-equipe').value = '';
+  document.getElementById('btn-salvar-equipe').innerText = '🔒 Salvar e Fechar Equipe';
+  document.getElementById('btn-cancelar-edicao').style.display = 'none';
+  document.getElementById('titulo-cadastro-equipe').innerText = 'Cadastro de Participantes';
   funcionariosTemporarios = [];
   atualizarVisualListaTemporaria();
-  document.getElementById('titulo-cadastro-equipe').innerText = "Cadastro de Participantes";
-  document.getElementById('btn-salvar-equipe').innerText = "🔒 Salvar e Fechar Equipe";
-  document.getElementById('btn-cancelar-edicao').style.display = "none";
 }
 
 function alternarStatusEquipe(index) {
   libroAtivo.equipes[index].ativo = !libroAtivo.equipes[index].ativo;
+  salvarEstadoLocal();
   atualizarSeletorEquipeSuperior();
   renderizarEquipes();
   recalcularTotais();
-  salvarNoDispositivo();
 }
 
 function excluirEquipe(index) {
-  if(confirm("Deseja realmente remover esta equipe?")) {
+  if (confirm('Deseja realmente remover esta equipe?')) {
     libroAtivo.equipes.splice(index, 1);
+    salvarEstadoLocal();
     atualizarSeletorEquipeSuperior();
     renderizarEquipes();
     recalcularTotais();
-    salvarNoDispositivo();
   }
 }
 
 function renderizarEquipes() {
   const tbody = document.getElementById('lista-equipes-corpo');
   tbody.innerHTML = '';
-  (libroAtivo.equipes || []).forEach((eq, idx) => {
+
+  libroAtivo.equipes.forEach((eq, idx) => {
     const tr = document.createElement('tr');
+    const numIntegrantes = eq.integrantes ? eq.integrantes.length : 0;
+    const statusClass = eq.ativo ? 'status-active' : 'status-inactive';
+    const statusText = eq.ativo ? 'Ativo' : 'Inativo';
+
     tr.innerHTML = `
       <td><strong>${eq.nome}</strong></td>
-      <td>${eq.integrantesCount || (eq.detalhesFuncionarios ? eq.detalhesFuncionarios.length : 0)} pessoa(s)</td>
+      <td>${numIntegrantes} integrante(s)</td>
       <td>R$ ${(eq.descontoTotal || 0).toFixed(2)}</td>
+      <td><span class="badge-status ${statusClass}" onclick="alternarStatusEquipe(${idx})">${statusText}</span></td>
       <td>
-        <span class="badge-status ${eq.ativo ? 'status-active' : 'status-inactive'}" onclick="alternarStatusEquipe(${idx})">
-          ${eq.ativo ? 'Ativa' : 'Inativa'}
-        </span>
-      </td>
-      <td>
-        <button onclick="editarEquipe(${idx})" style="background:transparent; border:none; color:var(--text); cursor:pointer; margin-right:8px;">✏️ Editar</button>
-        <button onclick="excluirEquipe(${idx})" style="background:transparent; border:none; color:#ef4444; cursor:pointer;">🗑️</button>
+        <button onclick="editarEquipe(${idx})" style="background:none; border:none; cursor:pointer; font-size:14px; margin-right:6px;">✏️</button>
+        <button onclick="excluirEquipe(${idx})" style="background:none; border:none; cursor:pointer; font-size:14px;">🗑️</button>
       </td>
     `;
     tbody.appendChild(tr);
@@ -715,215 +770,156 @@ function renderizarEquipes() {
 }
 
 function recalcularTotais() {
-  const casitas = Object.keys(libroAtivo.mappedLotes || {}).length;
+  const lotesFeitos = Object.keys(libroAtivo.mappedLotes || {}).length;
+  const totalCasas = 444;
   const valorUnitario = parseFloat(libroAtivo.valorCasa) || 0;
-  const totalFaturado = casitas * valorUnitario;
+  const faturamentoTotal = lotesFeitos * valorUnitario;
+  const pctConcluido = Math.round((lotesFeitos / totalCasas) * 100);
 
-  document.getElementById('lbl-casas-feitas').innerHTML = `${casitas}/444 <span style="font-size:14px;color:var(--text2);">UHs</span>`;
-  document.getElementById('lbl-faturamento-total').innerText = `R$ ${totalFaturado.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+  document.getElementById('lbl-casas-feitas').innerHTML = `${lotesFeitos}/${totalCasas} <span style="font-size:14px;color:var(--text2);">UHs</span>`;
   
-  const equipesAtivas = (libroAtivo.equipes || []).filter(e => e.ativo).length;
+  const equipesAtivas = libroAtivo.equipes.filter(e => e.ativo).length;
   document.getElementById('lbl-equipes-ativas').innerText = equipesAtivas;
+  document.getElementById('lbl-status-frente-progresso').innerText = `${pctConcluido}% Concluído`;
+  
+  document.getElementById('lbl-faturamento-total').innerText = faturamentoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-  const pct = Math.round((casitas / 444) * 100);
-  document.getElementById('lbl-status-frente-progresso').innerText = `${pct}% Concluído`;
+  hybridRecalcularProgressoSilencioso();
+  renderizarMenuLateral();
 }
 
-function salvarNoDispositivo() {
+function salvarEstadoLocal() {
   localStorage.setItem('cb_frente_v9_' + servicoAtivoId, JSON.stringify(libroAtivo));
-  mostrarToast("Salvo com sucesso!");
 }
 
 function forcarSalvarTudo() {
-  salvarNoDispositivo();
+  salvarConfigMensal();
+  salvarEstadoLocal();
+  exibirToast('Todos os dados foram salvos com sucesso!');
 }
 
-function mostrarToast(msg) {
+function exibirToast(mensagem) {
   const toast = document.getElementById('toast');
-  toast.innerText = msg;
+  toast.innerText = mensagem;
   toast.style.display = 'block';
-  setTimeout(() => { toast.style.display = 'none'; }, 2000);
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 3000);
 }
 
-/* FUNÇÃO CENTRALIZADA DE EMISSÃO DE RELATÓRIOS MENSAIS */
 function executarEmissaoRelatorioMensal() {
-  const mesFiltro = document.getElementById('seletorMesRelatorio').value;
+  const m = document.getElementById('seletorMesRelatorioMes').value;
+  const a = document.getElementById('seletorMesRelatorioAno').value;
+  const mes = `${m}/${a}`;
   const tipo = document.getElementById('seletorTipoRelatorio').value;
+  const frente = listaFrentes.find(f => f.id === servicoAtivoId)?.nome || 'Frente';
 
-  if (tipo === 'resumo_pdf') {
-    gerarPDFResumoMensal(mesFiltro);
+  if (tipo === 'excel') {
+    gerarRelatorioExcel(mes, frente);
+  } else if (tipo === 'resumo_pdf') {
+    gerarRelatorioResumoPDF(mes, frente);
   } else if (tipo === 'detalhado_pdf') {
-    gerarPDFExtratoDetalhado(mesFiltro);
-  } else if (tipo === 'excel') {
-    exportarExcelMensal(mesFiltro);
+    gerarRelatorioDetalhadoPDF(mes, frente);
   }
 }
 
-/* RELATÓRIO 1: RESUMO EM PDF FILTRADO PELO MÊS DA FRENTE */
-function gerarPDFResumoMensal(mesFiltro) {
-  const frenteObj = listaFrentes.find(f => f.id === servicoAtivoId);
-  const nomeFrente = frenteObj ? frenteObj.nome : "Frente de Serviço";
-  
-  // Filtrar casas finalizadas no mês selecionado
-  const lotesDoMes = Object.entries(libroAtivo.mappedLotes || {}).filter(([k, v]) => v.mes === mesFiltro);
-  const qtdMes = lotesDoMes.length;
-  const valUnit = libroAtivo.valorCasa || 0;
-  const totalBruto = qtdMes * valUnit;
+function gerarRelatorioExcel(mes, frente) {
+  const lotesDoMes = Object.entries(libroAtivo.mappedLotes || {})
+    .filter(([_, dado]) => (typeof dado === 'object' ? dado.mes : '') === mes);
 
-  let html = `
-    <div style="font-family: Arial, sans-serif; color: #000; padding: 20px;">
-      <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
-        <h2 style="margin: 0;">CB ENGENHARIA — RELATÓRIO MENSAL DE PRODUÇÃO</h2>
-        <h4 style="margin: 5px 0; color: #444;">Frente de Serviço: ${nomeFrente} | Referência: ${mesFiltro}</h4>
-      </div>
-
-      <div style="margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 5px; border: 1px solid #ddd;">
-        <p><strong>Total de Unidades Concluídas no Mês:</strong> ${qtdMes} UHs</p>
-        <p><strong>Valor por Unidade:</strong> R$ ${valUnit.toFixed(2)}</p>
-        <p><strong>Faturamento Bruto do Mês:</strong> R$ ${totalBruto.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</p>
-      </div>
-
-      <h3>Produção por Equipes no Mês (${mesFiltro})</h3>
-      <table style="width: 100%; border-collapse: collapse; margin-top: 10px;" border="1" cellpadding="8">
-        <thead>
-          <tr style="background: #eee;">
-            <th>Equipe</th>
-            <th>UHs Concluídas</th>
-            <th>Faturamento Bruto</th>
-            <th>Descontos Totais</th>
-          </tr>
-        </thead>
-        <tbody>`;
-
-  libroAtivo.equipes.forEach(eq => {
-    const casinhasEq = lotesDoMes.filter(([k, v]) => v.equipe === eq.nome).length;
-    const brutoEq = casinhasEq * valUnit;
-    html += `
-      <tr>
-        <td>${eq.nome}</td>
-        <td style="text-align:center;">${casinhasEq}</td>
-        <td>R$ ${brutoEq.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-        <td>R$ ${(eq.descontoTotal || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-      </tr>`;
-  });
-
-  html += `
-        </tbody>
-      </table>
-      <div style="margin-top: 40px; font-size: 10px; text-align: center; color: #666;">
-        Relatório gerado automaticamente via Plataforma de Controle CB Engenharia em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}.
-      </div>
-    </div>`;
-
-  const renderArea = document.getElementById('pdf-render-area');
-  renderArea.innerHTML = html;
-  
-  const opt = {
-    margin: 10,
-    filename: `Relatorio_${nomeFrente.replace(/\s+/g, '_')}_${mesFiltro.replace('/', '_')}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-
-  html2pdf().set(opt).from(renderArea).save();
-}
-
-/* RELATÓRIO 2: EXTRATO DETALHADO POR LOTE E EQUIPE EM PDF */
-function gerarPDFExtratoDetalhado(mesFiltro) {
-  const frenteObj = listaFrentes.find(f => f.id === servicoAtivoId);
-  const nomeFrente = frenteObj ? frenteObj.nome : "Frente de Serviço";
-  const lotesDoMes = Object.entries(libroAtivo.mappedLotes || {}).filter(([k, v]) => v.mes === mesFiltro);
-
-  let html = `
-    <div style="font-family: Arial, sans-serif; color: #000; padding: 20px;">
-      <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
-        <h2 style="margin: 0;">CB ENGENHARIA — EXTRATO DETALHADO DE CASAS</h2>
-        <h4 style="margin: 5px 0; color: #444;">Frente: ${nomeFrente} | Mês: ${mesFiltro}</h4>
-      </div>
-
-      <table style="width: 100%; border-collapse: collapse; font-size: 11px;" border="1" cellpadding="6">
-        <thead>
-          <tr style="background: #222; color: #fff;">
-            <th>#</th>
-            <th>Identificação do Lote</th>
-            <th>Equipe Responsável</th>
-            <th>Data de Lançamento</th>
-            <th>Valor Unitário</th>
-          </tr>
-        </thead>
-        <tbody>`;
-
-  if(lotesDoMes.length === 0) {
-    html += `<tr><td colspan="5" style="text-align:center;">Nenhum registro encontrado para este mês nesta frente.</td></tr>`;
-  } else {
-    lotesDoMes.forEach(([chaveLote, dados], idx) => {
-      html += `
-        <tr>
-          <td style="text-align:center;">${idx + 1}</td>
-          <td><strong>${chaveLote}</strong></td>
-          <td>${dados.equipe || 'N/A'}</td>
-          <td>${dados.data || 'N/A'}</td>
-          <td>R$ ${(libroAtivo.valorCasa || 0).toFixed(2)}</td>
-        </tr>`;
-    });
-  }
-
-  html += `
-        </tbody>
-      </table>
-    </div>`;
-
-  const renderArea = document.getElementById('pdf-render-area');
-  renderArea.innerHTML = html;
-  
-  const opt = {
-    margin: 10,
-    filename: `Extrato_Detalhado_${nomeFrente.replace(/\s+/g, '_')}_${mesFiltro.replace('/', '_')}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-
-  html2pdf().set(opt).from(renderArea).save();
-}
-
-/* RELATÓRIO 3: EXPORTAÇÃO EXCEL DO MÊS SELECIONADO */
-function exportarExcelMensal(mesFiltro) {
-  const frenteObj = listaFrentes.find(f => f.id === servicoAtivoId);
-  const nomeFrente = frenteObj ? frenteObj.nome : "Frente_de_Servico";
-  const lotesDoMes = Object.entries(libroAtivo.mappedLotes || {}).filter(([k, v]) => v.mes === mesFiltro);
-
-  if (lotesDoMes.length === 0) {
-    alert(`Nenhum dado encontrado para o mês ${mesFiltro} nesta frente de serviço.`);
-    return;
-  }
-
-  const dadosExcel = lotesDoMes.map(([chaveLote, dados], index) => ({
-    "Nº": index + 1,
-    "Frente de Serviço": nomeFrente,
-    "Mês de Referência": mesFiltro,
-    "Lote / Quadra": chaveLote,
-    "Equipe Responsável": dados.equipe || 'N/A',
-    "Data de Conclusão": dados.data || 'N/A',
-    "Valor Unitário (R$)": libroAtivo.valorCasa || 0
+  const dataExcel = lotesDoMes.map(([chave, dado]) => ({
+    'Quadra/Lote': chave,
+    'Equipe': dado.equipe || 'N/A',
+    'Mês Referência': dado.mes || mes,
+    'Data Lançamento': dado.data || 'N/A',
+    'Valor Unitário': libroAtivo.valorCasa
   }));
 
-  const worksheet = XLSX.utils.json_to_sheet(dadosExcel);
+  const worksheet = XLSX.utils.json_to_sheet(dataExcel.length ? dataExcel : [{'Status': 'Nenhum registro para este mês'}]);
   const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Produção Mensal");
-  XLSX.writeFile(workbook, `Producao_${nomeFrente}_${mesFiltro.replace('/', '_')}.xlsx`);
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Produção Mensal');
+  XLSX.writeFile(workbook, `Produção_${frente}_${mes.replace('/', '-')}.xlsx`);
 }
 
-// Inicializar aplicativo
-window.onload = function() {
-  const temaSalvo = localStorage.getItem('cb_tema_preferido');
-  if (temaSalvo === 'light') {
-    document.body.classList.add('light-mode');
-    document.getElementById('btnTema').innerText = '🌓 Modo Escuro';
-  }
-};
-</script>
+function gerarRelatorioResumoPDF(mes, frente) {
+  const area = document.getElementById('pdf-render-area');
+  const lotesDoMes = Object.entries(libroAtivo.mappedLotes || {})
+    .filter(([_, dado]) => (typeof dado === 'object' ? dado.mes : '') === mes);
 
+  const totalProduzido = lotesDoMes.length;
+  const valorTotal = totalProduzido * (libroAtivo.valorCasa || 0);
+
+  area.innerHTML = `
+    <div style="padding: 20px;">
+      <h2 style="margin-bottom: 5px; color: #18181b;">CB ENGENHARIA - RELATÓRIO RESUMIDO DE PRODUÇÃO</h2>
+      <p style="margin-bottom: 15px; color: #52525b;"><strong>Frente:</strong> ${frente} | <strong>Mês:</strong> ${mes}</p>
+      <hr style="margin-bottom: 20px;">
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr style="background: #f4f4f5;"><th style="padding: 10px; text-align: left; border: 1px solid #d4d4d8;">Métrica</th><th style="padding: 10px; text-align: left; border: 1px solid #d4d4d8;">Valor</th></tr>
+        <tr><td style="padding: 10px; border: 1px solid #d4d4d8;">Casas Concluídas no Mês</td><td style="padding: 10px; border: 1px solid #d4d4d8;">${totalProduzido} UHs</td></tr>
+        <tr><td style="padding: 10px; border: 1px solid #d4d4d8;">Valor por Casa</td><td style="padding: 10px; border: 1px solid #d4d4d8;">R$ ${(libroAtivo.valorCasa || 0).toFixed(2)}</td></tr>
+        <tr><td style="padding: 10px; border: 1px solid #d4d4d8;">Faturamento Bruto da Frente</td><td style="padding: 10px; border: 1px solid #d4d4d8;"><strong>R$ ${valorTotal.toFixed(2)}</strong></td></tr>
+      </table>
+    </div>
+  `;
+
+  area.style.display = 'block';
+  html2pdf().from(area).save(`Resumo_${frente}_${mes.replace('/', '-')}.pdf`).then(() => {
+    area.style.display = 'none';
+  });
+}
+
+function gerarRelatorioDetalhadoPDF(mes, frente) {
+  const area = document.getElementById('pdf-render-area');
+  const lotesDoMes = Object.entries(libroAtivo.mappedLotes || {})
+    .filter(([_, dado]) => (typeof dado === 'object' ? dado.mes : '') === mes);
+
+  let html = `
+    <div style="padding: 20px;">
+      <h2 style="margin-bottom: 5px;">CB ENGENHARIA - EXTRATO DETALHADO POR EQUIPE</h2>
+      <p style="margin-bottom: 15px;"><strong>Frente:</strong> ${frente} | <strong>Mês:</strong> ${mes}</p>
+      <hr style="margin-bottom: 20px;">
+  `;
+
+  if (lotesDoMes.length === 0) {
+    html += `<p>Nenhuma produção registrada para o mês de ${mes}.</p>`;
+  } else {
+    const agrupado = {};
+    lotesDoMes.forEach(([chave, dado]) => {
+      const eq = dado.equipe || 'Sem Equipe';
+      if (!agrupado[eq]) agrupado[eq] = [];
+      agrupado[eq].push(chave);
+    });
+
+    for (const [equipe, lotes] of Object.entries(agrupado)) {
+      const qtd = lotes.length;
+      const subtotal = qtd * (libroAtivo.valorCasa || 0);
+      html += `
+        <div style="margin-bottom: 20px; border: 1px solid #ccc; padding: 12px; border-radius: 6px;">
+          <h3 style="margin-bottom: 8px;">Equipe: ${equipe}</h3>
+          <p style="font-size: 13px; margin-bottom: 8px;"><strong>Unidades Concluídas (${qtd}):</strong> ${lotes.join(', ')}</p>
+          <p style="font-size: 14px;"><strong>Valor Bruto:</strong> R$ ${subtotal.toFixed(2)}</p>
+        </div>
+      `;
+    }
+  }
+
+  html += `</div>`;
+  area.innerHTML = html;
+  area.style.display = 'block';
+  html2pdf().from(area).save(`Detalhado_${frente}_${mes.replace('/', '-')}.pdf`).then(() => {
+    area.style.display = 'none';
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const tema = localStorage.getItem('cb_tema_preferido');
+  if (tema === 'light') {
+    document.body.classList.add('light-mode');
+    const btnTema = document.getElementById('btnTema');
+    if (btnTema) btnTema.innerText = '🌓 Modo Escuro';
+  }
+});
+</script>
 </body>
 </html>
