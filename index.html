@@ -198,8 +198,8 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
         <option value="Fevereiro">Fevereiro</option>
         <option value="Março">Março</option>
         <option value="Abril">Abril</option>
-        <option value="Maio" selected>Maio</option>
-        <option value="Junho">Junho</option>
+        <option value="Maio">Maio</option>
+        <option value="Junho" selected>Junho</option>
         <option value="Julho">Julho</option>
         <option value="Agosto">Agosto</option>
         <option value="Setembro">Setembro</option>
@@ -217,8 +217,8 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 
       <label style="font-size:12px; font-weight:600; color:var(--text2);">Tipo de Relatório:</label>
       <select id="seletorTipoRelatorio">
-        <option value="resumo_pdf">📄 Resumo Mensal PDF (Frente Ativa)</option>
-        <option value="detalhado_pdf">📄 Extrato Detalhado Por Equipe PDF</option>
+        <option value="resumo_pdf">📄 Medição Consolidada POO-Anexo A (PDF)</option>
+        <option value="detalhado_pdf">📄 Extrato Detalhado por Equipe POO-Anexo A (PDF)</option>
         <option value="excel">📊 Planilha Excel Mensal (.xlsx)</option>
       </select>
 
@@ -263,8 +263,8 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
               <option value="Fevereiro">Fevereiro</option>
               <option value="Março">Março</option>
               <option value="Abril">Abril</option>
-              <option value="Maio" selected>Maio</option>
-              <option value="Junho">Junho</option>
+              <option value="Maio">Maio</option>
+              <option value="Junho" selected>Junho</option>
               <option value="Julho">Julho</option>
               <option value="Agosto">Agosto</option>
               <option value="Setembro">Setembro</option>
@@ -348,7 +348,9 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 </div>
 
 <div class="toast" id="toast">Dados salvos com sucesso!</div>
-<div id="pdf-render-area" style="display:none; color:#000; background:#fff; padding:30px; font-family: Arial, sans-serif;"></div>
+
+<!-- ÁREA DE RENDERIZAÇÃO DE PDF -->
+<div id="pdf-render-area" style="display:none; color:#000; background:#fff; padding:20px; font-family: Arial, sans-serif;"></div>
 
 <script>
 // Gerar Grid da Tela de Login
@@ -390,14 +392,18 @@ let listaFrentes = JSON.parse(localStorage.getItem('cb_lista_frentes_v9')) || [
   { id: "esquadrias", nome: "Esquadrias", progresso: 0 },
   { id: "cabeamento", nome: "Cabeamento", progresso: 0 },
   { id: "impermea", nome: "Impermeabilização", progresso: 0 },
-  { id: "ceramica", nome: "Cerâmica", progresso: 0 }
+  { id: "ceramica", nome: "Piso e Revestimento Cerâmico", progresso: 0 }
 ];
 
 let servicoAtivoId = '';
-let libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
+let libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Junho/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
 let funcionariosTemporarios = [];
 let equipeSelecionadaParaMarcacao = "";
 let indexEquipeEmEdicao = null;
+
+function formatarMoeda(val) {
+  return (val || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
 function fazerLogin() {
   const email = document.getElementById('email').value.trim();
@@ -414,7 +420,7 @@ function fazerLogin() {
   document.getElementById('appMain').style.display = 'block';
   
   if(!servicoAtivoId) {
-    alternarFrenteDeServico(listaFrentes[4].id, listaFrentes[4].nome);
+    alternarFrenteDeServico(listaFrentes[17].id, listaFrentes[17].nome);
   } else {
     const frenteAtual = listaFrentes.find(f => f.id === servicoAtivoId);
     if(frenteAtual && document.getElementById('tituloFrenteAtiva')) {
@@ -477,11 +483,10 @@ function carregarEstadoLocal() {
     if (!libroAtivo.tipoDivisao) libroAtivo.tipoDivisao = 'igual';
     if (!libroAtivo.pctCasa) libroAtivo.pctCasa = 0;
   } else {
-    libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
+    libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Junho/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
   }
 
-  // Decompor o Mês e Ano salvos
-  let mesPart = 'Maio';
+  let mesPart = 'Junho';
   let anoPart = '2026';
   if (libroAtivo.mesAtivo && libroAtivo.mesAtivo.includes('/')) {
     const partes = libroAtivo.mesAtivo.split('/');
@@ -587,7 +592,7 @@ function alternarLote(loteKey) {
       alert("ATENÇÃO: Selecione uma 'Equipe Ativa para Marcação' no topo da página antes de lançar a produção.");
       return;
     }
-    const m = document.getElementById('cfg-mes-nome').value || 'Maio';
+    const m = document.getElementById('cfg-mes-nome').value || 'Junho';
     const a = document.getElementById('cfg-mes-ano').value || '2026';
     const mesVigente = `${m}/${a}`;
 
@@ -817,9 +822,9 @@ function executarEmissaoRelatorioMensal() {
   if (tipo === 'excel') {
     gerarRelatorioExcel(mes, frente);
   } else if (tipo === 'resumo_pdf') {
-    gerarRelatorioResumoPDF(mes, frente);
+    gerarRelatorioModeloPOO_PDF(mes, frente, null); // Consolidado
   } else if (tipo === 'detalhado_pdf') {
-    gerarRelatorioDetalhadoPDF(mes, frente);
+    gerarRelatorioModeloPOO_PDF(mes, frente, 'todas_equipes'); // Detalhado por equipes
   }
 }
 
@@ -841,73 +846,271 @@ function gerarRelatorioExcel(mes, frente) {
   XLSX.writeFile(workbook, `Produção_${frente}_${mes.replace('/', '-')}.xlsx`);
 }
 
-function gerarRelatorioResumoPDF(mes, frente) {
-  const area = document.getElementById('pdf-render-area');
-  const lotesDoMes = Object.entries(libroAtivo.mappedLotes || {})
-    .filter(([_, dado]) => (typeof dado === 'object' ? dado.mes : '') === mes);
-
-  const totalProduzido = lotesDoMes.length;
-  const valorTotal = totalProduzido * (libroAtivo.valorCasa || 0);
-
-  area.innerHTML = `
-    <div style="padding: 20px;">
-      <h2 style="margin-bottom: 5px; color: #18181b;">CB ENGENHARIA - RELATÓRIO RESUMIDO DE PRODUÇÃO</h2>
-      <p style="margin-bottom: 15px; color: #52525b;"><strong>Frente:</strong> ${frente} | <strong>Mês:</strong> ${mes}</p>
-      <hr style="margin-bottom: 20px;">
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-        <tr style="background: #f4f4f5;"><th style="padding: 10px; text-align: left; border: 1px solid #d4d4d8;">Métrica</th><th style="padding: 10px; text-align: left; border: 1px solid #d4d4d8;">Valor</th></tr>
-        <tr><td style="padding: 10px; border: 1px solid #d4d4d8;">Casas Concluídas no Mês</td><td style="padding: 10px; border: 1px solid #d4d4d8;">${totalProduzido} UHs</td></tr>
-        <tr><td style="padding: 10px; border: 1px solid #d4d4d8;">Valor por Casa</td><td style="padding: 10px; border: 1px solid #d4d4d8;">R$ ${(libroAtivo.valorCasa || 0).toFixed(2)}</td></tr>
-        <tr><td style="padding: 10px; border: 1px solid #d4d4d8;">Faturamento Bruto da Frente</td><td style="padding: 10px; border: 1px solid #d4d4d8;"><strong>R$ ${valorTotal.toFixed(2)}</strong></td></tr>
-      </table>
-    </div>
-  `;
-
-  area.style.display = 'block';
-  html2pdf().from(area).save(`Resumo_${frente}_${mes.replace('/', '-')}.pdf`).then(() => {
-    area.style.display = 'none';
-  });
-}
-
-function gerarRelatorioDetalhadoPDF(mes, frente) {
-  const area = document.getElementById('pdf-render-area');
-  const lotesDoMes = Object.entries(libroAtivo.mappedLotes || {})
-    .filter(([_, dado]) => (typeof dado === 'object' ? dado.mes : '') === mes);
-
-  let html = `
-    <div style="padding: 20px;">
-      <h2 style="margin-bottom: 5px;">CB ENGENHARIA - EXTRATO DETALHADO POR EQUIPE</h2>
-      <p style="margin-bottom: 15px;"><strong>Frente:</strong> ${frente} | <strong>Mês:</strong> ${mes}</p>
-      <hr style="margin-bottom: 20px;">
-  `;
-
-  if (lotesDoMes.length === 0) {
-    html += `<p>Nenhuma produção registrada para o mês de ${mes}.</p>`;
-  } else {
-    const agrupado = {};
-    lotesDoMes.forEach(([chave, dado]) => {
-      const eq = dado.equipe || 'Sem Equipe';
-      if (!agrupado[eq]) agrupado[eq] = [];
-      agrupado[eq].push(chave);
-    });
-
-    for (const [equipe, lotes] of Object.entries(agrupado)) {
-      const qtd = lotes.length;
-      const subtotal = qtd * (libroAtivo.valorCasa || 0);
-      html += `
-        <div style="margin-bottom: 20px; border: 1px solid #ccc; padding: 12px; border-radius: 6px;">
-          <h3 style="margin-bottom: 8px;">Equipe: ${equipe}</h3>
-          <p style="font-size: 13px; margin-bottom: 8px;"><strong>Unidades Concluídas (${qtd}):</strong> ${lotes.join(', ')}</p>
-          <p style="font-size: 14px;"><strong>Valor Bruto:</strong> R$ ${subtotal.toFixed(2)}</p>
-        </div>
-      `;
-    }
+// FUNÇÃO GERADORA DA ESTRUTURA FIEL AO MODELO POO-ANEXO A (PDF)
+function gerarHtmlModeloPOO(mes, frente, equipeObj) {
+  const [nomeMes, ano] = mes.split('/');
+  const valorUnitario = parseFloat(libroAtivo.valorCasa) || 1250;
+  
+  // Filtrar Lotes do escopo da equipe ou geral
+  const todosLotes = Object.entries(libroAtivo.mappedLotes || {});
+  let lotesFiltrados = todosLotes;
+  
+  if (equipeObj) {
+    lotesFiltrados = todosLotes.filter(([_, dado]) => (typeof dado === 'object' ? dado.equipe : dado) === equipeObj.nome);
   }
 
-  html += `</div>`;
-  area.innerHTML = html;
+  // Agrupar por Quadra
+  const quadrasAgrupadas = {};
+
+  lotesFiltrados.forEach(([chave, dado]) => {
+    // Ex: JBI-QD 03-L01 ou JBII-QD 18-L25
+    const partes = chave.split('-');
+    const loteamento = partes[0] === 'JBI' ? 'JB I' : 'JB II';
+    const quadraNome = partes[1] ? partes[1].replace('QD ', 'Q') : 'Q00';
+    const uhNum = partes[2] ? partes[2].replace('L', '') : '00';
+    
+    const quadraChave = `${loteamento}: ${quadraNome}`;
+    
+    if (!quadrasAgrupadas[quadraChave]) {
+      quadrasAgrupadas[quadraChave] = {
+        uhsMesAtual: [],
+        uhsMesAnterior: []
+      };
+    }
+
+    const mesLote = typeof dado === 'object' ? dado.mes : '';
+    if (mesLote === mes) {
+      quadrasAgrupadas[quadraChave].uhsMesAtual.push(uhNum);
+    } else {
+      quadrasAgrupadas[quadraChave].uhsMesAnterior.push(uhNum);
+    }
+  });
+
+  // Totais Gerais do Quadro
+  let totMedAtualQtd = 0;
+  let totMedAtualVal = 0;
+  let totAcumAntQtd = 0;
+  let totAcumAntVal = 0;
+  let totAcumTotQtd = 0;
+  let totAcumTotVal = 0;
+
+  let linhasQuadrasHtml = '';
+
+  const quadrasOrdenadas = Object.keys(quadrasAgrupadas).sort();
+
+  quadrasOrdenadas.forEach(qKey => {
+    const qData = quadrasAgrupadas[qKey];
+    
+    const medAtualQtd = qData.uhsMesAtual.length;
+    const medAtualVal = medAtualQtd * valorUnitario;
+
+    const acumAntQtd = qData.uhsMesAnterior.length;
+    const acumAntVal = acumAntQtd * valorUnitario;
+
+    const acumTotQtd = medAtualQtd + acumAntQtd;
+    const acumTotVal = medAtualVal + acumAntVal;
+
+    const totalASerPago = medAtualVal;
+
+    totMedAtualQtd += medAtualQtd;
+    totMedAtualVal += medAtualVal;
+    totAcumAntQtd += acumAntQtd;
+    totAcumAntVal += acumAntVal;
+    totAcumTotQtd += acumTotQtd;
+    totAcumTotVal += acumTotVal;
+
+    // Lista de UHs executadas no mês
+    const descUhs = medAtualQtd > 0 
+      ? `UH: ${qData.uhsMesAtual.sort().join(', ')}` 
+      : (acumAntQtd > 0 ? `UH: ${qData.uhsMesAnterior.sort().join(', ')}` : 'UH: -');
+
+    linhasQuadrasHtml += `
+      <tr>
+        <td style="border: 1px solid #000; padding: 4px; font-weight: bold; text-align: left;">${qKey}</td>
+        <td style="border: 1px solid #000; padding: 4px; text-align: left;">${descUhs}</td>
+        <td style="border: 1px solid #000; padding: 4px;">${medAtualQtd.toFixed(2).replace('.',',')}</td>
+        <td style="border: 1px solid #000; padding: 4px;">R$ ${formatarMoeda(valorUnitario)}</td>
+        <td style="border: 1px solid #000; padding: 4px;">R$ ${formatarMoeda(medAtualVal)}</td>
+        <td style="border: 1px solid #000; padding: 4px;">${acumAntQtd.toFixed(2).replace('.',',')}</td>
+        <td style="border: 1px solid #000; padding: 4px;">R$ ${formatarMoeda(acumAntVal)}</td>
+        <td style="border: 1px solid #000; padding: 4px;">${acumTotQtd.toFixed(2).replace('.',',')}</td>
+        <td style="border: 1px solid #000; padding: 4px;">R$ ${formatarMoeda(acumTotVal)}</td>
+        <td style="border: 1px solid #000; padding: 4px; font-weight: bold;">R$ ${formatarMoeda(totalASerPago)}</td>
+      </tr>
+    `;
+  });
+
+  // Tratar Descontos e Divisão de Valores por Integrante
+  let totalDescontos = 0;
+  let membrosRowsHtml = '';
+
+  if (equipeObj && equipeObj.integrantes && equipeObj.integrantes.length > 0) {
+    totalDescontos = equipeObj.integrantes.reduce((sum, f) => sum + (f.desconto || 0), 0);
+    const numIntegrantes = equipeObj.integrantes.length;
+
+    // Valor Bruto da Equipe
+    let valorBrutoDisponivel = totMedAtualVal;
+    if (libroAtivo.tipoDivisao === 'porcentagem') {
+      const pctCasa = parseFloat(libroAtivo.pctCasa) || 0;
+      valorBrutoDisponivel = valorBrutoDisponivel * (1 - (pctCasa / 100));
+    }
+
+    const valorBrutoPorMembro = numIntegrantes > 0 ? (valorBrutoDisponivel / numIntegrantes) : 0;
+
+    equipeObj.integrantes.forEach((membro, idx) => {
+      const valorLiquidoMembro = Math.max(0, valorBrutoPorMembro - (membro.desconto || 0));
+      membrosRowsHtml += `
+        <tr>
+          <td style="border: 1px solid #000; padding: 3px 6px; width: 30px; text-align: center; font-weight: bold;">${idx + 1}</td>
+          <td style="border: 1px solid #000; padding: 3px 6px; text-align: left; text-transform: uppercase;">${membro.nome}</td>
+          <td style="border: 1px solid #000; padding: 3px 6px; width: 40px; text-align: right;">R$</td>
+          <td style="border: 1px solid #000; padding: 3px 6px; width: 110px; text-align: right; font-weight: bold;">${formatarMoeda(valorLiquidoMembro)}</td>
+        </tr>
+      `;
+    });
+  } else {
+    membrosRowsHtml = `
+      <tr>
+        <td style="border: 1px solid #000; padding: 4px; text-align: center;" colspan="4">Todas as Equipes / Consolidado Geral</td>
+      </tr>
+    `;
+  }
+
+  const totalLiquidoAPagar = Math.max(0, totMedAtualVal - totalDescontos);
+
+  return `
+    <div style="font-family: Arial, sans-serif; color: #000; background: #fff; padding: 10px; font-size: 10px; page-break-after: always;">
+      
+      <!-- CABEÇALHO OFICIAL SGQ -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; text-align: center; font-size: 10px;">
+        <tr>
+          <td style="width: 25%; border: 1px solid #000; padding: 6px; font-weight: bold; vertical-align: middle;">
+            <div style="font-size: 18px; font-weight: 900;">CB</div>
+            <div style="font-size: 8px; font-weight: normal; margin-top: 2px;">Sistema de Gestão da Qualidade</div>
+          </td>
+          <td style="width: 50%; border: 1px solid #000; padding: 6px; font-weight: bold; vertical-align: middle;">
+            <div style="font-size: 11px;">LOTEAMENTO JOSÉ BERNARDINO I e II</div>
+            <div style="font-size: 12px; margin: 2px 0;">CONTROLE DE PRODUÇÃO</div>
+            <div style="font-size: 11px; text-transform: uppercase; font-weight: 800;">${frente.toUpperCase()}</div>
+          </td>
+          <td style="width: 25%; border: 1px solid #000; padding: 6px; text-align: left; font-size: 10px; vertical-align: middle;">
+            <b>Identificação:</b> POO-Anexo A<br>
+            <b>Revisão:</b> 02
+          </td>
+        </tr>
+      </table>
+
+      <!-- MÊS E ANO -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; border-top: none; font-size: 11px;">
+        <tr style="background: #f2f2f2;">
+          <td style="width: 50%; border-right: 1px solid #000; padding: 4px 8px;"><b>Mês:</b> ${nomeMes.toUpperCase()}</td>
+          <td style="width: 50%; padding: 4px 8px;"><b>Ano:</b> ${ano}</td>
+        </tr>
+      </table>
+
+      <!-- SEÇÃO EQUIPE E INTEGRANTES -->
+      <div style="margin-top: 10px; border: 1.5px solid #000;">
+        <div style="background: #e6e6e6; padding: 4px 8px; font-weight: bold; font-size: 11px; border-bottom: 1px solid #000;">
+          Equipe: ${equipeObj ? equipeObj.nome.toUpperCase() : 'TODAS AS EQUIPES'}
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+          ${membrosRowsHtml}
+        </table>
+      </div>
+
+      <!-- TABELA PRINCIPAL DE MEDIÇÃO -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; margin-top: 10px; font-size: 9.5px; text-align: center;">
+        <thead>
+          <tr style="background: #e6e6e6; font-weight: bold;">
+            <th rowspan="2" style="border: 1px solid #000; padding: 4px; width: 14%;">Quadra</th>
+            <th rowspan="2" style="border: 1px solid #000; padding: 4px; width: 18%;">Descrição</th>
+            <th colspan="3" style="border: 1px solid #000; padding: 4px;">Medição Atual</th>
+            <th colspan="2" style="border: 1px solid #000; padding: 4px;">Acumulado Anterior</th>
+            <th colspan="2" style="border: 1px solid #000; padding: 4px;">Acumulado Total</th>
+            <th rowspan="2" style="border: 1px solid #000; padding: 4px; width: 13%;">Total a Ser Pago</th>
+          </tr>
+          <tr style="background: #f2f2f2; font-weight: bold; font-size: 8.5px;">
+            <th style="border: 1px solid #000; padding: 3px;">Quant. (un)</th>
+            <th style="border: 1px solid #000; padding: 3px;">Valor unitário</th>
+            <th style="border: 1px solid #000; padding: 3px;">Valor total</th>
+            <th style="border: 1px solid #000; padding: 3px;">Quant. (un)</th>
+            <th style="border: 1px solid #000; padding: 3px;">Acumulado anterior</th>
+            <th style="border: 1px solid #000; padding: 3px;">Quant. (un)</th>
+            <th style="border: 1px solid #000; padding: 3px;">Acumulado</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${linhasQuadrasHtml}
+
+          <!-- LINHA DE DESCONTO SALÁRIO -->
+          <tr>
+            <td colspan="2" style="border: 1px solid #000; padding: 4px; font-weight: bold; text-align: left;">DESCONTO SALÁRIO</td>
+            <td style="border: 1px solid #000; padding: 4px;">1,00</td>
+            <td style="border: 1px solid #000; padding: 4px;">-</td>
+            <td style="border: 1px solid #000; padding: 4px; color: #cc0000; font-weight: bold;">-R$ ${formatarMoeda(totalDescontos)}</td>
+            <td style="border: 1px solid #000; padding: 4px;">-</td>
+            <td style="border: 1px solid #000; padding: 4px;">-</td>
+            <td style="border: 1px solid #000; padding: 4px;">-</td>
+            <td style="border: 1px solid #000; padding: 4px;">-</td>
+            <td style="border: 1px solid #000; padding: 4px; color: #cc0000; font-weight: bold;">-R$ ${formatarMoeda(totalDescontos)}</td>
+          </tr>
+
+          <!-- LINHA DE TOTAL -->
+          <tr style="background: #e6e6e6; font-weight: bold;">
+            <td colspan="2" style="border: 1px solid #000; padding: 5px; text-align: left;">Total</td>
+            <td style="border: 1px solid #000; padding: 5px;">${totMedAtualQtd.toFixed(2).replace('.',',')}</td>
+            <td style="border: 1px solid #000; padding: 5px;">-</td>
+            <td style="border: 1px solid #000; padding: 5px;">R$ ${formatarMoeda(totMedAtualVal)}</td>
+            <td style="border: 1px solid #000; padding: 5px;">${totAcumAntQtd.toFixed(2).replace('.',',')}</td>
+            <td style="border: 1px solid #000; padding: 5px;">R$ ${formatarMoeda(totAcumAntVal)}</td>
+            <td style="border: 1px solid #000; padding: 5px;">${totAcumTotQtd.toFixed(2).replace('.',',')}</td>
+            <td style="border: 1px solid #000; padding: 5px;">R$ ${formatarMoeda(totAcumTotVal)}</td>
+            <td style="border: 1px solid #000; padding: 5px; font-size: 10.5px;">R$ ${formatarMoeda(totalLiquidoAPagar)}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- RODAPÉ - PRODUÇÃO TOTAL DO MÊS -->
+      <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; border-top: none; font-size: 11px;">
+        <tr style="background: #f2f2f2;">
+          <td style="padding: 6px 12px; font-weight: bold; text-align: right; width: 70%;">Produção total do mês de ${nomeMes}:</td>
+          <td style="padding: 6px 12px; font-weight: bold; text-align: right; width: 30%; font-size: 12px;">R$ ${formatarMoeda(totalLiquidoAPagar)}</td>
+        </tr>
+      </table>
+
+    </div>
+  `;
+}
+
+function gerarRelatorioModeloPOO_PDF(mes, frente, modo) {
+  const area = document.getElementById('pdf-render-area');
+  area.innerHTML = '';
+
+  if (modo === 'todas_equipes') {
+    // Gerar uma página por equipe cadastrada
+    if (!libroAtivo.equipes || libroAtivo.equipes.length === 0) {
+      alert('Nenhuma equipe cadastrada para esta frente.');
+      return;
+    }
+    libroAtivo.equipes.forEach(eq => {
+      area.innerHTML += gerarHtmlModeloPOO(mes, frente, eq);
+    });
+  } else {
+    // Relatório Consolidado Geral da Frente
+    area.innerHTML = gerarHtmlModeloPOO(mes, frente, null);
+  }
+
   area.style.display = 'block';
-  html2pdf().from(area).save(`Detalhado_${frente}_${mes.replace('/', '-')}.pdf`).then(() => {
+
+  const opt = {
+    margin: 6,
+    filename: `Relatorio_POO-AnexoA_${frente}_${mes.replace('/', '-')}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(area).save().then(() => {
     area.style.display = 'none';
   });
 }
