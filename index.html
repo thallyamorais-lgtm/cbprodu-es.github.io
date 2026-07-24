@@ -6,6 +6,7 @@
 <title>Plataforma de Controle de Produções — CB Engenharia</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
   --bg: #09090b;
@@ -74,7 +75,7 @@ body.light-mode .sidebar-logo-img { filter: invert(1); }
 
 /* CONTEÚDO PRINCIPAL */
 .main-content { flex: 1; padding: 30px; overflow-y: auto; height: 100vh; }
-.nav-header { display: flex; justify-content: space-between; align-items: center; background: var(--surface); border: 1px solid var(--border); padding: 16px 24px; border-radius: var(--radius); margin-bottom: 25px; }
+.nav-header { display: flex; justify-content: space-between; align-items: center; background: var(--surface); border: 1px solid var(--border); padding: 16px 24px; border-radius: var(--radius); margin-bottom: 15px; }
 .nav-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .btn-web { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px 18px; border-radius: var(--radius); cursor: pointer; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
 .btn-web:hover { background: var(--border); }
@@ -82,6 +83,12 @@ body.light-mode .sidebar-logo-img { filter: invert(1); }
 .btn-web-primary:hover { opacity: 0.9; }
 .btn-web-success { background: #22c55e; border: 1px solid #22c55e; color: #000; }
 .btn-web-success:hover { background: #16a34a; }
+
+/* PAINEL SUPERIOR DE RELATÓRIOS MENSAIS */
+.relatorio-menu-box { background: var(--surface); border: 1px solid var(--border); padding: 16px 20px; border-radius: var(--radius); margin-bottom: 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px; }
+.relatorio-menu-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+.relatorio-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.relatorio-controls select { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; }
 
 /* SELEÇÃO SUPERIOR DE EQUIPE ATIVA */
 .selector-top-box { background: var(--surface2); border: 1px solid var(--border2); padding: 15px 20px; border-radius: var(--radius); margin-bottom: 25px; display: flex; align-items: center; gap: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
@@ -139,7 +146,7 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
   <div class="grid-container" id="gridContainer"></div>
   <div class="login-box">
     <div class="logo-box">
-      <img src="Logo-01.png" alt="CB Engenharia" class="logo-img" id="img-login-logo">
+      <img src="Logo-01.png" alt="CB Engenharia" class="logo-img" id="img-login-logo" onerror="this.style.display='none'">
       <div class="logo-text">CB ENGENHARIA</div>
     </div>
     <p>Plataforma de Controle de Produções</p>
@@ -158,7 +165,7 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 
 <div class="sidebar" id="appSidebar" style="display:none;">
   <div class="sidebar-header">
-    <img src="Logo-01.png" alt="CB" class="sidebar-logo-img">
+    <img src="Logo-01.png" alt="CB" class="sidebar-logo-img" onerror="this.style.display='none'">
     <div class="sidebar-logo">CB ENGENHARIA</div>
     <button class="btn-tema-mini" onclick="toggleTema()" id="btnTema">🌓 Modo Claro</button>
   </div>
@@ -174,11 +181,41 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
     </div>
     <div class="nav-actions">
       <div class="status-pill"><div class="indicator"></div><span>Online</span></div>
-      <button class="btn-web btn-web-success" onclick="gerarRelatorioPDFGeralConsolidado()">PDF Geral</button>
-      <button class="btn-web" onclick="exportarPlanilhaExcelFrenteAtiva()">Planilha Excel (Frente Ativa)</button>
-      <button class="btn-web" onclick="gerarRelatorioPDFFrenteAtiva()">Visualizar PDF (Frente Ativa)</button>
       <button class="btn-web btn-web-primary" onclick="forcarSalvarTudo()">Atualizar Dados</button>
       <button class="btn-web" onclick="fazerLogout()" style="border-color:#ef4444; color:#ef4444;">Sair</button>
+    </div>
+  </div>
+
+  <!-- MENU SUPERIOR PARA EXTRAÇÃO DE RELATÓRIOS MENSAIS DA FRENTE -->
+  <div class="relatorio-menu-box">
+    <div class="relatorio-menu-title">
+      📊 Central de Relatórios Mensais da Frente
+    </div>
+    <div class="relatorio-controls">
+      <label style="font-size:12px; font-weight:600; color:var(--text2);">Selecione o Mês:</label>
+      <select id="seletorMesRelatorio">
+        <option value="Janeiro/2026">Janeiro/2026</option>
+        <option value="Fevereiro/2026">Fevereiro/2026</option>
+        <option value="Março/2026">Março/2026</option>
+        <option value="Abril/2026">Abril/2026</option>
+        <option value="Maio/2026" selected>Maio/2026</option>
+        <option value="Junho/2026">Junho/2026</option>
+        <option value="Julho/2026">Julho/2026</option>
+        <option value="Agosto/2026">Agosto/2026</option>
+        <option value="Setembro/2026">Setembro/2026</option>
+        <option value="Outubro/2026">Outubro/2026</option>
+        <option value="Novembro/2026">Novembro/2026</option>
+        <option value="Dezembro/2026">Dezembro/2026</option>
+      </select>
+
+      <label style="font-size:12px; font-weight:600; color:var(--text2);">Tipo de Relatório:</label>
+      <select id="seletorTipoRelatorio">
+        <option value="resumo_pdf">📄 Resumo Mensal PDF (Frente Ativa)</option>
+        <option value="detalhado_pdf">📄 Extrato Detalhado Por Equipe PDF</option>
+        <option value="excel">📊 Planilha Excel Mensal (.xlsx)</option>
+      </select>
+
+      <button class="btn-web btn-web-success" onclick="executarEmissaoRelatorioMensal()"> Gerar Relatório</button>
     </div>
   </div>
 
@@ -214,7 +251,21 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
         <div class="form-row">
           <div class="input-wrapper">
             <label>Mês Vigente</label>
-            <input type="text" id="cfg-mes" placeholder="Ex: Maio/2026" onchange="salvarConfigMensal()">
+            <!-- SELETOR DE MÊS EM VEZ DE DIGITAÇÃO MANUAL -->
+            <select id="cfg-mes" onchange="salvarConfigMensal()">
+              <option value="Janeiro/2026">Janeiro/2026</option>
+              <option value="Fevereiro/2026">Fevereiro/2026</option>
+              <option value="Março/2026">Março/2026</option>
+              <option value="Abril/2026">Abril/2026</option>
+              <option value="Maio/2026">Maio/2026</option>
+              <option value="Junho/2026">Junho/2026</option>
+              <option value="Julho/2026">Julho/2026</option>
+              <option value="Agosto/2026">Agosto/2026</option>
+              <option value="Setembro/2026">Setembro/2026</option>
+              <option value="Outubro/2026">Outubro/2026</option>
+              <option value="Novembro/2026">Novembro/2026</option>
+              <option value="Dezembro/2026">Dezembro/2026</option>
+            </select>
           </div>
           <div class="input-wrapper">
             <label>Valor por Unidade</label>
@@ -273,7 +324,7 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
         <button class="btn-web" id="btn-cancelar-edicao" onclick="cancelarEdicaoEquipe()" style="width:100%; justify-content:center; margin-top: 6px; display: none; background: #ef4444; color: #fff;">Cancelar Edição</button>
 
         <table class="team-list-table" style="margin-top: 25px;">
-          <thead><tr><th>Equipe Registrada</th><th>Nº Integrantes</th><th>Total Descontos</th><th>Status Mensal</th><th>Ações</th></tr></thead>
+          <thead><tr><th>Equipe Registrada</th><th>Nº Integrantes</th><th>Total Descontos</th><th>Status</th><th>Ações</th></tr></thead>
           <tbody id="lista-equipes-corpo"></tbody>
         </table>
       </div>
@@ -285,6 +336,7 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 <div id="pdf-render-area" style="display:none; color:#000; background:#fff; padding:30px; font-family: Arial, sans-serif;"></div>
 
 <script>
+// Gerar Grid da Tela de Login
 const gridContainer = document.getElementById('gridContainer');
 const totalBlocks = Math.ceil(window.innerWidth / 60) * Math.ceil(window.innerHeight / 60);
 for (let i = 0; i < totalBlocks; i++) {
@@ -301,7 +353,7 @@ const CONFIG_JBI = [
 
 const CONFIG_JBII = [
   {qd: 'QD 18', lotes: 30}, {qd: 'QD 19', lotes: 30}, {qd: 'QD 20', lotes: 30}, 
-  {qd: 'QD 14', lotes: 30}, {qd: 'QD 13', platos: 30, lotes: 30}, {qd: 'QD 12', lotes: 30},
+  {qd: 'QD 14', lotes: 30}, {qd: 'QD 13', lotes: 30}, {qd: 'QD 12', lotes: 30},
   {qd: 'QD 15', lotes: 13}, {qd: 'QD 16', lotes: 13}, {qd: 'QD 17', lotes: 13}
 ];
 
@@ -356,6 +408,12 @@ function fazerLogin() {
   }
 }
 
+function fazerLogout() {
+  document.getElementById('appSidebar').style.display = 'none';
+  document.getElementById('appMain').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
 function toggleTema() {
   const corpo = document.body;
   corpo.classList.toggle('light-mode');
@@ -406,7 +464,7 @@ function carregarEstadoLocal() {
   } else {
     libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Maio/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
   }
-  document.getElementById('cfg-mes').value = libroAtivo.mesAtivo || '';
+  document.getElementById('cfg-mes').value = libroAtivo.mesAtivo || 'Maio/2026';
   document.getElementById('cfg-valor-casa').value = libroAtivo.valorCasa || 0;
   document.getElementById('cfg-tipo-divisao').value = libroAtivo.tipoDivisao;
   document.getElementById('cfg-pct-casa').value = libroAtivo.pctCasa;
@@ -531,7 +589,7 @@ function salvarConfigMensal() {
 function adicionarFuncionarioTemporario() {
   const funcNome = document.getElementById('nome-funcionario').value.trim();
   const descVal = parseFloat(document.getElementById('desconto-funcionario').value) || 0;
-  if(!funcNome) return alert("Digite o nome.");
+  if(!funcNome) return alert("Digite o nome do funcionário.");
   funcionariosTemporarios.push({ nome: funcNome, desconto: descVal });
   document.getElementById('nome-funcionario').value = '';
   document.getElementById('desconto-funcionario').value = '';
@@ -560,7 +618,7 @@ function atualizarVisualListaTemporaria() {
 
 function fecharEquipeGeral() {
   const equipeNome = document.getElementById('nome-equipe').value.trim();
-  if(!equipeNome || funcionariosTemporarios.length === 0) return alert("Preencha o nome e os integrantes.");
+  if(!equipeNome || funcionariosTemporarios.length === 0) return alert("Preencha o nome da equipe e adicione ao menos um integrante.");
   let totalDescontoTime = funcionariosTemporarios.reduce((acc, f) => acc + f.desconto, 0);
   
   if (indexEquipeEmEdicao !== null) {
@@ -584,192 +642,288 @@ function fecharEquipeGeral() {
       ativo: true
     });
   }
-  
-  funcionariosTemporarios = [];
+
   document.getElementById('nome-equipe').value = '';
+  funcionariosTemporarios = [];
   atualizarVisualListaTemporaria();
+  atualizarSeletorEquipeSuperior();
+  renderizarEquipes();
+  salvarNoDispositivo();
+}
+
+function editarEquipe(index) {
+  const eq = libroAtivo.equipes[index];
+  if(!eq) return;
+  indexEquipeEmEdicao = index;
+  document.getElementById('nome-equipe').value = eq.nome;
+  funcionariosTemporarios = [...(eq.detalhesFuncionarios || [])];
+  atualizarVisualListaTemporaria();
+  document.getElementById('titulo-cadastro-equipe').innerText = `Editando: ${eq.nome}`;
+  document.getElementById('btn-salvar-equipe').innerText = "💾 Salvar Alterações na Equipe";
+  document.getElementById('btn-cancelar-edicao').style.display = "block";
+}
+
+function cancelarEdicaoEquipe() {
+  indexEquipeEmEdicao = null;
+  document.getElementById('nome-equipe').value = '';
+  funcionariosTemporarios = [];
+  atualizarVisualListaTemporaria();
+  document.getElementById('titulo-cadastro-equipe').innerText = "Cadastro de Participantes";
+  document.getElementById('btn-salvar-equipe').innerText = "🔒 Salvar e Fechar Equipe";
+  document.getElementById('btn-cancelar-edicao').style.display = "none";
+}
+
+function alternarStatusEquipe(index) {
+  libroAtivo.equipes[index].ativo = !libroAtivo.equipes[index].ativo;
   atualizarSeletorEquipeSuperior();
   renderizarEquipes();
   recalcularTotais();
   salvarNoDispositivo();
 }
 
-function editarEquipe(idx) {
-  const equipe = libroAtivo.equipes[idx];
-  indexEquipeEmEdicao = idx;
-  
-  document.getElementById('titulo-cadastro-equipe').innerText = `Editando: ${equipe.nome}`;
-  document.getElementById('nome-equipe').value = equipe.nome;
-  
-  funcionariosTemporarios = equipe.detalhesFuncionarios ? [...equipe.detalhesFuncionarios] : [];
-  atualizarVisualListaTemporaria();
-  
-  document.getElementById('btn-salvar-equipe').innerText = "🔒 Salvar Alterações";
-  document.getElementById('btn-cancelar-edicao').style.display = "block";
-  document.getElementById('nome-equipe').focus();
-}
-
-function cancelarEdicaoEquipe() {
-  indexEquipeEmEdicao = null;
-  document.getElementById('titulo-cadastro-equipe').innerText = "Cadastro de Participantes";
-  document.getElementById('nome-equipe').value = '';
-  funcionariosTemporarios = [];
-  atualizarVisualListaTemporaria();
-  document.getElementById('btn-salvar-equipe').innerText = "🔒 Salvar e Fechar Equipe";
-  document.getElementById('btn-cancelar-edicao').style.display = "none";
-}
-
-function alternarStatusEquipe(idx) {
-  libroAtivo.equipes[idx].ativo = !libroAtivo.equipes[idx].ativo;
-  atualizarSeletorEquipeSuperior(); renderizarEquipes(); recalcularTotais(); salvarNoDispositivo();
-}
-
-function removerEquipe(idx) {
-  if(confirm("Deseja remover esta equipe permanentemente?")) {
-    libroAtivo.equipes.splice(idx, 1);
-    atualizarSeletorEquipeSuperior(); renderizarEquipes(); recalcularTotais(); salvarNoDispositivo();
+function excluirEquipe(index) {
+  if(confirm("Deseja realmente remover esta equipe?")) {
+    libroAtivo.equipes.splice(index, 1);
+    atualizarSeletorEquipeSuperior();
+    renderizarEquipes();
+    recalcularTotais();
+    salvarNoDispositivo();
   }
 }
 
 function renderizarEquipes() {
-  const corpo = document.getElementById('lista-equipes-corpo');
-  corpo.innerHTML = '';
-  libroAtivo.equipes.forEach((eq, idx) => {
-    const dTotal = eq.descontoTotal || 0;
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>👑 ${eq.nome}</td>
-      <td>${eq.detalhesFuncionarios ? eq.detalhesFuncionarios.length : 0}</td>
-      <td>R$ ${dTotal.toFixed(2)}</td>
-      <td><span class="badge-status ${eq.ativo ? 'status-active' : 'status-inactive'}" onclick="alternarStatusEquipe(${idx})">${eq.ativo ? 'Ativa' : 'Inativa'}</span></td>
+  const tbody = document.getElementById('lista-equipes-corpo');
+  tbody.innerHTML = '';
+  (libroAtivo.equipes || []).forEach((eq, idx) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${eq.nome}</strong></td>
+      <td>${eq.integrantesCount || (eq.detalhesFuncionarios ? eq.detalhesFuncionarios.length : 0)} pessoa(s)</td>
+      <td>R$ ${(eq.descontoTotal || 0).toFixed(2)}</td>
       <td>
-        <button onclick="editarEquipe(${idx})" style="background:transparent;color:var(--accent);border:none;cursor:pointer;margin-right:10px;">Ver / Editar</button>
-        <button onclick="removerEquipe(${idx})" style="background:transparent;color:#ef4444;border:none;cursor:pointer;">Remover</button>
-      </td>`;
-    corpo.appendChild(row);
+        <span class="badge-status ${eq.ativo ? 'status-active' : 'status-inactive'}" onclick="alternarStatusEquipe(${idx})">
+          ${eq.ativo ? 'Ativa' : 'Inativa'}
+        </span>
+      </td>
+      <td>
+        <button onclick="editarEquipe(${idx})" style="background:transparent; border:none; color:var(--text); cursor:pointer; margin-right:8px;">✏️ Editar</button>
+        <button onclick="excluirEquipe(${idx})" style="background:transparent; border:none; color:#ef4444; cursor:pointer;">🗑️</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
   });
 }
 
 function recalcularTotais() {
-  const concluidos = Object.keys(libroAtivo.mappedLotes || {}).length;
-  const precoCasa = parseFloat(document.getElementById('cfg-valor-casa').value) || 0;
-  const bruto = concluidos * precoCasa;
+  const casitas = Object.keys(libroAtivo.mappedLotes || {}).length;
+  const valorUnitario = parseFloat(libroAtivo.valorCasa) || 0;
+  const totalFaturado = casitas * valorUnitario;
+
+  document.getElementById('lbl-casas-feitas').innerHTML = `${casitas}/444 <span style="font-size:14px;color:var(--text2);">UHs</span>`;
+  document.getElementById('lbl-faturamento-total').innerText = `R$ ${totalFaturado.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
   
-  document.getElementById('lbl-faturamento-total').innerText = `R$ ${bruto.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-  const f = listaFrentes.find(frente => frente.id === servicoAtivoId);
-  document.getElementById('lbl-status-frente-progresso').innerText = `${f ? f.progresso : 0}% Concluído`;
-  document.getElementById('lbl-equipes-ativas').innerText = libroAtivo.equipes.filter(e => e.ativo).length;
-  document.getElementById('lbl-casas-feitas').innerHTML = `${concluidos}/444 <span style="font-size:14px;">UHs</span>`;
+  const equipesAtivas = (libroAtivo.equipes || []).filter(e => e.ativo).length;
+  document.getElementById('lbl-equipes-ativas').innerText = equipesAtivas;
+
+  const pct = Math.round((casitas / 444) * 100);
+  document.getElementById('lbl-status-frente-progresso').innerText = `${pct}% Concluído`;
 }
 
-function salvarNoDispositivo() { localStorage.setItem('cb_frente_v9_' + servicoAtivoId, JSON.stringify(libroAtivo)); }
-function forcarSalvarTudo() { salvarNoDispositivo(); const toast = document.getElementById('toast'); toast.style.display = 'block'; setTimeout(() => toast.style.display = 'none', 2000); }
-function fazerLogout() { window.location.reload(); }
+function salvarNoDispositivo() {
+  localStorage.setItem('cb_frente_v9_' + servicoAtivoId, JSON.stringify(libroAtivo));
+  mostrarToast("Salvo com sucesso!");
+}
 
-function exportarPlanilhaExcelFrenteAtiva() { alert("Função de exportação para Excel."); }
-function gerarRelatorioPDFGeralConsolidado() { alert("Função de relatório consolidado geral."); }
+function forcarSalvarTudo() {
+  salvarNoDispositivo();
+}
 
-function gerarRelatorioPDFFrenteAtiva() {
-  const area = document.getElementById('pdf-render-area');
-  const frenteNome = listaFrentes.find(f => f.id === servicoAtivoId).nome;
-  const mesVigente = libroAtivo.mesAtivo || 'N/A';
-  const valorUnitario = libroAtivo.valorCasa || 0;
-  const modeloDivisao = libroAtivo.tipoDivisao || 'igual';
-  const pctDaCasa = libroAtivo.pctCasa || 0;
+function mostrarToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.innerText = msg;
+  toast.style.display = 'block';
+  setTimeout(() => { toast.style.display = 'none'; }, 2000);
+}
 
-  let htmlConteudo = `
-    <h2 style="text-align:center;margin-bottom:5px;color:#000;">CB ENGENHARIA</h2>
-    <h4 style="text-align:center;margin-bottom:20px;color:#555;">Fechamento de Produção - ${frenteNome} (${mesVigente})</h4>
-    <hr style="margin-bottom:20px;"/>
-  `;
+/* FUNÇÃO CENTRALIZADA DE EMISSÃO DE RELATÓRIOS MENSAIS */
+function executarEmissaoRelatorioMensal() {
+  const mesFiltro = document.getElementById('seletorMesRelatorio').value;
+  const tipo = document.getElementById('seletorTipoRelatorio').value;
+
+  if (tipo === 'resumo_pdf') {
+    gerarPDFResumoMensal(mesFiltro);
+  } else if (tipo === 'detalhado_pdf') {
+    gerarPDFExtratoDetalhado(mesFiltro);
+  } else if (tipo === 'excel') {
+    exportarExcelMensal(mesFiltro);
+  }
+}
+
+/* RELATÓRIO 1: RESUMO EM PDF FILTRADO PELO MÊS DA FRENTE */
+function gerarPDFResumoMensal(mesFiltro) {
+  const frenteObj = listaFrentes.find(f => f.id === servicoAtivoId);
+  const nomeFrente = frenteObj ? frenteObj.nome : "Frente de Serviço";
+  
+  // Filtrar casas finalizadas no mês selecionado
+  const lotesDoMes = Object.entries(libroAtivo.mappedLotes || {}).filter(([k, v]) => v.mes === mesFiltro);
+  const qtdMes = lotesDoMes.length;
+  const valUnit = libroAtivo.valorCasa || 0;
+  const totalBruto = qtdMes * valUnit;
+
+  let html = `
+    <div style="font-family: Arial, sans-serif; color: #000; padding: 20px;">
+      <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+        <h2 style="margin: 0;">CB ENGENHARIA — RELATÓRIO MENSAL DE PRODUÇÃO</h2>
+        <h4 style="margin: 5px 0; color: #444;">Frente de Serviço: ${nomeFrente} | Referência: ${mesFiltro}</h4>
+      </div>
+
+      <div style="margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 5px; border: 1px solid #ddd;">
+        <p><strong>Total de Unidades Concluídas no Mês:</strong> ${qtdMes} UHs</p>
+        <p><strong>Valor por Unidade:</strong> R$ ${valUnit.toFixed(2)}</p>
+        <p><strong>Faturamento Bruto do Mês:</strong> R$ ${totalBruto.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</p>
+      </div>
+
+      <h3>Produção por Equipes no Mês (${mesFiltro})</h3>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 10px;" border="1" cellpadding="8">
+        <thead>
+          <tr style="background: #eee;">
+            <th>Equipe</th>
+            <th>UHs Concluídas</th>
+            <th>Faturamento Bruto</th>
+            <th>Descontos Totais</th>
+          </tr>
+        </thead>
+        <tbody>`;
 
   libroAtivo.equipes.forEach(eq => {
-    let totalLotesFeitos = 0;
-    Object.keys(libroAtivo.mappedLotes).forEach(key => {
-      if(libroAtivo.mappedLotes[key].equipe === eq.nome) totalLotesFeitos++;
-    });
-
-    let faturamentoBrutoEquipe = totalLotesFeitos * valorUnitario;
-    let valorDisponivelParaEquipe = faturamentoBrutoEquipe;
-    let retencaoCasaVal = 0;
-
-    if(modeloDivisao === 'porcentagem') {
-      retencaoCasaVal = faturamentoBrutoEquipe * (pctDaCasa / 100);
-      valorDisponivelParaEquipe = faturamentoBrutoEquipe - retencaoCasaVal;
-    }
-
-    let manualValoresParaPdf = {};
-    if(modeloDivisao === 'manual' && totalLotesFeitos > 0) {
-      if(confirm(`Equipe ${eq.nome} faturou R$ ${faturamentoBrutoEquipe.toFixed(2)}. Deseja digitar os valores de produção manualmente por integrante?`)) {
-        eq.detalhesFuncionarios.forEach(f => {
-          let v = parseFloat(prompt(`Digite a produção BRUTA do(a) ${f.nome} (Sem contar descontos):`, "0")) || 0;
-          manualValoresParaPdf[f.nome] = v;
-        });
-      }
-    }
-
-    htmlConteudo += `
-      <div style="margin-bottom:30px; border:1px solid #ccc; padding:15px; border-radius:6px; color:#000;">
-        <h3 style="background:#f4f4f5; padding:8px; margin:0 0 10px 0;">👑 Equipe: ${eq.nome}</h3>
-        <p style="font-size:13px; margin-bottom:10px;">
-          <b>Total Lotes Feitos:</b> ${totalLotesFeitos} UHs | 
-          <b>Faturamento Bruto:</b> R$ ${faturamentoBrutoEquipe.toLocaleString('pt-BR', {minimumFractionDigits:2})}
-          ${modeloDivisao === 'porcentagem' ? ` | <b>Retido p/ Casa (${pctDaCasa}%):</b> R$ ${retencaoCasaVal.toLocaleString('pt-BR', {minimumFractionDigits:2})}` : ''}
-        </p>
-        <table style="width:100%; border-collapse:collapse; font-size:12px; color:#000;">
-          <thead>
-            <tr style="background:#e4e4e7; text-align:left;">
-              <th style="padding:6px;border:1px solid #ddd;">Integrante</th>
-              <th style="padding:6px;border:1px solid #ddd;">Produção Bruta</th>
-              <th style="padding:6px;border:1px solid #ddd;">Descontos</th>
-              <th style="padding:6px;border:1px solid #ddd;color:#16a34a;">Líquido a Receber</th>
-            </tr>
-          </thead>
-          <tbody>
-    `;
-
-    let totalIntegrantes = eq.detalhesFuncionarios ? eq.detalhesFuncionarios.length : 0;
-    let cotaParteIgual = totalIntegrantes > 0 ? (valorDisponivelParaEquipe / totalIntegrantes) : 0;
-
-    eq.detalhesFuncionarios.forEach(f => {
-      let brutoFunc = 0;
-      
-      if(modeloDivisao === 'manual') {
-        brutoFunc = manualValoresParaPdf[f.nome] || 0;
-      } else {
-        brutoFunc = cotaParteIgual;
-      }
-
-      let liquidoFunc = brutoFunc - (f.desconto || 0);
-      if(liquidoFunc < 0) liquidoFunc = 0;
-
-      htmlConteudo += `
-        <tr>
-          <td style="padding:6px;border:1px solid #ddd;">👤 ${f.nome}</td>
-          <td style="padding:6px;border:1px solid #ddd;">R$ ${brutoFunc.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
-          <td style="padding:6px;border:1px solid #ddd;color:#ef4444;">- R$ ${(f.desconto || 0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
-          <td style="padding:6px;border:1px solid #ddd;font-weight:bold;color:#16a34a;">R$ ${liquidoFunc.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
-        </tr>
-      `;
-    });
-
-    htmlConteudo += `</tbody></table></div>`;
+    const casinhasEq = lotesDoMes.filter(([k, v]) => v.equipe === eq.nome).length;
+    const brutoEq = casinhasEq * valUnit;
+    html += `
+      <tr>
+        <td>${eq.nome}</td>
+        <td style="text-align:center;">${casinhasEq}</td>
+        <td>R$ ${brutoEq.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+        <td>R$ ${(eq.descontoTotal || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+      </tr>`;
   });
 
-  area.innerHTML = htmlConteudo;
-  area.style.display = 'block';
+  html += `
+        </tbody>
+      </table>
+      <div style="margin-top: 40px; font-size: 10px; text-align: center; color: #666;">
+        Relatório gerado automaticamente via Plataforma de Controle CB Engenharia em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}.
+      </div>
+    </div>`;
 
+  const renderArea = document.getElementById('pdf-render-area');
+  renderArea.innerHTML = html;
+  
   const opt = {
     margin: 10,
-    filename: `Fechamento_${frenteNome.replace(/ /g, "_")}_${mesVigente.replace('/','-')}.pdf`,
+    filename: `Relatorio_${nomeFrente.replace(/\s+/g, '_')}_${mesFiltro.replace('/', '_')}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2 },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
 
-  html2pdf().from(area).set(opt).save().then(() => {
-    area.style.display = 'none';
-  });
+  html2pdf().set(opt).from(renderArea).save();
 }
+
+/* RELATÓRIO 2: EXTRATO DETALHADO POR LOTE E EQUIPE EM PDF */
+function gerarPDFExtratoDetalhado(mesFiltro) {
+  const frenteObj = listaFrentes.find(f => f.id === servicoAtivoId);
+  const nomeFrente = frenteObj ? frenteObj.nome : "Frente de Serviço";
+  const lotesDoMes = Object.entries(libroAtivo.mappedLotes || {}).filter(([k, v]) => v.mes === mesFiltro);
+
+  let html = `
+    <div style="font-family: Arial, sans-serif; color: #000; padding: 20px;">
+      <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+        <h2 style="margin: 0;">CB ENGENHARIA — EXTRATO DETALHADO DE CASAS</h2>
+        <h4 style="margin: 5px 0; color: #444;">Frente: ${nomeFrente} | Mês: ${mesFiltro}</h4>
+      </div>
+
+      <table style="width: 100%; border-collapse: collapse; font-size: 11px;" border="1" cellpadding="6">
+        <thead>
+          <tr style="background: #222; color: #fff;">
+            <th>#</th>
+            <th>Identificação do Lote</th>
+            <th>Equipe Responsável</th>
+            <th>Data de Lançamento</th>
+            <th>Valor Unitário</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+  if(lotesDoMes.length === 0) {
+    html += `<tr><td colspan="5" style="text-align:center;">Nenhum registro encontrado para este mês nesta frente.</td></tr>`;
+  } else {
+    lotesDoMes.forEach(([chaveLote, dados], idx) => {
+      html += `
+        <tr>
+          <td style="text-align:center;">${idx + 1}</td>
+          <td><strong>${chaveLote}</strong></td>
+          <td>${dados.equipe || 'N/A'}</td>
+          <td>${dados.data || 'N/A'}</td>
+          <td>R$ ${(libroAtivo.valorCasa || 0).toFixed(2)}</td>
+        </tr>`;
+    });
+  }
+
+  html += `
+        </tbody>
+      </table>
+    </div>`;
+
+  const renderArea = document.getElementById('pdf-render-area');
+  renderArea.innerHTML = html;
+  
+  const opt = {
+    margin: 10,
+    filename: `Extrato_Detalhado_${nomeFrente.replace(/\s+/g, '_')}_${mesFiltro.replace('/', '_')}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(renderArea).save();
+}
+
+/* RELATÓRIO 3: EXPORTAÇÃO EXCEL DO MÊS SELECIONADO */
+function exportarExcelMensal(mesFiltro) {
+  const frenteObj = listaFrentes.find(f => f.id === servicoAtivoId);
+  const nomeFrente = frenteObj ? frenteObj.nome : "Frente_de_Servico";
+  const lotesDoMes = Object.entries(libroAtivo.mappedLotes || {}).filter(([k, v]) => v.mes === mesFiltro);
+
+  if (lotesDoMes.length === 0) {
+    alert(`Nenhum dado encontrado para o mês ${mesFiltro} nesta frente de serviço.`);
+    return;
+  }
+
+  const dadosExcel = lotesDoMes.map(([chaveLote, dados], index) => ({
+    "Nº": index + 1,
+    "Frente de Serviço": nomeFrente,
+    "Mês de Referência": mesFiltro,
+    "Lote / Quadra": chaveLote,
+    "Equipe Responsável": dados.equipe || 'N/A',
+    "Data de Conclusão": dados.data || 'N/A',
+    "Valor Unitário (R$)": libroAtivo.valorCasa || 0
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(dadosExcel);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Produção Mensal");
+  XLSX.writeFile(workbook, `Producao_${nomeFrente}_${mesFiltro.replace('/', '_')}.xlsx`);
+}
+
+// Inicializar aplicativo
+window.onload = function() {
+  const temaSalvo = localStorage.getItem('cb_tema_preferido');
+  if (temaSalvo === 'light') {
+    document.body.classList.add('light-mode');
+    document.getElementById('btnTema').innerText = '🌓 Modo Escuro';
+  }
+};
 </script>
+
 </body>
 </html>
