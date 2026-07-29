@@ -177,6 +177,7 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
     <div class="nav-actions">
       <div class="status-pill"><div class="indicator"></div><span>Sincronizado Nuvem</span></div>
       <button class="btn-web btn-web-primary" onclick="forcarSalvarTudo()">Atualizar Dados</button>
+      <button class="btn-web" onclick="migrarDadosAntigosParaNuvemAuto()" style="border-color:#3b82f6; color:#3b82f6;">🔄 Resgatar Dados Antigos</button>
       <button class="btn-web" onclick="fazerLogout()" style="border-color:#ef4444; color:#ef4444;">Sair</button>
     </div>
   </div>
@@ -342,9 +343,8 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 </div>
 
 <div class="toast" id="toast">Dados salvos com sucesso!</div>
-<div id="pdf-render-area" style="display:none; color:#000; background:#fff; padding:20px; font-family: Arial, sans-serif;"></div>
 
-<!-- FIREBASE SDK (Sincronização Cloud em Tempo Real) -->
+<!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
@@ -359,7 +359,6 @@ if (!firebase.apps.length) {
 }
 const db = firebase.database();
 
-// Interface / UI
 const gridContainer = document.getElementById('gridContainer');
 if (gridContainer) {
   const totalBlocks = Math.ceil(window.innerWidth / 60) * Math.ceil(window.innerHeight / 60);
@@ -403,7 +402,7 @@ let listaFrentes = [
   { id: "ceramica", nome: "Piso e Revestimento Cerâmico", progresso: 0 }
 ];
 
-let servicoAtivoId = '';
+let servicoAtivoId = 'graute_sup';
 let libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Junho/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
 let funcionariosTemporarios = [];
 let equipeSelecionadaParaMarcacao = "";
@@ -423,6 +422,36 @@ function mostrarToast(msg) {
   }
 }
 
+// MIGRADAOR AUTOMÁTICO DE DADOS ANTIGOS PARA NUVEM
+function migrarDadosAntigosParaNuvemAuto() {
+  let migrou = false;
+  
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('cb_frente_') || key === 'appCBData' || key === 'cb_engenharia_dados') {
+      try {
+        const raw = localStorage.getItem(key);
+        if (raw) {
+          const dados = JSON.parse(raw);
+          let targetFrente = key.replace('cb_frente_', '');
+          if (key === 'appCBData' || key === 'cb_engenharia_dados') targetFrente = servicoAtivoId || 'graute_sup';
+          
+          if (dados && (dados.mappedLotes || dados.equipes)) {
+            db.ref('frentes/' + targetFrente).set(dados);
+            migrou = true;
+          }
+        }
+      } catch (e) {
+        console.error("Erro ao ler dados antigos:", e);
+      }
+    }
+  }
+
+  if (migrou) {
+    mostrarToast("🚀 Dados antigos migrados com sucesso para a nuvem!");
+  }
+}
+
 function fazerLogin() {
   const email = document.getElementById('email').value.trim();
   const senha = document.getElementById('password').value.trim();
@@ -437,6 +466,9 @@ function fazerLogin() {
   document.getElementById('appSidebar').style.display = 'flex';
   document.getElementById('appMain').style.display = 'block';
   
+  // Executa migração automática ao logar
+  migrarDadosAntigosParaNuvemAuto();
+  
   sincronizarFrentesGerais();
 
   if(!servicoAtivoId) {
@@ -446,6 +478,7 @@ function fazerLogin() {
     if(frenteAtual && document.getElementById('tituloFrenteAtiva')) {
       document.getElementById('tituloFrenteAtiva').innerText = frenteAtual.nome;
     }
+    alternarFrenteDeServico(servicoAtivoId, frenteAtual ? frenteAtual.nome : 'Graute Superior');
   }
 }
 
@@ -507,7 +540,7 @@ function conectarSincronizacaoTempoReal() {
       if (!libroAtivo.tipoDivisao) libroAtivo.tipoDivisao = 'igual';
       if (!libroAtivo.pctCasa) libroAtivo.pctCasa = 0;
     } else {
-      libroAtivo = { mappedLotes: {}, valorCasa: 253, mesAtivo: 'Junho/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
+      libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Junho/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
     }
 
     let mesPart = 'Junho';
@@ -559,7 +592,7 @@ function salvarEstadoNuvem() {
 
 function forcarSalvarTudo() {
   salvarEstadoNuvem();
-  mostrarToast("Dados sincronizados com sucesso!");
+  mostrarToast("Dados sincronizados com a nuvem!");
 }
 
 function atualizarSeletorEquipeSuperior() {
