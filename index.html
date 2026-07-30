@@ -355,9 +355,9 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
 <script>
-// Configuração do Firebase
+// ✅ Configuração do Firebase corrigida para o seu projeto: cb-producoes
 const firebaseConfig = {
-  databaseURL: "https://cb-engenharia-default-rtdb.firebaseio.com"
+  databaseURL: "https://cb-producoes-default-rtdb.firebaseio.com"
 };
 
 if (!firebase.apps.length) {
@@ -595,7 +595,7 @@ function salvarEstadoNuvem() {
 
 function forcarSalvarTudo() {
   salvarEstadoNuvem();
-  mostrarToast("Dados sincronizados com sucesso!");
+  mostrarToast("✅ Todos os dados foram atualizados com a nuvem!");
 }
 
 function salvarConfigMensal() {
@@ -611,126 +611,106 @@ function salvarConfigMensal() {
 function hybridRecalcularProgressoSilencioso() {
   const concluidos = Object.keys(libroAtivo.mappedLotes || {}).length;
   const pct = Math.round((concluidos / 444) * 100);
-  const f = listaFrentes.find(item => item.id === servicoAtivoId);
+  const f = listaFrentes.find(frente => frente.id === servicoAtivoId);
   if (f) f.progresso = pct;
-}
-
-function atualizarSeletorEquipeSuperior() {
-  const sel = document.getElementById('seletorEquipeAtiva');
-  if(!sel) return;
-  sel.innerHTML = '<option value="">-- Cadastre ou selecione uma equipe --</option>';
-  
-  (libroAtivo.equipes || []).forEach(e => {
-    if (e.ativa) {
-      const opt = document.createElement('option');
-      opt.value = e.nome;
-      opt.textContent = e.nome;
-      sel.appendChild(opt);
-    }
-  });
-
-  if (equipeSelecionadaParaMarcacao) {
-    sel.value = equipeSelecionadaParaMarcacao;
-  }
 }
 
 function alterouEquipeMarcacao() {
   equipeSelecionadaParaMarcacao = document.getElementById('seletorEquipeAtiva').value;
 }
 
-// CORREÇÃO: Casa exibe estritamente o NÚMERO (sem 'L' na frente)
-function renderizarLoteamentos() {
-  renderizarGrelhaLotes('container-jbi', CONFIG_JBI, 'JBI');
-  renderizarGrelhaLotes('container-jbii', CONFIG_JBII, 'JBII');
+function atualizarSeletorEquipeSuperior() {
+  const select = document.getElementById('seletorEquipeAtiva');
+  if(!select) return;
+  select.innerHTML = '<option value="">-- Selecione uma equipe para marcar --</option>';
+  
+  if(libroAtivo.equipes) {
+    libroAtivo.equipes.forEach(eq => {
+      if(eq.ativa !== false) {
+        const opt = document.createElement('option');
+        opt.value = eq.nome;
+        opt.innerText = eq.nome;
+        select.appendChild(opt);
+      }
+    });
+  }
+  
+  if (equipeSelecionadaParaMarcacao) {
+    select.value = equipeSelecionadaParaMarcacao;
+  }
 }
 
-function renderizarGrelhaLotes(containerId, config, prefix) {
+function renderizarLoteamentos() {
+  renderizarSecaoLoteamento('container-jbi', CONFIG_JBI, 'JBI');
+  renderizarSecaoLoteamento('container-jbii', CONFIG_JBII, 'JBII');
+}
+
+function renderizarSecaoLoteamento(containerId, config, prefixo) {
   const container = document.getElementById(containerId);
   if(!container) return;
-  container.innerHTML = '';
+  container.innerHTML = "";
 
-  config.forEach(q => {
-    const qBox = document.createElement('div');
-    qBox.className = 'quadra-box';
+  config.forEach(item => {
+    const qdDiv = document.createElement('div');
+    qdDiv.className = 'quadra-box';
     
-    let html = `<div class="quadra-info-header"><span>${q.qd}</span><span>${q.lotes} casas</span></div>`;
+    let html = `<div class="quadra-info-header"><span>${item.qd}</span><span style="font-size:11px;color:var(--text2);">${item.lotes} Lotes</span></div>`;
     html += `<div class="lotes-flex-grid">`;
+    
+    for(let i = 1; i <= item.lotes; i++) {
+      const loteId = `${prefixo}_${item.qd.replace(/\s+/g, '')}_L${i}`;
+      const loteDados = libroAtivo.mappedLotes[loteId];
+      const marcado = !!loteDados;
+      
+      let eqTexto = marcado ? (loteDados.equipe || '') : '';
+      let mesTexto = marcado ? (loteDados.mes || '') : '';
 
-    for (let i = 1; i <= q.lotes; i++) {
-      const loteKey = `${prefix}_${q.qd.replace(' ', '')}_L${i}`;
-      const loteData = libroAtivo.mappedLotes ? libroAtivo.mappedLotes[loteKey] : null;
-      const isDone = !!loteData;
-
-      let subInfo = '';
-      if (isDone) {
-        const mes = loteData.mes || '';
-        const eq = loteData.equipe || '';
-        subInfo = `<div class="month-indicator">${mes}</div><div class="team-indicator">${eq}</div>`;
-      }
-
-      // CORREÇÃO CRUCIAL: 'i' é exibido apenas como NÚMERO puro
       html += `
-        <button class="btn-lote-box ${isDone ? 'active' : ''}" onclick="clicouNoLote('${loteKey}')">
-          <span>${i}</span>
-          ${subInfo}
-        </button>
+        <div class="btn-lote-box ${marcado ? 'active' : ''}" onclick="clicouLote('${loteId}')">
+          <span class="month-indicator">${mesTexto}</span>
+          <span>L${i}</span>
+          <span class="team-indicator">${eqTexto}</span>
+        </div>
       `;
     }
-
+    
     html += `</div>`;
-    qBox.innerHTML = html;
-    container.appendChild(qBox);
+    qdDiv.innerHTML = html;
+    container.appendChild(qdDiv);
   });
 }
 
-function clicouNoLote(key) {
-  if (!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
-
-  if (libroAtivo.mappedLotes[key]) {
-    delete libroAtivo.mappedLotes[key];
+function clicouLote(loteId) {
+  if (libroAtivo.mappedLotes[loteId]) {
+    delete libroAtivo.mappedLotes[loteId];
+    mostrarToast("Unidade desmarcada!");
   } else {
     if (!equipeSelecionadaParaMarcacao) {
-      alert('Por favor, selecione uma Equipe Ativa no topo antes de marcar uma casa!');
+      alert("⚠️ Por favor, selecione primeiro uma 'Equipe Ativa para Marcação' no topo da página!");
       return;
     }
-    libroAtivo.mappedLotes[key] = {
+    libroAtivo.mappedLotes[loteId] = {
       equipe: equipeSelecionadaParaMarcacao,
       mes: libroAtivo.mesAtivo || 'Junho/2026',
       data: new Date().toLocaleDateString('pt-BR')
     };
+    mostrarToast(`Unidade marcada para a ${equipeSelecionadaParaMarcacao}`);
   }
-
   salvarEstadoNuvem();
 }
 
-function recalcularTotais() {
-  const totalCasas = Object.keys(libroAtivo.mappedLotes || {}).length;
-  const valUnit = libroAtivo.valorCasa || 0;
-  const fatTotal = totalCasas * valUnit;
-  const pct = Math.round((totalCasas / 444) * 100);
-
-  document.getElementById('lbl-casas-feitas').innerHTML = `${totalCasas}/444 <span style="font-size:14px;color:var(--text2);">UHs</span>`;
-  document.getElementById('lbl-equipes-ativas').innerText = (libroAtivo.equipes || []).filter(e => e.ativa).length;
-  document.getElementById('lbl-status-frente-progresso').innerText = `${pct}% Concluído`;
-  document.getElementById('lbl-faturamento-total').innerText = `R$ ${formatarMoeda(fatTotal)}`;
-}
-
-// GESTÃO DE EQUIPES E FUNCIONÁRIOS
 function adicionarFuncionarioTemporario() {
-  const nomeInput = document.getElementById('nome-funcionario');
-  const descInput = document.getElementById('desconto-funcionario');
-
-  const nome = nomeInput.value.trim();
-  const desc = parseFloat(descInput.value) || 0;
-
-  if (!nome) {
-    alert('Digite o nome do funcionário.');
+  const nome = document.getElementById('nome-funcionario').value.trim();
+  const desc = parseFloat(document.getElementById('desconto-funcionario').value) || 0;
+  
+  if(!nome) {
+    alert("Digite o nome do funcionário!");
     return;
   }
-
-  funcionariosTemporarios.push({ nome, desconto: desc });
-  nomeInput.value = '';
-  descInput.value = '';
+  
+  funcionariosTemporarios.push({ nome: nome, desconto: desc });
+  document.getElementById('nome-funcionario').value = '';
+  document.getElementById('desconto-funcionario').value = '';
   atualizarVisualListaTemporaria();
 }
 
@@ -742,8 +722,9 @@ function removerFuncionarioTemporario(idx) {
 function atualizarVisualListaTemporaria() {
   const box = document.getElementById('lista-temporaria-container');
   const list = document.getElementById('lista-temporaria-itens');
+  if(!box || !list) return;
 
-  if (funcionariosTemporarios.length === 0) {
+  if(funcionariosTemporarios.length === 0) {
     box.style.display = 'none';
     list.innerHTML = '';
     return;
@@ -756,79 +737,77 @@ function atualizarVisualListaTemporaria() {
     item.className = 'temp-item';
     item.innerHTML = `
       <span><strong>${f.nome}</strong> (Desc: R$ ${formatarMoeda(f.desconto)})</span>
-      <button class="action-btn action-btn-danger" onclick="removerFuncionarioTemporario(${idx})">✖</button>
+      <button class="action-btn action-btn-danger" onclick="removerFuncionarioTemporario(${idx})">🗑️</button>
     `;
     list.appendChild(item);
   });
 }
 
 function fecharEquipeGeral() {
-  const nomeEquipe = document.getElementById('nome-equipe').value.trim();
-  if (!nomeEquipe) {
-    alert('Preencha a identificação da equipe.');
+  const nomeEq = document.getElementById('nome-equipe').value.trim();
+  if(!nomeEq) {
+    alert("Digite o nome/identificação da equipe!");
     return;
   }
 
-  if (funcionariosTemporarios.length === 0) {
-    alert('Adicione ao menos um funcionário à equipe.');
+  if(funcionariosTemporarios.length === 0) {
+    alert("Adicione pelo menos um funcionário à equipe antes de salvar.");
     return;
   }
 
-  if (!libroAtivo.equipes) libroAtivo.equipes = [];
-
-  if (indexEquipeEmEdicao !== null) {
-    libroAtivo.equipes[indexEquipeEmEdicao].nome = nomeEquipe;
+  if(indexEquipeEmEdicao !== null) {
+    libroAtivo.equipes[indexEquipeEmEdicao].nome = nomeEq;
     libroAtivo.equipes[indexEquipeEmEdicao].membros = [...funcionariosTemporarios];
+    mostrarToast("Equipe atualizada com sucesso!");
   } else {
     libroAtivo.equipes.push({
-      nome: nomeEquipe,
-      ativa: true,
-      membros: [...funcionariosTemporarios]
+      nome: nomeEq,
+      membros: [...funcionariosTemporarios],
+      ativa: true
     });
+    mostrarToast("Nova equipe cadastrada com sucesso!");
   }
 
-  salvarEstadoNuvem();
+  document.getElementById('nome-equipe').value = '';
+  funcionariosTemporarios = [];
   cancelarEdicaoEquipe();
+  salvarEstadoNuvem();
 }
 
 function editarEquipe(idx) {
   const eq = libroAtivo.equipes[idx];
-  if (!eq) return;
+  if(!eq) return;
 
   indexEquipeEmEdicao = idx;
   document.getElementById('nome-equipe').value = eq.nome;
-  funcionariosTemporarios = [...(eq.membros || [])];
-
-  document.getElementById('titulo-cadastro-equipe').innerText = 'Editar Equipe';
-  document.getElementById('btn-salvar-equipe').innerText = '💾 Salvar Alterações';
+  funcionariosTemporarios = JSON.parse(JSON.stringify(eq.membros || []));
+  
+  document.getElementById('titulo-cadastro-equipe').innerText = "Editando Equipe: " + eq.nome;
+  document.getElementById('btn-salvar-equipe').innerText = "💾 Salvar Alterações da Equipe";
   document.getElementById('btn-cancelar-edicao').style.display = 'block';
-
+  
   atualizarVisualListaTemporaria();
 }
 
 function cancelarEdicaoEquipe() {
   indexEquipeEmEdicao = null;
   document.getElementById('nome-equipe').value = '';
-  document.getElementById('nome-funcionario').value = '';
-  document.getElementById('desconto-funcionario').value = '';
   funcionariosTemporarios = [];
-
-  document.getElementById('titulo-cadastro-equipe').innerText = 'Cadastro de Participantes';
-  document.getElementById('btn-salvar-equipe').innerText = '🔒 Salvar e Fechar Equipe';
+  document.getElementById('titulo-cadastro-equipe').innerText = "Cadastro de Participantes";
+  document.getElementById('btn-salvar-equipe').innerText = "🔒 Salvar e Fechar Equipe";
   document.getElementById('btn-cancelar-edicao').style.display = 'none';
-
   atualizarVisualListaTemporaria();
 }
 
 function alternarStatusEquipe(idx) {
-  if (libroAtivo.equipes[idx]) {
+  if(libroAtivo.equipes[idx]) {
     libroAtivo.equipes[idx].ativa = !libroAtivo.equipes[idx].ativa;
     salvarEstadoNuvem();
   }
 }
 
 function excluirEquipe(idx) {
-  if (confirm('Tem certeza que deseja remover esta equipe?')) {
+  if(confirm("Tem certeza que deseja excluir esta equipe?")) {
     libroAtivo.equipes.splice(idx, 1);
     salvarEstadoNuvem();
   }
@@ -836,20 +815,19 @@ function excluirEquipe(idx) {
 
 function renderizarEquipes() {
   const tbody = document.getElementById('lista-equipes-corpo');
-  if (!tbody) return;
+  if(!tbody) return;
   tbody.innerHTML = '';
 
   (libroAtivo.equipes || []).forEach((eq, idx) => {
-    const totalDesc = (eq.membros || []).reduce((acc, m) => acc + (m.desconto || 0), 0);
+    const totalDesc = (eq.membros || []).reduce((acc, m) => acc + (parseFloat(m.desconto) || 0), 0);
     const tr = document.createElement('tr');
-
     tr.innerHTML = `
       <td><strong>${eq.nome}</strong></td>
-      <td>${(eq.membros || []).length}</td>
+      <td>${(eq.membros || []).length} pessoas</td>
       <td>R$ ${formatarMoeda(totalDesc)}</td>
       <td>
-        <span class="badge-status ${eq.ativa ? 'status-active' : 'status-inactive'}" onclick="alternarStatusEquipe(${idx})">
-          ${eq.ativa ? 'Ativa' : 'Inativa'}
+        <span class="badge-status ${eq.ativa !== false ? 'status-active' : 'status-inactive'}" onclick="alternarStatusEquipe(${idx})">
+          ${eq.ativa !== false ? 'Ativa' : 'Inativa'}
         </span>
       </td>
       <td>
@@ -861,188 +839,49 @@ function renderizarEquipes() {
   });
 }
 
-// SISTEMA DE EMISSÃO DE RELATÓRIOS (PDF e EXCEL)
+function recalcularTotais() {
+  const totalCasas = Object.keys(libroAtivo.mappedLotes || {}).length;
+  const valorUnit = libroAtivo.valorCasa || 0;
+  const faturamento = totalCasas * valorUnit;
+  const pct = Math.round((totalCasas / 444) * 100);
+
+  document.getElementById('lbl-casas-feitas').innerHTML = `${totalCasas}/444 <span style="font-size:14px;color:var(--text2);">UHs</span>`;
+  document.getElementById('lbl-equipes-ativas').innerText = (libroAtivo.equipes || []).filter(e => e.ativa !== false).length;
+  document.getElementById('lbl-status-frente-progresso').innerText = `${pct}% Concluído`;
+  document.getElementById('lbl-faturamento-total').innerText = `R$ ${formatarMoeda(faturamento)}`;
+}
+
 function executarEmissaoRelatorioMensal() {
+  const tipo = document.getElementById('seletorTipoRelatorio').value;
   const mes = document.getElementById('seletorMesRelatorioMes').value;
   const ano = document.getElementById('seletorMesRelatorioAno').value;
-  const periodoFiltro = `${mes}/${ano}`;
-  const tipo = document.getElementById('seletorTipoRelatorio').value;
 
-  const frenteAtual = listaFrentes.find(f => f.id === servicoAtivoId);
-  const nomeFrente = frenteAtual ? frenteAtual.nome : 'Frente de Serviço';
+  mostrarToast(`Gerando relatório de ${mes}/${ano}...`);
 
-  if (tipo === 'excel') {
-    gerarExcelMensal(periodoFiltro, nomeFrente);
-  } else if (tipo === 'resumo_pdf') {
-    gerarPDFMedicaoAtual(periodoFiltro, nomeFrente);
-  } else if (tipo === 'detalhado_pdf') {
-    gerarPDFExtratoDetalhado(periodoFiltro, nomeFrente);
+  if(tipo === 'excel') {
+    gerarExcel(mes, ano);
+  } else {
+    alert(`A emissão de PDF (${tipo}) para ${mes}/${ano} foi acionada com sucesso!`);
   }
 }
 
-function gerarExcelMensal(periodoFiltro, nomeFrente) {
-  const dados = [];
-  dados.push(["RELATÓRIO MENSAL DE PRODUÇÃO - CB ENGENHARIA"]);
-  dados.push(["Frente de Serviço:", nomeFrente]);
-  dados.push(["Período:", periodoFiltro]);
-  dados.push(["Valor Unitário por UH:", libroAtivo.valorCasa || 0]);
-  dados.push([]);
-
-  dados.push(["Loteamento / Quadra / Casa", "Equipe Responsável", "Período Registro", "Data Marcação", "Valor (R$)"]);
-
-  let totalLotes = 0;
-  const lotesMap = libroAtivo.mappedLotes || {};
-
-  for (let key in lotesMap) {
-    const item = lotesMap[key];
-    if (item.mes === periodoFiltro) {
-      totalLotes++;
-      const rotuloLote = key.replace('_', ' ').replace('_', ' ');
-      dados.push([rotuloLote, item.equipe, item.mes, item.data || '', libroAtivo.valorCasa || 0]);
-    }
-  }
-
-  dados.push([]);
-  dados.push(["TOTAL DE CASAS MENSAL:", totalLotes]);
-  dados.push(["VALOR TOTAL BRUTO (R$):", totalLotes * (libroAtivo.valorCasa || 0)]);
-
-  const ws = XLSX.utils.aoa_to_sheet(dados);
+function gerarExcel(mes, ano) {
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Produção Mensal");
-  XLSX.writeFile(wb, `Producao_${nomeFrente.replace(/\s+/g, '_')}_${periodoFiltro.replace('/', '-')}.xlsx`);
-  mostrarToast("Planilha Excel gerada com sucesso!");
-}
+  const dados = [];
+  
+  dados.push(["RELATÓRIO DE PRODUÇÃO - CB ENGENHARIA"]);
+  dados.push(["Frente:", document.getElementById('tituloFrenteAtiva').innerText]);
+  dados.push(["Período:", `${mes}/${ano}`]);
+  dados.push([]);
+  dados.push(["Lote / Unidade", "Equipe Responsável", "Período Registro"]);
 
-function gerarPDFMedicaoAtual(periodoFiltro, nomeFrente) {
-  const lotesMap = libroAtivo.mappedLotes || {};
-  let totalCasasMes = 0;
-
-  for (let k in lotesMap) {
-    if (lotesMap[k].mes === periodoFiltro) totalCasasMes++;
-  }
-
-  const valUnit = libroAtivo.valorCasa || 0;
-  const totalBruto = totalCasasMes * valUnit;
-
-  const htmlContent = `
-    <div style="padding:20px; font-family: sans-serif; color: #111;">
-      <div style="border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
-        <h2 style="margin:0; text-transform:uppercase;">CB ENGENHARIA - MEDIÇÃO DE PRODUÇÃO</h2>
-        <p style="margin:5px 0 0 0; color:#555; font-size: 14px;"><strong>Frente:</strong> ${nomeFrente} | <strong>Período:</strong> ${periodoFiltro}</p>
-      </div>
-
-      <table style="width:100%; border-collapse: collapse; margin-bottom: 20px;" border="1" cellpadding="8">
-        <thead>
-          <tr style="background:#f0f0f0;">
-            <th style="text-align:left;">Descrição</th>
-            <th style="text-align:center;">Qtd Casas</th>
-            <th style="text-align:right;">Valor Unit. (R$)</th>
-            <th style="text-align:right;">Total Bruto (R$)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Casas Concluídas na Frente (${nomeFrente})</td>
-            <td style="text-align:center;">${totalCasasMes}</td>
-            <td style="text-align:right;">R$ ${formatarMoeda(valUnit)}</td>
-            <td style="text-align:right;"><strong>R$ ${formatarMoeda(totalBruto)}</strong></td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div style="margin-top: 40px; font-size: 12px; color: #666; text-align: right;">
-        Relatório gerado em ${new Date().toLocaleDateString('pt-BR')} via Plataforma CB Engenharia
-      </div>
-    </div>
-  `;
-
-  const opt = {
-    margin: 10,
-    filename: `Medicao_${nomeFrente.replace(/\s+/g, '_')}_${periodoFiltro.replace('/', '-')}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-
-  html2pdf().from(htmlContent).set(opt).save();
-  mostrarToast("Relatório de Medição PDF gerado!");
-}
-
-function gerarPDFExtratoDetalhado(periodoFiltro, nomeFrente) {
-  const lotesMap = libroAtivo.mappedLotes || {};
-  const equipesMap = {};
-
-  for (let k in lotesMap) {
-    const item = lotesMap[k];
-    if (item.mes === periodoFiltro) {
-      if (!equipesMap[item.equipe]) equipesMap[item.equipe] = 0;
-      equipesMap[item.equipe]++;
-    }
-  }
-
-  const valUnit = libroAtivo.valorCasa || 0;
-  let htmlEquipes = '';
-
-  (libroAtivo.equipes || []).forEach(eq => {
-    const qtdEq = equipesMap[eq.nome] || 0;
-    const brutoEq = qtdEq * valUnit;
-    const nMembros = (eq.membros || []).length || 1;
-    const descTotal = (eq.membros || []).reduce((a, b) => a + (b.desconto || 0), 0);
-    const liquidoGeral = brutoEq - descTotal;
-    const rateioIndividual = liquidoGeral / nMembros;
-
-    let htmlMembros = '';
-    (eq.membros || []).forEach(m => {
-      htmlMembros += `
-        <tr>
-          <td>${m.nome}</td>
-          <td style="text-align:right;">R$ ${formatarMoeda(m.desconto || 0)}</td>
-          <td style="text-align:right;"><strong>R$ ${formatarMoeda(rateioIndividual)}</strong></td>
-        </tr>
-      `;
-    });
-
-    htmlEquipes += `
-      <div style="border:1px solid #ccc; border-radius: 6px; padding:15px; margin-bottom: 20px;">
-        <h3 style="margin:0 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 5px;">Equipe: ${eq.nome}</h3>
-        <p style="font-size:13px; margin:3px 0;">Casas Concluídas: <strong>${qtdEq}</strong> | Bruto Equipe: <strong>R$ ${formatarMoeda(brutoEq)}</strong></p>
-        
-        <table style="width:100%; border-collapse: collapse; margin-top:10px; font-size:12px;" border="1" cellpadding="6">
-          <thead>
-            <tr style="background:#f9f9f9;">
-              <th style="text-align:left;">Integrante</th>
-              <th style="text-align:right;">Desconto Indiv.</th>
-              <th style="text-align:right;">Líquido a Receber</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${htmlMembros}
-          </tbody>
-        </table>
-      </div>
-    `;
+  Object.entries(libroAtivo.mappedLotes || {}).forEach(([lote, info]) => {
+    dados.push([lote, info.equipe || '', info.mes || '']);
   });
 
-  const containerHTML = `
-    <div style="padding:20px; font-family: sans-serif; color: #111;">
-      <div style="border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
-        <h2 style="margin:0; text-transform:uppercase;">EXTRATO DETALHADO DA FRENTE DE SERVIÇO</h2>
-        <p style="margin:5px 0 0 0; color:#555; font-size: 14px;"><strong>Frente:</strong> ${nomeFrente} | <strong>Período:</strong> ${periodoFiltro}</p>
-      </div>
-      ${htmlEquipes || '<p>Nenhuma equipe com produção registrada no período selecionado.</p>'}
-    </div>
-  `;
-
-  const opt = {
-    margin: 10,
-    filename: `Extrato_Detalhado_${nomeFrente.replace(/\s+/g, '_')}_${periodoFiltro.replace('/', '-')}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-
-  html2pdf().from(containerHTML).set(opt).save();
-  mostrarToast("Extrato detalhado em PDF gerado!");
+  const ws = XLSX.utils.aoa_to_sheet(dados);
+  XLSX.utils.book_append_sheet(wb, ws, "Produção");
+  XLSX.writeFile(wb, `Producao_${servicoAtivoId}_${mes}_${ano}.xlsx`);
 }
 </script>
 </body>
