@@ -355,7 +355,6 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
 <script>
-// ✅ Configuração do Firebase corrigida para o seu projeto: cb-producoes
 const firebaseConfig = {
   databaseURL: "https://cb-producoes-default-rtdb.firebaseio.com"
 };
@@ -645,6 +644,7 @@ function renderizarLoteamentos() {
   renderizarSecaoLoteamento('container-jbii', CONFIG_JBII, 'JBII');
 }
 
+// 🎯 AJUSTE FEITO AQUI: Removido o 'L' antes da variável ${i}
 function renderizarSecaoLoteamento(containerId, config, prefixo) {
   const container = document.getElementById(containerId);
   if(!container) return;
@@ -668,7 +668,7 @@ function renderizarSecaoLoteamento(containerId, config, prefixo) {
       html += `
         <div class="btn-lote-box ${marcado ? 'active' : ''}" onclick="clicouLote('${loteId}')">
           <span class="month-indicator">${mesTexto}</span>
-          <span>L${i}</span>
+          <span>${i}</span>
           <span class="team-indicator">${eqTexto}</span>
         </div>
       `;
