@@ -34,8 +34,8 @@ body.light-mode {
   --accent: #000000;          
   --text: #09090b;
   --text2: #71717a;
-  --lote-bg: #f4f4f5;
-  --lote-text: #71717a;
+  --lote-bg: #ffffff;
+  --lote-text: #3f3f46;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -53,9 +53,10 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 .input-group { margin-bottom: 18px; text-align: left; }
 .input-group label { display: block; color: #222; margin-bottom: 6px; font-size: 13px; font-weight: 600; }
 .input-group input { width: 100%; padding: 12px; background: #f4f4f5; border: 1px solid #e4e4e7; color: #000; border-radius: 6px; font-size: 14px; }
-.btn-login { background: #000000; color: #ffffff; padding: 14px; border: none; width: 100%; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 15px; }
+.btn-login { background: #000000; color: #ffffff; padding: 14px; border: none; width: 100%; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; }
+.btn-login:hover { background: #27272a; }
 
-.sidebar { width: 290px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0; }
+.sidebar { width: 290px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0; flex-shrink: 0; }
 .sidebar-header { padding: 20px 20px 15px 20px; border-bottom: 1px solid var(--border); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .sidebar-logo-img { max-width: 90px; height: auto; object-fit: contain; margin-bottom: 2px; }
 body.light-mode .sidebar-logo-img { filter: invert(1); }
@@ -90,7 +91,7 @@ body.light-mode .sidebar-logo-img { filter: invert(1); }
 .selector-top-box label { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text); }
 .selector-top-box select { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 10px 15px; border-radius: 6px; font-size: 14px; font-weight: 600; min-width: 250px; cursor: pointer; }
 
-.top-metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 25px; }
+.top-metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 25px; }
 .metric-card { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: var(--radius); }
 .metric-card p { font-size: 12px; color: var(--text2); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
 .metric-card h3 { font-size: 24px; font-weight: 700; margin-top: 6px; font-family: var(--mono); }
@@ -111,6 +112,9 @@ body.light-mode .sidebar-logo-img { filter: invert(1); }
 body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: #000; padding: 0px 2px; border-radius: 2px; }
 
 .management-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 25px; }
+@media (max-width: 1024px) {
+  .management-container { grid-template-columns: 1fr; }
+}
 .manage-box { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: var(--radius); }
 .manage-box h4 { font-size: 14px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
 .form-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; align-items: flex-end; }
@@ -118,7 +122,7 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 .form-row .input-wrapper label { font-size: 11px; color: var(--text2); }
 .form-row input, .form-row select { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 6px; font-size: 13px; width: 100%; }
 
-.input-money-container { position: relative; display: flex; align-items: center; }
+.input-money-container { position: relative; display: flex; align-items: center; width: 100%; }
 .input-money-container .money-prefix { position: absolute; left: 10px; font-size: 13px; font-weight: 600; color: var(--text2); pointer-events: none; }
 .input-money-container input { padding-left: 32px !important; }
 
@@ -133,6 +137,9 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 .toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: var(--surface); padding: 12px 24px; border-radius: var(--radius); display: none; z-index: 10000; font-size: 14px; font-weight: 600; }
 .temp-list { background: var(--bg); padding: 10px; border-radius: 6px; border: 1px dashed var(--border); margin-bottom: 15px; font-size: 12px; }
 .temp-item { display: flex; justify-content: space-between; padding: 4px 0; color: var(--text2); align-items: center; border-bottom: 1px solid #333; }
+.action-btn { background: transparent; border: none; cursor: pointer; color: var(--text2); font-size: 14px; margin: 0 4px; transition: color 0.2s; }
+.action-btn:hover { color: var(--text); }
+.action-btn-danger:hover { color: #ef4444; }
 </style>
 </head>
 <body>
@@ -147,11 +154,11 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
     <p>Plataforma de Controle de Produções</p>
     <div class="input-group">
       <label>Login</label>
-      <input type="email" id="email" placeholder="">
+      <input type="email" id="email" placeholder="admin@cb.com">
     </div>
     <div class="input-group">
       <label>Senha</label>
-      <input type="password" id="password" placeholder="">
+      <input type="password" id="password" placeholder="••••••••">
     </div>
     <button class="btn-login" id="btnLoginAction" onclick="fazerLogin()">Acessar</button>
     <p id="erroLogin" style="color:#ef4444; margin-top:15px; font-size:13px; font-weight:600;"></p>
@@ -422,10 +429,8 @@ function mostrarToast(msg) {
   }
 }
 
-// MIGRADAOR AUTOMÁTICO DE DADOS ANTIGOS PARA NUVEM
 function migrarDadosAntigosParaNuvemAuto() {
   let migrou = false;
-  
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key.startsWith('cb_frente_') || key === 'appCBData' || key === 'cb_engenharia_dados') {
@@ -449,6 +454,8 @@ function migrarDadosAntigosParaNuvemAuto() {
 
   if (migrou) {
     mostrarToast("🚀 Dados antigos migrados com sucesso para a nuvem!");
+  } else {
+    mostrarToast("Nenhum dado antigo encontrado no navegador.");
   }
 }
 
@@ -466,9 +473,7 @@ function fazerLogin() {
   document.getElementById('appSidebar').style.display = 'flex';
   document.getElementById('appMain').style.display = 'block';
   
-  // Executa migração automática ao logar
   migrarDadosAntigosParaNuvemAuto();
-  
   sincronizarFrentesGerais();
 
   if(!servicoAtivoId) {
@@ -503,6 +508,7 @@ function ajustarCamposDivisaoGeral() {
 
 function renderizarMenuLateral() {
   const container = document.getElementById('menuFrentes');
+  if(!container) return;
   container.innerHTML = "";
   listaFrentes.forEach(frente => {
     const wrapper = document.createElement('div');
@@ -597,104 +603,106 @@ function forcarSalvarTudo() {
 
 function atualizarSeletorEquipeSuperior() {
   const seletor = document.getElementById('seletorEquipeAtiva');
-  seletor.innerHTML = '<option value="">-- Selecione a Equipe Responsável --</option>';
+  if(!seletor) return;
+  seletor.innerHTML = '<option value="">-- Selecione uma equipe para marcação --</option>';
   
-  libroAtivo.equipes.forEach(e => {
-    if(e.ativo) {
-      const opt = document.createElement('option');
-      opt.value = e.nome;
-      opt.innerText = `👑 ${e.nome}`;
-      if(equipeSelecionadaParaMarcacao === e.nome) opt.selected = true;
-      seletor.appendChild(opt);
-    }
+  (libroAtivo.equipes || []).filter(e => e.ativa !== false).forEach(eq => {
+    const opt = document.createElement('option');
+    opt.value = eq.nome;
+    opt.innerText = eq.nome + ` (${eq.membros ? eq.membros.length : 0} integrantes)`;
+    seletor.appendChild(opt);
   });
+
+  if (equipeSelecionadaParaMarcacao) {
+    seletor.value = equipeSelecionadaParaMarcacao;
+  }
 }
 
 function alterouEquipeMarcacao() {
   equipeSelecionadaParaMarcacao = document.getElementById('seletorEquipeAtiva').value;
 }
 
+function salvarConfigMensal() {
+  const mes = document.getElementById('cfg-mes-nome').value;
+  const ano = document.getElementById('cfg-mes-ano').value;
+  libroAtivo.mesAtivo = mes + '/' + ano;
+  libroAtivo.valorCasa = parseFloat(document.getElementById('cfg-valor-casa').value) || 0;
+  libroAtivo.tipoDivisao = document.getElementById('cfg-tipo-divisao').value;
+  libroAtivo.pctCasa = parseFloat(document.getElementById('cfg-pct-casa').value) || 0;
+  salvarEstadoNuvem();
+}
+
 function hybridRecalcularProgressoSilencioso() {
   const concluidos = Object.keys(libroAtivo.mappedLotes || {}).length;
   const pct = Math.round((concluidos / 444) * 100);
   const f = listaFrentes.find(frente => frente.id === servicoAtivoId);
-  if(f) f.progresso = pct;
+  if (f) f.progresso = pct;
 }
 
 function renderizarLoteamentos() {
-  renderizarBloco('container-jbi', CONFIG_JBI, 'JBI');
-  renderizarBloco('container-jbii', CONFIG_JBII, 'JBII');
+  renderizarLoteamentoEspecifico('container-jbi', CONFIG_JBI, 'JBI');
+  renderizarLoteamentoEspecifico('container-jbii', CONFIG_JBII, 'JBII');
 }
 
-function renderizarBloco(elementId, config, prefix) {
-  const container = document.getElementById(elementId);
+function renderizarLoteamentoEspecifico(containerId, config, prefixo) {
+  const container = document.getElementById(containerId);
+  if(!container) return;
   container.innerHTML = "";
+
   config.forEach(q => {
-    const box = document.createElement('div');
-    box.className = "quadra-box";
-    box.innerHTML = `<div class="quadra-info-header"><span>Quadra ${q.qd}</span><span style="font-size:11px;opacity:0.6;">${q.lotes} Lotes</span></div>`;
-    const flexGrid = document.createElement('div');
-    flexGrid.className = "lotes-flex-grid";
-    for(let i = 1; i <= q.lotes; i++) {
-      const loteKey = `${prefix}-${q.qd}-L${String(i).padStart(2,'0')}`;
-      const dadoLote = libroAtivo.mappedLotes && libroAtivo.mappedLotes[loteKey];
-      const isDone = !!dadoLote;
-      
-      let tNome = '';
-      let tMes = '';
-      if(isDone) {
-        tNome = (typeof dadoLote === 'string') ? dadoLote : (dadoLote.equipe || 'Equipe Geral');
-        tMes = (dadoLote && dadoLote.mes) ? dadoLote.mes.split('/')[0] : '';
-      }
+    const qBox = document.createElement('div');
+    qBox.className = 'quadra-box';
+
+    let loteCount = 0;
+    for (let i = 1; i <= q.lotes; i++) {
+      const loteKey = `${prefixo}_${q.qd}_L${i}`;
+      if (libroAtivo.mappedLotes[loteKey]) loteCount++;
+    }
+
+    qBox.innerHTML = `
+      <div class="quadra-info-header">
+        <span>${q.qd}</span>
+        <span style="font-size:12px; color:var(--text2);">${loteCount}/${q.lotes} Concluídos</span>
+      </div>
+      <div class="lotes-flex-grid" id="grid-${prefixo}-${q.qd.replace(' ', '')}"></div>
+    `;
+    container.appendChild(qBox);
+
+    const gridLotes = qBox.querySelector(`.lotes-flex-grid`);
+    for (let i = 1; i <= q.lotes; i++) {
+      const loteKey = `${prefixo}_${q.qd}_L${i}`;
+      const loteData = libroAtivo.mappedLotes[loteKey];
+      const isDone = !!loteData;
 
       const btn = document.createElement('div');
       btn.className = `btn-lote-box ${isDone ? 'active' : ''}`;
       
-      if(isDone) {
-        btn.setAttribute('title', `Mês: ${dadoLote.mes || 'N/A'} | Equipe: ${tNome}`);
-        btn.innerHTML = `<span class="month-indicator">${tMes}</span><span>${String(i).padStart(2,'0')}</span><span class="team-indicator">${tNome}</span>`;
-      } else {
-        btn.innerHTML = `<span>${String(i).padStart(2,'0')}</span>`;
-      }
-
-      btn.onclick = () => alternarLote(loteKey);
-      flexGrid.appendChild(btn);
+      let mesHtml = isDone ? `<div class="month-indicator">${loteData.mes || ''}</div>` : '';
+      let teamHtml = isDone ? `<div class="team-indicator">${loteData.equipe || ''}</div>` : '';
+      
+      btn.innerHTML = `${mesHtml}<div>L${i}</div>${teamHtml}`;
+      btn.onclick = () => alternarStatusLote(loteKey);
+      gridLotes.appendChild(btn);
     }
-    box.appendChild(flexGrid);
-    container.appendChild(box);
   });
 }
 
-function alternarLote(key) {
-  if(!equipeSelecionadaParaMarcacao && !libroAtivo.mappedLotes[key]) {
-    alert("Por favor, selecione uma 'Equipe Ativa' no topo da tela antes de marcar a produção.");
-    return;
-  }
-
-  const mesSel = document.getElementById('cfg-mes-nome').value;
-  const anoSel = document.getElementById('cfg-mes-ano').value;
-  const mesFormatado = `${mesSel}/${anoSel}`;
-
-  if(libroAtivo.mappedLotes[key]) {
-    delete libroAtivo.mappedLotes[key];
+function alternarStatusLote(loteKey) {
+  if (libroAtivo.mappedLotes[loteKey]) {
+    delete libroAtivo.mappedLotes[loteKey];
   } else {
-    libroAtivo.mappedLotes[key] = {
+    if (!equipeSelecionadaParaMarcacao) {
+      alert("Por favor, selecione uma equipe ativa no topo da página antes de marcar lotes!");
+      return;
+    }
+    const mes = document.getElementById('cfg-mes-nome').value;
+    const ano = document.getElementById('cfg-mes-ano').value;
+    libroAtivo.mappedLotes[loteKey] = {
       equipe: equipeSelecionadaParaMarcacao,
-      mes: mesFormatado
+      mes: `${mes}/${ano}`,
+      data: new Date().toLocaleDateString('pt-BR')
     };
   }
-
-  salvarEstadoNuvem();
-}
-
-function salvarConfigMensal() {
-  const m = document.getElementById('cfg-mes-nome').value;
-  const a = document.getElementById('cfg-mes-ano').value;
-  libroAtivo.mesAtivo = `${m}/${a}`;
-  libroAtivo.valorCasa = parseFloat(document.getElementById('cfg-valor-casa').value) || 0;
-  libroAtivo.tipoDivisao = document.getElementById('cfg-tipo-divisao').value;
-  libroAtivo.pctCasa = parseFloat(document.getElementById('cfg-pct-casa').value) || 0;
-
   salvarEstadoNuvem();
 }
 
@@ -702,194 +710,182 @@ function adicionarFuncionarioTemporario() {
   const nome = document.getElementById('nome-funcionario').value.trim();
   const desc = parseFloat(document.getElementById('desconto-funcionario').value) || 0;
 
-  if(!nome) {
+  if (!nome) {
     alert("Digite o nome do funcionário.");
     return;
   }
 
-  funcionariosTemporarios.push({ nome, desconto: desc });
-  document.getElementById('nome-funcionario').value = "";
-  document.getElementById('desconto-funcionario').value = "";
+  funcionariosTemporarios.push({ nome: nome, desconto: desc });
+  document.getElementById('nome-funcionario').value = '';
+  document.getElementById('desconto-funcionario').value = '';
   atualizarVisualListaTemporaria();
 }
 
-function removerFuncionarioTemporario(i) {
-  funcionariosTemporarios.splice(i, 1);
+function removerFuncionarioTemporario(index) {
+  funcionariosTemporarios.splice(index, 1);
   atualizarVisualListaTemporaria();
 }
 
 function atualizarVisualListaTemporaria() {
-  const box = document.getElementById('lista-temporaria-container');
-  const container = document.getElementById('lista-temporaria-itens');
-  container.innerHTML = "";
+  const container = document.getElementById('lista-temporaria-container');
+  const lista = document.getElementById('lista-temporaria-itens');
+  if(!container || !lista) return;
 
-  if(funcionariosTemporarios.length === 0) {
-    box.style.display = "none";
+  if (funcionariosTemporarios.length === 0) {
+    container.style.display = 'none';
+    lista.innerHTML = '';
     return;
   }
 
-  box.style.display = "block";
-  funcionariosTemporarios.forEach((item, idx) => {
-    const el = document.createElement('div');
-    el.className = "temp-item";
-    el.innerHTML = `
-      <span>👤 ${item.nome} ${item.desconto > 0 ? `(Desc: R$ ${formatarMoeda(item.desconto)})` : ''}</span>
-      <button onclick="removerFuncionarioTemporario(${idx})" style="background:none; border:none; color:#ef4444; cursor:pointer; font-weight:bold;">✕</button>
+  container.style.display = 'block';
+  lista.innerHTML = '';
+  funcionariosTemporarios.forEach((f, idx) => {
+    const item = document.createElement('div');
+    item.className = 'temp-item';
+    item.innerHTML = `
+      <span>${f.nome} (Desc: R$ ${formatarMoeda(f.desconto)})</span>
+      <button class="action-btn action-btn-danger" onclick="removerFuncionarioTemporario(${idx})">✕</button>
     `;
-    container.appendChild(el);
+    lista.appendChild(item);
   });
 }
 
 function fecharEquipeGeral() {
   const nomeEq = document.getElementById('nome-equipe').value.trim();
-  if(!nomeEq) {
-    alert("Digite o nome/identificação da equipe.");
+  if (!nomeEq) {
+    alert("Digite o nome da equipe.");
+    return;
+  }
+  if (funcionariosTemporarios.length === 0) {
+    alert("Adicione pelo menos um funcionário à equipe.");
     return;
   }
 
-  if(funcionariosTemporarios.length === 0) {
-    alert("Adicione pelo menos um funcionário à lista da equipe.");
-    return;
-  }
+  const novaEquipe = {
+    nome: nomeEq,
+    membros: [...funcionariosTemporarios],
+    ativa: true
+  };
 
-  if(indexEquipeEmEdicao !== null) {
-    libroAtivo.equipes[indexEquipeEmEdicao].nome = nomeEq;
-    libroAtivo.equipes[indexEquipeEmEdicao].membros = [...funcionariosTemporarios];
+  if (indexEquipeEmEdicao !== null) {
+    libroAtivo.equipes[indexEquipeEmEdicao] = novaEquipe;
+    indexEquipeEmEdicao = null;
   } else {
-    libroAtivo.equipes.push({
-      nome: nomeEq,
-      ativo: true,
-      membros: [...funcionariosTemporarios]
-    });
+    libroAtivo.equipes.push(novaEquipe);
   }
 
-  document.getElementById('nome-equipe').value = "";
+  document.getElementById('nome-equipe').value = '';
   funcionariosTemporarios = [];
   cancelarEdicaoEquipe();
-  atualizarVisualListaTemporaria();
   salvarEstadoNuvem();
+  mostrarToast("Equipe salva com sucesso!");
 }
 
-function editarEquipe(i) {
-  const eq = libroAtivo.equipes[i];
-  indexEquipeEmEdicao = i;
+function editarEquipe(idx) {
+  const eq = libroAtivo.equipes[idx];
+  if (!eq) return;
+
+  indexEquipeEmEdicao = idx;
   document.getElementById('nome-equipe').value = eq.nome;
-  funcionariosTemporarios = [...eq.membros];
+  funcionariosTemporarios = [...(eq.membros || [])];
   
-  document.getElementById('titulo-cadastro-equipe').innerText = `Editando: ${eq.nome}`;
-  document.getElementById('btn-salvar-equipe').innerText = "💾 Salvar Alterações da Equipe";
-  document.getElementById('btn-cancelar-edicao').style.display = "block";
-  
+  document.getElementById('titulo-cadastro-equipe').innerText = "Editando Equipe";
+  document.getElementById('btn-salvar-equipe').innerText = "💾 Atualizar Equipe";
+  document.getElementById('btn-cancelar-edicao').style.display = 'block';
+
   atualizarVisualListaTemporaria();
 }
 
 function cancelarEdicaoEquipe() {
   indexEquipeEmEdicao = null;
-  document.getElementById('nome-equipe').value = "";
+  document.getElementById('nome-equipe').value = '';
+  funcionariosTemporarios = [];
   document.getElementById('titulo-cadastro-equipe').innerText = "Cadastro de Participantes";
   document.getElementById('btn-salvar-equipe').innerText = "🔒 Salvar e Fechar Equipe";
-  document.getElementById('btn-cancelar-edicao').style.display = "none";
-  funcionariosTemporarios = [];
+  document.getElementById('btn-cancelar-edicao').style.display = 'none';
   atualizarVisualListaTemporaria();
 }
 
-function alternarStatusEquipe(i) {
-  libroAtivo.equipes[i].ativo = !libroAtivo.equipes[i].ativo;
-  salvarEstadoNuvem();
+function alternarStatusEquipe(idx) {
+  if (libroAtivo.equipes[idx]) {
+    libroAtivo.equipes[idx].ativa = !(libroAtivo.equipes[idx].ativa !== false);
+    salvarEstadoNuvem();
+  }
 }
 
-function excluirEquipe(i) {
-  if(confirm(`Tem certeza que deseja excluir a equipe '${libroAtivo.equipes[i].nome}'?`)) {
-    libroAtivo.equipes.splice(i, 1);
+function excluirEquipe(idx) {
+  if (confirm("Tem certeza que deseja excluir esta equipe?")) {
+    libroAtivo.equipes.splice(idx, 1);
     salvarEstadoNuvem();
   }
 }
 
 function renderizarEquipes() {
-  const tbody = document.getElementById('lista-equipes-corpo');
-  tbody.innerHTML = "";
+  const corpo = document.getElementById('lista-equipes-corpo');
+  if (!corpo) return;
+  corpo.innerHTML = '';
 
-  libroAtivo.equipes.forEach((eq, idx) => {
-    const totalDesc = eq.membros.reduce((acc, m) => acc + (m.desconto || 0), 0);
+  (libroAtivo.equipes || []).forEach((eq, idx) => {
+    const totalDesc = (eq.membros || []).reduce((acc, m) => acc + (parseFloat(m.desconto) || 0), 0);
+    const isAtiva = eq.ativa !== false;
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td style="font-weight:600;">👑 ${eq.nome}</td>
-      <td>${eq.membros.length} Integrante(s)</td>
+      <td><strong>${eq.nome}</strong></td>
+      <td>${eq.membros ? eq.membros.length : 0}</td>
       <td>R$ ${formatarMoeda(totalDesc)}</td>
+      <td><span class="badge-status ${isAtiva ? 'status-active' : 'status-inactive'}" onclick="alternarStatusEquipe(${idx})">${isAtiva ? 'Ativa' : 'Inativa'}</span></td>
       <td>
-        <span class="badge-status ${eq.ativo ? 'status-active' : 'status-inactive'}" onclick="alternarStatusEquipe(${idx})">
-          ${eq.ativo ? 'Ativa' : 'Inativa'}
-        </span>
-      </td>
-      <td>
-        <button onclick="editarEquipe(${idx})" style="background:none; border:none; color:var(--accent); cursor:pointer; margin-right:8px;" title="Editar">✏️</button>
-        <button onclick="excluirEquipe(${idx})" style="background:none; border:none; color:#ef4444; cursor:pointer;" title="Excluir">🗑️</button>
+        <button class="action-btn" onclick="editarEquipe(${idx})" title="Editar">✏️</button>
+        <button class="action-btn action-btn-danger" onclick="excluirEquipe(${idx})" title="Excluir">🗑️</button>
       </td>
     `;
-    tbody.appendChild(tr);
+    corpo.appendChild(tr);
   });
 }
 
 function recalcularTotais() {
-  const concluidos = Object.keys(libroAtivo.mappedLotes || {}).length;
-  const pct = Math.round((concluidos / 444) * 100);
-  const valUnit = libroAtivo.valorCasa || 0;
-  const fatTotal = concluidos * valUnit;
-  const equipesAtivasCount = libroAtivo.equipes.filter(e => e.ativo).length;
+  const totalConcluidos = Object.keys(libroAtivo.mappedLotes || {}).length;
+  const valorUnitario = parseFloat(libroAtivo.valorCasa) || 0;
+  const faturamentoTotal = totalConcluidos * valorUnitario;
+  const equipesAtivas = (libroAtivo.equipes || []).filter(e => e.ativa !== false).length;
+  const pct = Math.round((totalConcluidos / 444) * 100);
 
-  document.getElementById('lbl-casas-feitas').innerHTML = `${concluidos}/444 <span style="font-size:14px;color:var(--text2);">UHs</span>`;
-  document.getElementById('lbl-equipes-ativas').innerText = equipesAtivasCount;
+  document.getElementById('lbl-casas-feitas').innerHTML = `${totalConcluidos}/444 <span style="font-size:14px;color:var(--text2);">UHs</span>`;
+  document.getElementById('lbl-equipes-ativas').innerText = equipesAtivas;
   document.getElementById('lbl-status-frente-progresso').innerText = `${pct}% Concluído`;
-  document.getElementById('lbl-faturamento-total').innerText = `R$ ${formatarMoeda(fatTotal)}`;
+  document.getElementById('lbl-faturamento-total').innerText = `R$ ${formatarMoeda(faturamentoTotal)}`;
 }
 
 function executarEmissaoRelatorioMensal() {
-  const mesSel = document.getElementById('seletorMesRelatorioMes').value;
-  const anoSel = document.getElementById('seletorMesRelatorioAno').value;
-  const mesBusca = `${mesSel}/${anoSel}`;
   const tipo = document.getElementById('seletorTipoRelatorio').value;
-
-  const lotesFiltrados = {};
-  Object.keys(libroAtivo.mappedLotes || {}).forEach(k => {
-    const item = libroAtivo.mappedLotes[k];
-    const itemMes = (typeof item === 'object') ? item.mes : libroAtivo.mesAtivo;
-    if(itemMes === mesBusca) {
-      lotesFiltrados[k] = item;
-    }
-  });
-
-  const qtdFeitaMes = Object.keys(lotesFiltrados).length;
-
-  if (qtdFeitaMes === 0) {
-    alert(`Nenhuma produção encontrada para o período ${mesBusca}.`);
-    return;
-  }
+  const mes = document.getElementById('seletorMesRelatorioMes').value;
+  const ano = document.getElementById('seletorMesRelatorioAno').value;
 
   if (tipo === 'excel') {
-    gerarExcelMensal(lotesFiltrados, mesBusca);
+    gerarExcel(mes, ano);
   } else {
-    alert(`Gerando relatório PDF para o período ${mesBusca}...`);
+    alert(`Relatório em PDF ("${tipo}") para ${mes}/${ano} iniciado. Para relatórios avançados de produção, consulte a central de impressões.`);
   }
 }
 
-function gerarExcelMensal(lotesMap, mesAno) {
-  const rows = [];
-  rows.push(["RELATÓRIO DE PRODUÇÃO - CB ENGENHARIA"]);
-  rows.push(["Frente de Serviço:", document.getElementById('tituloFrenteAtiva').innerText]);
-  rows.push(["Período:", mesAno]);
-  rows.push([]);
-  rows.push(["Quadra / Lote", "Equipe Responsável", "Valor Unidade (R$)"]);
+function gerarExcel(mes, ano) {
+  const wb = XLSX.utils.book_new();
+  const dados = [
+    ["CB ENGENHARIA - RELATÓRIO DE PRODUÇÃO"],
+    ["Frente:", document.getElementById('tituloFrenteAtiva').innerText],
+    ["Período:", `${mes}/${ano}`],
+    [],
+    ["Lote / UH", "Equipe Responsável", "Mês Registro", "Data Marcação"]
+  ];
 
-  const valUnit = libroAtivo.valorCasa || 0;
-  Object.keys(lotesMap).forEach(key => {
-    const eq = (typeof lotesMap[key] === 'string') ? lotesMap[key] : (lotesMap[key].equipe || 'Equipe Geral');
-    rows.push([key, eq, valUnit]);
+  Object.entries(libroAtivo.mappedLotes || {}).forEach(([key, val]) => {
+    dados.push([key, val.equipe, val.mes, val.data || '']);
   });
 
-  const ws = XLSX.utils.aoa_to_sheet(rows);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Produção Mensal");
-  XLSX.writeFile(wb, `Producao_${servicoAtivoId}_${mesAno.replace('/', '_')}.xlsx`);
+  const ws = XLSX.utils.aoa_to_sheet(dados);
+  XLSX.utils.book_append_sheet(wb, ws, "Producao");
+  XLSX.writeFile(wb, `Producao_${servicoAtivoId}_${mes}_${ano}.xlsx`);
 }
 </script>
 </body>
