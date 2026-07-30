@@ -184,7 +184,6 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
     <div class="nav-actions">
       <div class="status-pill"><div class="indicator"></div><span>Sincronizado Nuvem</span></div>
       <button class="btn-web btn-web-primary" onclick="forcarSalvarTudo()">Atualizar Dados</button>
-      <button class="btn-web" onclick="migrarDadosAntigosParaNuvemAuto()" style="border-color:#3b82f6; color:#3b82f6;">🔄 Resgatar Dados Antigos</button>
       <button class="btn-web" onclick="fazerLogout()" style="border-color:#ef4444; color:#ef4444;">Sair</button>
     </div>
   </div>
@@ -219,8 +218,8 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 
       <label style="font-size:12px; font-weight:600; color:var(--text2);">Tipo de Relatório:</label>
       <select id="seletorTipoRelatorio">
-        <option value="resumo_pdf">📄 Medição Consolidada POO-Anexo A (PDF)</option>
-        <option value="detalhado_pdf">📄 Extrato Detalhado por Equipe POO-Anexo A (PDF)</option>
+        <option value="resumo_pdf">📄 Medição Atual (PDF)</option>
+        <option value="detalhado_pdf">📄 Extrato Detalhado por Equipe (PDF)</option>
         <option value="excel">📊 Planilha Excel Mensal (.xlsx)</option>
       </select>
 
@@ -298,7 +297,7 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
             <label>Modelo de Divisão da Produção</label>
             <select id="cfg-tipo-divisao" onchange="ajustarCamposDivisaoGeral()">
               <option value="igual">Dividir Igual Entre Todos (Padrão)</option>
-              <option value="porcentagem">Definir % para a Casa</option>
+              <option value="porcentagem">Definir % para a cada</option>
               <option value="manual">Digitar Valores Manuais no PDF</option>
             </select>
           </div>
