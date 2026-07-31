@@ -291,7 +291,11 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
       </div>
 
       <div class="manage-box">
-        <h4 id="titulo-cadastro-equipe">Cadastro de Participantes (Mês Ativo)</h4>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <h4 id="titulo-cadastro-equipe" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">Cadastro de Participantes (Mês Ativo)</h4>
+          <button class="btn-web" id="btn-importar-mes-anterior" onclick="copiarEquipesMesAnterior()" style="font-size: 11px; padding: 4px 8px; display: none; background: var(--surface2); color: var(--accent);">📋 Copiar Equipes do Mês Anterior</button>
+        </div>
+        <hr style="border:0; border-top:1px solid var(--border); margin-bottom:15px;">
         
         <div class="form-row" style="margin-bottom: 12px;">
           <div style="flex: 2; min-width: 150px;" class="input-wrapper">
@@ -427,6 +431,33 @@ function getEquipesDoMesAtivo() {
   if (!libroAtivo.equipesPorMes) libroAtivo.equipesPorMes = {};
   if (!libroAtivo.equipesPorMes[mesAno]) libroAtivo.equipesPorMes[mesAno] = [];
   return libroAtivo.equipesPorMes[mesAno];
+}
+
+function copiarEquipesMesAnterior() {
+  const mesAnoAtivo = getMesAnoAtivo();
+  const partes = mesAnoAtivo.split('/');
+  const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  let idxMes = meses.indexOf(partes[0]);
+  let ano = parseInt(partes[1]);
+
+  if (idxMes === 0) {
+    idxMes = 11;
+    ano--;
+  } else {
+    idxMes--;
+  }
+
+  const mesAnoAnterior = `${meses[idxMes]}/${ano}`;
+
+  if (libroAtivo.equipesPorMes && libroAtivo.equipesPorMes[mesAnoAnterior] && libroAtivo.equipesPorMes[mesAnoAnterior].length > 0) {
+    // Clonar equipes mantendo nomes e integrantes, mas mantendo a independència dos registros do mês
+    const equipesCopiadas = JSON.parse(JSON.stringify(libroAtivo.equipesPorMes[mesAnoAnterior]));
+    libroAtivo.equipesPorMes[mesAnoAtivo] = equipesCopiadas;
+    salvarEstadoNuvem();
+    mostrarToast(`Equipes importadas de ${mesAnoAnterior}! Ajuste os descontos se necessário.`);
+  } else {
+    alert(`Nenhuma equipe cadastrada encontrada em ${mesAnoAnterior} para copiar.`);
+  }
 }
 
 function formatarMoeda(val) {
@@ -843,10 +874,15 @@ function excluirEquipe(idx) {
 
 function renderizarEquipes() {
   const tbody = document.getElementById('lista-equipes-corpo');
+  const btnCopiar = document.getElementById('btn-importar-mes-anterior');
   if(!tbody) return;
   tbody.innerHTML = '';
   const isCabeamento = (servicoAtivoId === 'cabeamento');
   const equipesDoMes = getEquipesDoMesAtivo();
+
+  if (btnCopiar) {
+    btnCopiar.style.display = (equipesDoMes.length === 0) ? 'inline-block' : 'none';
+  }
 
   equipesDoMes.forEach((eq, idx) => {
     const totalDesc = (eq.membros || []).reduce((acc, m) => acc + (parseFloat(m.desconto) || 0), 0);
