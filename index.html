@@ -329,7 +329,7 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
           </div>
         </div>
         
-        <button class="btn-web" onclick="adicionarFuncionarioTemporario()" style="width:100%; justify-content:center; margin-bottom: 12px; background: var(--surface2);">+ Adicionar Funcionário à Lista</button>
+        <button class="btn-web" onclick="adicionarFuncionarioTemporario()" style="width:100%; justify-content:center; margin-bottom: 12px; background: var(--surface2);">+ Adicionar / Atualizar Funcionário na Lista</button>
 
         <div id="lista-temporaria-container" style="display: none;">
           <div style="font-size: 11px; color: var(--accent); margin-bottom: 4px; font-weight: 600;">Funcionários na equipe atual:</div>
@@ -644,7 +644,6 @@ function renderizarLoteamentos() {
   renderizarSecaoLoteamento('container-jbii', CONFIG_JBII, 'JBII');
 }
 
-// 🎯 AJUSTE FEITO AQUI: Removido o 'L' antes da variável ${i}
 function renderizarSecaoLoteamento(containerId, config, prefixo) {
   const container = document.getElementById(containerId);
   if(!container) return;
@@ -699,6 +698,7 @@ function clicouLote(loteId) {
   salvarEstadoNuvem();
 }
 
+// 🟢 ADICIONAR / EDICAO DE FUNCIONÁRIO DENTRO DA EQUIPE
 function adicionarFuncionarioTemporario() {
   const nome = document.getElementById('nome-funcionario').value.trim();
   const desc = parseFloat(document.getElementById('desconto-funcionario').value) || 0;
@@ -708,10 +708,28 @@ function adicionarFuncionarioTemporario() {
     return;
   }
   
-  funcionariosTemporarios.push({ nome: nome, desconto: desc });
+  // Se o funcionário já existe na lista temporária, atualiza os dados dele
+  const indexExistente = funcionariosTemporarios.findIndex(f => f.nome.toLowerCase() === nome.toLowerCase());
+  
+  if (indexExistente !== -1) {
+    funcionariosTemporarios[indexExistente].desconto = desc;
+    mostrarToast(`Dados de ${nome} atualizados na lista!`);
+  } else {
+    funcionariosTemporarios.push({ nome: nome, desconto: desc });
+    mostrarToast(`${nome} adicionado à equipe!`);
+  }
+
   document.getElementById('nome-funcionario').value = '';
   document.getElementById('desconto-funcionario').value = '';
   atualizarVisualListaTemporaria();
+}
+
+function carregarFuncionarioParaEdicao(idx) {
+  const func = funcionariosTemporarios[idx];
+  if (func) {
+    document.getElementById('nome-funcionario').value = func.nome;
+    document.getElementById('desconto-funcionario').value = func.desconto || 0;
+  }
 }
 
 function removerFuncionarioTemporario(idx) {
@@ -737,7 +755,10 @@ function atualizarVisualListaTemporaria() {
     item.className = 'temp-item';
     item.innerHTML = `
       <span><strong>${f.nome}</strong> (Desc: R$ ${formatarMoeda(f.desconto)})</span>
-      <button class="action-btn action-btn-danger" onclick="removerFuncionarioTemporario(${idx})">🗑️</button>
+      <div>
+        <button class="action-btn" title="Editar valor" onclick="carregarFuncionarioParaEdicao(${idx})">✏️</button>
+        <button class="action-btn action-btn-danger" title="Remover" onclick="removerFuncionarioTemporario(${idx})">🗑️</button>
+      </div>
     `;
     list.appendChild(item);
   });
@@ -755,7 +776,18 @@ function fecharEquipeGeral() {
     return;
   }
 
+  // Se o nome da equipe mudou, atualizar as marcações de lotes vinculadas ao nome antigo
   if(indexEquipeEmEdicao !== null) {
+    const nomeAntigo = libroAtivo.equipes[indexEquipeEmEdicao].nome;
+    
+    if (nomeAntigo !== nomeEq) {
+      Object.keys(libroAtivo.mappedLotes || {}).forEach(loteId => {
+        if (libroAtivo.mappedLotes[loteId].equipe === nomeAntigo) {
+          libroAtivo.mappedLotes[loteId].equipe = nomeEq;
+        }
+      });
+    }
+
     libroAtivo.equipes[indexEquipeEmEdicao].nome = nomeEq;
     libroAtivo.equipes[indexEquipeEmEdicao].membros = [...funcionariosTemporarios];
     mostrarToast("Equipe atualizada com sucesso!");
@@ -792,6 +824,8 @@ function editarEquipe(idx) {
 function cancelarEdicaoEquipe() {
   indexEquipeEmEdicao = null;
   document.getElementById('nome-equipe').value = '';
+  document.getElementById('nome-funcionario').value = '';
+  document.getElementById('desconto-funcionario').value = '';
   funcionariosTemporarios = [];
   document.getElementById('titulo-cadastro-equipe').innerText = "Cadastro de Participantes";
   document.getElementById('btn-salvar-equipe').innerText = "🔒 Salvar e Fechar Equipe";
@@ -858,11 +892,175 @@ function executarEmissaoRelatorioMensal() {
 
   mostrarToast(`Gerando relatório de ${mes}/${ano}...`);
 
-  if(tipo === 'excel') {
+  if (tipo === 'excel') {
     gerarExcel(mes, ano);
-  } else {
-    alert(`A emissão de PDF (${tipo}) para ${mes}/${ano} foi acionada com sucesso!`);
+  } else if (tipo === 'resumo_pdf') {
+    gerarPDFResumo(mes, ano);
+  } else if (tipo === 'detalhado_pdf') {
+    gerarPDFDetalhado(mes, ano);
   }
+}
+
+function gerarPDFResumo(mes, ano) {
+  const nomeFrente = document.getElementById('tituloFrenteAtiva').innerText;
+  const totalCasas = Object.keys(libroAtivo.mappedLotes || {}).length;
+  const valorUnit = libroAtivo.valorCasa || 0;
+  const totalBruto = totalCasas * valorUnit;
+  const pctProgresso = Math.round((totalCasas / 444) * 100);
+
+  const container = document.createElement('div');
+  container.style.padding = '30px';
+  container.style.fontFamily = 'Helvetica, Arial, sans-serif';
+  container.style.color = '#111';
+
+  container.innerHTML = `
+    <div style="border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h1 style="font-size: 22px; margin: 0; font-weight: 800; text-transform: uppercase;">CB ENGENHARIA</h1>
+        <p style="font-size: 12px; color: #555; margin-top: 4px;">Relatório Executivo de Produção Mensal</p>
+      </div>
+      <div style="text-align: right;">
+        <h3 style="font-size: 14px; margin: 0; color: #333;">Período: ${mes}/${ano}</h3>
+        <p style="font-size: 11px; color: #666; margin-top: 2px;">Frente: <strong>${nomeFrente}</strong></p>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+      <div style="flex: 1; border: 1px solid #ddd; padding: 15px; border-radius: 6px; background: #f9f9f9;">
+        <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: bold;">Casas Concluídas</span>
+        <h2 style="font-size: 20px; margin-top: 5px; color: #000;">${totalCasas} / 444 UHs</h2>
+      </div>
+      <div style="flex: 1; border: 1px solid #ddd; padding: 15px; border-radius: 6px; background: #f9f9f9;">
+        <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: bold;">Progresso Geral</span>
+        <h2 style="font-size: 20px; margin-top: 5px; color: #000;">${pctProgresso}%</h2>
+      </div>
+      <div style="flex: 1; border: 1px solid #ddd; padding: 15px; border-radius: 6px; background: #f9f9f9;">
+        <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: bold;">Valor Total Medido</span>
+        <h2 style="font-size: 20px; margin-top: 5px; color: #22c55e;">R$ ${formatarMoeda(totalBruto)}</h2>
+      </div>
+    </div>
+
+    <h3 style="font-size: 14px; border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-bottom: 12px;">Detalhamento das Unidades Produzidas</h3>
+    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+      <thead>
+        <tr style="background: #eee;">
+          <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Unidade / Lote</th>
+          <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Equipe Responsável</th>
+          <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Mês de Registro</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${Object.entries(libroAtivo.mappedLotes || {}).map(([lote, info]) => `
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 6px 8px;"><strong>${lote}</strong></td>
+            <td style="border: 1px solid #ddd; padding: 6px 8px;">${info.equipe || 'N/I'}</td>
+            <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: center;">${info.mes || `${mes}/${ano}`}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    <div style="margin-top: 40px; text-align: right; font-size: 10px; color: #888;">Emitido em: ${new Date().toLocaleString('pt-BR')} — CB Engenharia</div>
+  `;
+
+  const opt = {
+    margin:       10,
+    filename:     `Medicao_${nomeFrente.replace(/\s+/g, '_')}_${mes}_${ano}.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(container).save();
+}
+
+function gerarPDFDetalhado(mes, ano) {
+  const nomeFrente = document.getElementById('tituloFrenteAtiva').innerText;
+  const valorUnit = libroAtivo.valorCasa || 0;
+
+  const equipesMap = {};
+  (libroAtivo.equipes || []).forEach(eq => {
+    equipesMap[eq.nome] = { membros: eq.membros || [], lotes: [] };
+  });
+
+  Object.entries(libroAtivo.mappedLotes || {}).forEach(([loteId, info]) => {
+    const eqNome = info.equipe;
+    if (eqNome) {
+      if (!equipesMap[eqNome]) equipesMap[eqNome] = { membros: [], lotes: [] };
+      equipesMap[eqNome].lotes.push(loteId);
+    }
+  });
+
+  const container = document.createElement('div');
+  container.style.padding = '30px';
+  container.style.fontFamily = 'Helvetica, Arial, sans-serif';
+  container.style.color = '#111';
+
+  let htmlEquipes = '';
+
+  Object.entries(equipesMap).forEach(([eqNome, dados]) => {
+    const totalCasas = dados.lotes.length;
+    const valorBruto = totalCasas * valorUnit;
+    const totalDescontos = dados.membros.reduce((acc, m) => acc + (parseFloat(m.desconto) || 0), 0);
+    const valorLiquido = valorBruto - totalDescontos;
+
+    htmlEquipes += `
+      <div style="border: 1px solid #ccc; border-radius: 6px; padding: 15px; margin-bottom: 20px; page-break-inside: avoid;">
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 10px;">
+          <h3 style="font-size: 15px; margin: 0; font-weight: bold;">EQUIPE: ${eqNome.toUpperCase()}</h3>
+          <span style="font-size: 12px; font-weight: bold; color: #555;">Casas Concluídas: ${totalCasas} UHs</span>
+        </div>
+        
+        <p style="font-size: 11px; font-weight: bold; margin-bottom: 6px; color: #333;">Participantes e Descontos:</p>
+        <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 12px;">
+          <thead>
+            <tr style="background: #f4f4f4;">
+              <th style="border: 1px solid #ddd; padding: 4px 6px; text-align: left;">Funcionário</th>
+              <th style="border: 1px solid #ddd; padding: 4px 6px; text-align: right;">Desconto Individual</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${dados.membros.length > 0 ? dados.membros.map(m => `
+              <tr>
+                <td style="border: 1px solid #ddd; padding: 4px 6px;">${m.nome}</td>
+                <td style="border: 1px solid #ddd; padding: 4px 6px; text-align: right; color: #ef4444;">R$ ${formatarMoeda(parseFloat(m.desconto) || 0)}</td>
+              </tr>
+            `).join('') : '<tr><td colspan="2" style="border: 1px solid #ddd; padding: 4px; text-align: center; color: #888;">Nenhum funcionário cadastrado</td></tr>'}
+          </tbody>
+        </table>
+
+        <div style="background: #f9f9f9; padding: 10px; border-radius: 4px; font-size: 11px; display: flex; justify-content: space-between;">
+          <span>Bruto: <strong>R$ ${formatarMoeda(valorBruto)}</strong></span>
+          <span>Descontos: <strong style="color: #ef4444;">R$ ${formatarMoeda(totalDescontos)}</strong></span>
+          <span>Líquido a Pagar: <strong style="color: #22c55e;">R$ ${formatarMoeda(valorLiquido)}</strong></span>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = `
+    <div style="border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h1 style="font-size: 22px; margin: 0; font-weight: 800; text-transform: uppercase;">CB ENGENHARIA</h1>
+        <p style="font-size: 12px; color: #555; margin-top: 4px;">Extrato Detalhado de Equipes e Fechamento Mensal</p>
+      </div>
+      <div style="text-align: right;">
+        <h3 style="font-size: 14px; margin: 0; color: #333;">Período: ${mes}/${ano}</h3>
+        <p style="font-size: 11px; color: #666; margin-top: 2px;">Frente: <strong>${nomeFrente}</strong></p>
+      </div>
+    </div>
+    ${htmlEquipes}
+    <div style="margin-top: 30px; text-align: right; font-size: 10px; color: #888;">Emitido em: ${new Date().toLocaleString('pt-BR')} — CB Engenharia</div>
+  `;
+
+  const opt = {
+    margin:       10,
+    filename:     `Extrato_Equipes_${nomeFrente.replace(/\s+/g, '_')}_${mes}_${ano}.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(container).save();
 }
 
 function gerarExcel(mes, ano) {
