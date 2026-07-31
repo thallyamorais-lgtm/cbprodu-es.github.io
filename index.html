@@ -68,12 +68,17 @@ body.light-mode .sidebar-logo-img { filter: invert(1); }
 .menu-btn-container { padding: 12px 14px; border-radius: var(--radius); cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
 .menu-btn-container:hover { background: var(--surface2); }
 .menu-btn-container.active { background: var(--surface2); border-left: 4px solid var(--accent); }
-.menu-btn-header { display: flex; justify-between; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+
+/* CORREÇÃO DO ALINHAMENTO DO MENU LATERAL */
+.menu-btn-header { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 500; margin-bottom: 6px; width: 100%; }
+.menu-pct-badge { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--text2); }
+.menu-btn-container.active .menu-pct-badge { color: var(--accent); }
+
 .menu-progress-bg { width: 100%; height: 5px; background: var(--bg); border-radius: 3px; overflow: hidden; }
 .menu-progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
 
 .main-content { flex: 1; padding: 30px; overflow-y: auto; height: 100vh; }
-.nav-header { display: flex; justify-content: space-between; align-items: center; background: var(--surface); border: 1px solid var(--border); padding: 16px 24px; border-radius: var(--radius); margin-bottom: 15px; }
+.nav-header { display: flex; justify-between: center; align-items: center; background: var(--surface); border: 1px solid var(--border); padding: 16px 24px; border-radius: var(--radius); margin-bottom: 15px; }
 .nav-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .btn-web { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px 18px; border-radius: var(--radius); cursor: pointer; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
 .btn-web:hover { background: var(--border); }
@@ -302,7 +307,7 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
             <input type="text" id="nome-equipe" placeholder="Ex: Equipe João">
           </div>
           <div style="flex: 1; min-width: 130px; display: none;" class="input-wrapper" id="box-valor-equipe-cabeamento">
-            <label style="font-size: 11px; color: #3b82f6; font-weight: 700;"> Valor/Casa (Equipe)</label>
+            <label style="font-size: 11px; color: #3b82f6; font-weight: 700;">⚡ Valor/Casa (Equipe)</label>
             <div class="input-money-container">
               <span class="money-prefix">R$</span>
               <input type="number" step="0.01" id="valor-equipe-cabeamento" placeholder="0.00">
@@ -424,14 +429,11 @@ function getMesAnoAtivo() {
   return `${m}/${a}`;
 }
 
-// OBTÉM OU MIGRA EQUIPES DA FRENTE ATIVA PARA O MÊS ATIVO
 function getEquipesDoMesAtivo() {
   const mesAno = getMesAnoAtivo();
   if (!libroAtivo.equipesPorMes) libroAtivo.equipesPorMes = {};
   
-  // Se ainda não houver equipes cadastradas no mês ativo desta frente
   if (!libroAtivo.equipesPorMes[mesAno]) {
-    // 1. Tentar puxar do formato antigo (equipes salvas diretamente na frente ativa)
     if (libroAtivo.equipes && Array.isArray(libroAtivo.equipes) && libroAtivo.equipes.length > 0) {
       libroAtivo.equipesPorMes[mesAno] = JSON.parse(JSON.stringify(libroAtivo.equipes));
     } else {
@@ -539,7 +541,10 @@ function renderizarMenuLateral() {
     wrapper.className = `menu-btn-container ${frente.id === servicoAtivoId ? 'active' : ''}`;
     wrapper.onclick = () => alternarFrenteDeServico(frente.id, frente.nome);
     wrapper.innerHTML = `
-      <div class="menu-btn-header"><span>${frente.nome}</span><span>${frente.progresso}%</span></div>
+      <div class="menu-btn-header">
+        <span>${frente.nome}</span>
+        <span class="menu-pct-badge">${frente.progresso}%</span>
+      </div>
       <div class="menu-progress-bg"><div class="menu-progress-bar" style="width: ${frente.progresso}%"></div></div>
     `;
     container.appendChild(wrapper);
