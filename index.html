@@ -283,11 +283,23 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
               <option value="2028">2028</option>
             </select>
           </div>
-          <div class="input-wrapper">
-            <label>Valor por Unidade</label>
+        </div>
+
+        <!-- DIVISÃO DOS VALORES POR CASA -->
+        <div class="form-row" style="background: var(--surface2); padding: 12px; border-radius: 6px; border: 1px solid var(--border);">
+          <div class="input-wrapper" id="box-valor-padrao">
+            <label style="font-weight:700; color:var(--text);">Valor por Unidade (Frentes Gerais)</label>
             <div class="input-money-container">
               <span class="money-prefix">R$</span>
               <input type="number" id="cfg-valor-casa" placeholder="0.00" onchange="salvarConfigMensal()">
+            </div>
+          </div>
+
+          <div class="input-wrapper" id="box-valor-cabeamento" style="border-left: 1px solid var(--border); padding-left: 10px;">
+            <label style="font-weight:700; color:#3b82f6;">⚡ Valor por Unidade (Exclusivo CABEAMENTO)</label>
+            <div class="input-money-container">
+              <span class="money-prefix">R$</span>
+              <input type="number" id="cfg-valor-cabeamento" placeholder="0.00" onchange="salvarConfigMensal()">
             </div>
           </div>
         </div>
@@ -408,7 +420,7 @@ let listaFrentes = [
 ];
 
 let servicoAtivoId = 'graute_sup';
-let libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Junho/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
+let libroAtivo = { mappedLotes: {}, valorCasa: 1250, valorCasaCabeamento: 0, mesAtivo: 'Junho/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
 let funcionariosTemporarios = [];
 let equipeSelecionadaParaMarcacao = "";
 let indexEquipeEmEdicao = null;
@@ -541,8 +553,9 @@ function conectarSincronizacaoTempoReal() {
       if (!libroAtivo.equipes) libroAtivo.equipes = [];
       if (!libroAtivo.tipoDivisao) libroAtivo.tipoDivisao = 'igual';
       if (!libroAtivo.pctCasa) libroAtivo.pctCasa = 0;
+      if (libroAtivo.valorCasaCabeamento === undefined) libroAtivo.valorCasaCabeamento = 0;
     } else {
-      libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Junho/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
+      libroAtivo = { mappedLotes: {}, valorCasa: 1250, valorCasaCabeamento: 0, mesAtivo: 'Junho/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
     }
 
     let mesPart = 'Junho';
@@ -556,6 +569,7 @@ function conectarSincronizacaoTempoReal() {
     document.getElementById('cfg-mes-nome').value = mesPart;
     document.getElementById('cfg-mes-ano').value = anoPart;
     document.getElementById('cfg-valor-casa').value = libroAtivo.valorCasa || 0;
+    document.getElementById('cfg-valor-cabeamento').value = libroAtivo.valorCasaCabeamento || 0;
     document.getElementById('cfg-tipo-divisao').value = libroAtivo.tipoDivisao;
     document.getElementById('cfg-pct-casa').value = libroAtivo.pctCasa;
     
@@ -602,6 +616,7 @@ function salvarConfigMensal() {
   const a = document.getElementById('cfg-mes-ano').value;
   libroAtivo.mesAtivo = `${m}/${a}`;
   libroAtivo.valorCasa = parseFloat(document.getElementById('cfg-valor-casa').value) || 0;
+  libroAtivo.valorCasaCabeamento = parseFloat(document.getElementById('cfg-valor-cabeamento').value) || 0;
   libroAtivo.tipoDivisao = document.getElementById('cfg-tipo-divisao').value;
   libroAtivo.pctCasa = parseFloat(document.getElementById('cfg-pct-casa').value) || 0;
   salvarEstadoNuvem();
@@ -698,7 +713,6 @@ function clicouLote(loteId) {
   salvarEstadoNuvem();
 }
 
-// 🟢 ADICIONAR / EDICAO DE FUNCIONÁRIO DENTRO DA EQUIPE
 function adicionarFuncionarioTemporario() {
   const nome = document.getElementById('nome-funcionario').value.trim();
   const desc = parseFloat(document.getElementById('desconto-funcionario').value) || 0;
@@ -708,7 +722,6 @@ function adicionarFuncionarioTemporario() {
     return;
   }
   
-  // Se o funcionário já existe na lista temporária, atualiza os dados dele
   const indexExistente = funcionariosTemporarios.findIndex(f => f.nome.toLowerCase() === nome.toLowerCase());
   
   if (indexExistente !== -1) {
@@ -776,7 +789,6 @@ function fecharEquipeGeral() {
     return;
   }
 
-  // Se o nome da equipe mudou, atualizar as marcações de lotes vinculadas ao nome antigo
   if(indexEquipeEmEdicao !== null) {
     const nomeAntigo = libroAtivo.equipes[indexEquipeEmEdicao].nome;
     
@@ -873,9 +885,17 @@ function renderizarEquipes() {
   });
 }
 
+// OBTÉM O VALOR CORRETO COM BASE NA FRENTE DE SERVIÇO ATIVA
+function obterValorUnitarioAtual() {
+  if (servicoAtivoId === 'cabeamento') {
+    return libroAtivo.valorCasaCabeamento || 0;
+  }
+  return libroAtivo.valorCasa || 0;
+}
+
 function recalcularTotais() {
   const totalCasas = Object.keys(libroAtivo.mappedLotes || {}).length;
-  const valorUnit = libroAtivo.valorCasa || 0;
+  const valorUnit = obterValorUnitarioAtual();
   const faturamento = totalCasas * valorUnit;
   const pct = Math.round((totalCasas / 444) * 100);
 
@@ -904,7 +924,7 @@ function executarEmissaoRelatorioMensal() {
 function gerarPDFResumo(mes, ano) {
   const nomeFrente = document.getElementById('tituloFrenteAtiva').innerText;
   const totalCasas = Object.keys(libroAtivo.mappedLotes || {}).length;
-  const valorUnit = libroAtivo.valorCasa || 0;
+  const valorUnit = obterValorUnitarioAtual();
   const totalBruto = totalCasas * valorUnit;
   const pctProgresso = Math.round((totalCasas / 444) * 100);
 
@@ -975,7 +995,7 @@ function gerarPDFResumo(mes, ano) {
 
 function gerarPDFDetalhado(mes, ano) {
   const nomeFrente = document.getElementById('tituloFrenteAtiva').innerText;
-  const valorUnit = libroAtivo.valorCasa || 0;
+  const valorUnit = obterValorUnitarioAtual();
 
   const equipesMap = {};
   (libroAtivo.equipes || []).forEach(eq => {
