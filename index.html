@@ -69,7 +69,6 @@ body.light-mode .sidebar-logo-img { filter: invert(1); }
 .menu-btn-container:hover { background: var(--surface2); }
 .menu-btn-container.active { background: var(--surface2); border-left: 4px solid var(--accent); }
 
-/* CORREÇÃO DO ALINHAMENTO DO MENU LATERAL */
 .menu-btn-header { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 500; margin-bottom: 6px; width: 100%; }
 .menu-pct-badge { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--text2); }
 .menu-btn-container.active .menu-pct-badge { color: var(--accent); }
@@ -78,7 +77,9 @@ body.light-mode .sidebar-logo-img { filter: invert(1); }
 .menu-progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
 
 .main-content { flex: 1; padding: 30px; overflow-y: auto; height: 100vh; }
-.nav-header { display: flex; justify-between: center; align-items: center; background: var(--surface); border: 1px solid var(--border); padding: 16px 24px; border-radius: var(--radius); margin-bottom: 15px; }
+
+/* CORREÇÃO DA BARRA DE NAVEGAÇÃO SUPERIOR */
+.nav-header { display: flex; justify-content: space-between; align-items: center; background: var(--surface); border: 1px solid var(--border); padding: 16px 24px; border-radius: var(--radius); margin-bottom: 15px; flex-wrap: wrap; gap: 15px; }
 .nav-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .btn-web { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px 18px; border-radius: var(--radius); cursor: pointer; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
 .btn-web:hover { background: var(--border); }
@@ -688,7 +689,7 @@ function renderizarSecaoLoteamento(containerId, config, prefixo) {
     
     for(let i = 1; i <= item.lotes; i++) {
       const loteId = `${prefixo}_${item.qd.replace(/\s+/g, '')}_L${i}`;
-      const loteDados = libroAtivo.mappedLotes[loteId];
+      const loteDados = libroAtivo.mappedLotes ? libroAtivo.mappedLotes[loteId] : null;
       const marcado = !!loteDados;
       
       let eqTexto = marcado ? (loteDados.equipe || '') : '';
@@ -709,9 +710,13 @@ function renderizarSecaoLoteamento(containerId, config, prefixo) {
   });
 }
 
+/* CORREÇÃO NA FUNÇÃO DE DESMARCAR CASA NO FIREBASE */
 function clicouLote(loteId) {
+  if (!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
+
   if (libroAtivo.mappedLotes[loteId]) {
     delete libroAtivo.mappedLotes[loteId];
+    db.ref(`frentes/${servicoAtivoId}/mappedLotes/${loteId}`).remove();
     mostrarToast("Unidade desmarcada!");
   } else {
     if (!equipeSelecionadaParaMarcacao || equipeSelecionadaParaMarcacao === "") {
@@ -725,7 +730,9 @@ function clicouLote(loteId) {
     };
     mostrarToast(`Unidade marcada para ${equipeSelecionadaParaMarcacao}`);
   }
+  
   salvarEstadoNuvem();
+  atualizarExibicaoGeral();
 }
 
 function adicionarFuncionarioTemporario() {
