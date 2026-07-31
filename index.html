@@ -68,7 +68,7 @@ body.light-mode .sidebar-logo-img { filter: invert(1); }
 .menu-btn-container { padding: 12px 14px; border-radius: var(--radius); cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
 .menu-btn-container:hover { background: var(--surface2); }
 .menu-btn-container.active { background: var(--surface2); border-left: 4px solid var(--accent); }
-.menu-btn-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+.menu-btn-header { display: flex; justify-between; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
 .menu-progress-bg { width: 100%; height: 5px; background: var(--bg); border-radius: 3px; overflow: hidden; }
 .menu-progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
 
@@ -200,8 +200,8 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
         <option value="Março">Março</option>
         <option value="Abril">Abril</option>
         <option value="Maio">Maio</option>
-        <option value="Junho" selected>Junho</option>
-        <option value="Julho">Julho</option>
+        <option value="Junho">Junho</option>
+        <option value="Julho" selected>Julho</option>
         <option value="Agosto">Agosto</option>
         <option value="Setembro">Setembro</option>
         <option value="Outubro">Outubro</option>
@@ -263,7 +263,6 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
           </div>
         </div>
 
-        <!-- VALOR POR CASA GERAL (OCULTO NA FRENTE CABEAMENTO) -->
         <div class="form-row" id="box-valor-padrao">
           <div class="input-wrapper">
             <label style="font-weight:700; color:var(--text);">Valor por Unidade (Geral da Frente)</label>
@@ -302,7 +301,6 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
             <label style="font-size: 11px; color: var(--text2);">1. Nome / Identificação Geral da Equipe</label>
             <input type="text" id="nome-equipe" placeholder="Ex: Equipe João">
           </div>
-          <!-- CAMPO EXCLUSIVO DE CABEAMENTO PARA PREÇO POR EQUIPE -->
           <div style="flex: 1; min-width: 130px; display: none;" class="input-wrapper" id="box-valor-equipe-cabeamento">
             <label style="font-size: 11px; color: #3b82f6; font-weight: 700;">⚡ Valor/Casa (Equipe)</label>
             <div class="input-money-container">
@@ -426,10 +424,21 @@ function getMesAnoAtivo() {
   return `${m}/${a}`;
 }
 
+// OBTÉM OU MIGRA EQUIPES DA FRENTE ATIVA PARA O MÊS ATIVO
 function getEquipesDoMesAtivo() {
   const mesAno = getMesAnoAtivo();
   if (!libroAtivo.equipesPorMes) libroAtivo.equipesPorMes = {};
-  if (!libroAtivo.equipesPorMes[mesAno]) libroAtivo.equipesPorMes[mesAno] = [];
+  
+  // Se ainda não houver equipes cadastradas no mês ativo desta frente
+  if (!libroAtivo.equipesPorMes[mesAno]) {
+    // 1. Tentar puxar do formato antigo (equipes salvas diretamente na frente ativa)
+    if (libroAtivo.equipes && Array.isArray(libroAtivo.equipes) && libroAtivo.equipes.length > 0) {
+      libroAtivo.equipesPorMes[mesAno] = JSON.parse(JSON.stringify(libroAtivo.equipes));
+    } else {
+      libroAtivo.equipesPorMes[mesAno] = [];
+    }
+  }
+  
   return libroAtivo.equipesPorMes[mesAno];
 }
 
@@ -450,13 +459,12 @@ function copiarEquipesMesAnterior() {
   const mesAnoAnterior = `${meses[idxMes]}/${ano}`;
 
   if (libroAtivo.equipesPorMes && libroAtivo.equipesPorMes[mesAnoAnterior] && libroAtivo.equipesPorMes[mesAnoAnterior].length > 0) {
-    // Clonar equipes mantendo nomes e integrantes, mas mantendo a independència dos registros do mês
     const equipesCopiadas = JSON.parse(JSON.stringify(libroAtivo.equipesPorMes[mesAnoAnterior]));
     libroAtivo.equipesPorMes[mesAnoAtivo] = equipesCopiadas;
     salvarEstadoNuvem();
     mostrarToast(`Equipes importadas de ${mesAnoAnterior}! Ajuste os descontos se necessário.`);
   } else {
-    alert(`Nenhuma equipe cadastrada encontrada em ${mesAnoAnterior} para copiar.`);
+    alert(`Nenhuma equipe encontrada no mês de ${mesAnoAnterior} nesta frente de serviço.`);
   }
 }
 
@@ -547,7 +555,6 @@ function alternarFrenteDeServico(id, nome) {
   cancelarEdicaoEquipe();
   atualizarVisualListaTemporaria();
 
-  // CONTROLE VISUAL ESPECÍFICO PARA CABEAMENTO
   const isCabeamento = (servicoAtivoId === 'cabeamento');
   document.getElementById('box-valor-padrao').style.display = isCabeamento ? 'none' : 'flex';
   document.getElementById('box-valor-equipe-cabeamento').style.display = isCabeamento ? 'flex' : 'none';
@@ -618,7 +625,7 @@ function salvarEstadoNuvem() {
 
 function forcarSalvarTudo() {
   salvarEstadoNuvem();
-  mostrarToast("✅ Todos os dados foram atualizados com a nuvem!");
+  mostrarToast("✅ Dados atualizados no servidor!");
 }
 
 function salvarConfigMensal() {
@@ -729,7 +736,7 @@ function adicionarFuncionarioTemporario() {
   
   if (indexExistente !== -1) {
     funcionariosTemporarios[indexExistente].desconto = desc;
-    mostrarToast(`Desconto de ${nome} atualizado!`);
+    mostrarToast(`Desconto de ${nome} atualizado para este mês!`);
   } else {
     funcionariosTemporarios.push({ nome: nome, desconto: desc });
     mostrarToast(`${nome} adicionado!`);
@@ -811,7 +818,7 @@ function fecharEquipeGeral() {
     equipesDoMes[indexEquipeEmEdicao].nome = nomeEq;
     equipesDoMes[indexEquipeEmEdicao].valorCasa = valorEquipeCabeamento;
     equipesDoMes[indexEquipeEmEdicao].membros = [...funcionariosTemporarios];
-    mostrarToast(`Equipe atualizada para ${mesAno}!`);
+    mostrarToast(`Equipe salva para o mês de ${mesAno}!`);
   } else {
     equipesDoMes.push({
       nome: nomeEq,
@@ -819,7 +826,7 @@ function fecharEquipeGeral() {
       membros: [...funcionariosTemporarios],
       ativa: true
     });
-    mostrarToast(`Equipe salva para ${mesAno}!`);
+    mostrarToast(`Equipe salva para o mês de ${mesAno}!`);
   }
 
   cancelarEdicaoEquipe();
@@ -866,7 +873,7 @@ function alternarStatusEquipe(idx) {
 
 function excluirEquipe(idx) {
   const equipesDoMes = getEquipesDoMesAtivo();
-  if(confirm("Tem certeza que deseja excluir esta equipe deste mês?")) {
+  if(confirm("Tem certeza que deseja remover esta equipe deste mês?")) {
     equipesDoMes.splice(idx, 1);
     salvarEstadoNuvem();
   }
