@@ -285,21 +285,13 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
           </div>
         </div>
 
-        <!-- DIVISÃO DOS VALORES POR CASA -->
-        <div class="form-row" style="background: var(--surface2); padding: 12px; border-radius: 6px; border: 1px solid var(--border);">
-          <div class="input-wrapper" id="box-valor-padrao">
-            <label style="font-weight:700; color:var(--text);">Valor por Unidade (Frentes Gerais)</label>
+        <!-- VALOR POR CASA GERAL (OCULTO NA FRENTE CABEAMENTO) -->
+        <div class="form-row" id="box-valor-padrao">
+          <div class="input-wrapper">
+            <label style="font-weight:700; color:var(--text);">Valor por Unidade (Geral da Frente)</label>
             <div class="input-money-container">
               <span class="money-prefix">R$</span>
               <input type="number" id="cfg-valor-casa" placeholder="0.00" onchange="salvarConfigMensal()">
-            </div>
-          </div>
-
-          <div class="input-wrapper" id="box-valor-cabeamento" style="border-left: 1px solid var(--border); padding-left: 10px;">
-            <label style="font-weight:700; color:#3b82f6;">⚡ Valor por Unidade (Exclusivo CABEAMENTO)</label>
-            <div class="input-money-container">
-              <span class="money-prefix">R$</span>
-              <input type="number" id="cfg-valor-cabeamento" placeholder="0.00" onchange="salvarConfigMensal()">
             </div>
           </div>
         </div>
@@ -322,9 +314,20 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 
       <div class="manage-box">
         <h4 id="titulo-cadastro-equipe">Cadastro de Participantes</h4>
-        <div style="margin-bottom: 12px;">
-          <label style="font-size: 11px; color: var(--text2); display: block; margin-bottom: 4px;">1. Nome / Identificação Geral da Equipe</label>
-          <input type="text" id="nome-equipe" placeholder="Ex: Equipe 1" style="background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 6px; font-size: 13px; width: 100%;">
+        
+        <div class="form-row" style="margin-bottom: 12px;">
+          <div style="flex: 2; min-width: 150px;" class="input-wrapper">
+            <label style="font-size: 11px; color: var(--text2);">1. Nome / Identificação Geral da Equipe</label>
+            <input type="text" id="nome-equipe" placeholder="Ex: Equipe 1">
+          </div>
+          <!-- CAMPO EXCLUSIVO DE CABEAMENTO PARA PREÇO POR EQUIPE -->
+          <div style="flex: 1; min-width: 130px; display: none;" class="input-wrapper" id="box-valor-equipe-cabeamento">
+            <label style="font-size: 11px; color: #3b82f6; font-weight: 700;">⚡ Valor/Casa (Equipe)</label>
+            <div class="input-money-container">
+              <span class="money-prefix">R$</span>
+              <input type="number" step="0.01" id="valor-equipe-cabeamento" placeholder="0.00">
+            </div>
+          </div>
         </div>
         
         <div class="form-row" style="margin-bottom: 8px;">
@@ -352,7 +355,16 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
         <button class="btn-web" id="btn-cancelar-edicao" onclick="cancelarEdicaoEquipe()" style="width:100%; justify-content:center; margin-top: 6px; display: none; background: #ef4444; color: #fff;">Cancelar Edição</button>
 
         <table class="team-list-table" style="margin-top: 25px;">
-          <thead><tr><th>Equipe Registrada</th><th>Nº Integrantes</th><th>Total Descontos</th><th>Status</th><th>Ações</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Equipe Registrada</th>
+              <th id="th-valor-equipe" style="display:none;">Val/Casa</th>
+              <th>Integrantes</th>
+              <th>Descontos</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
           <tbody id="lista-equipes-corpo"></tbody>
         </table>
       </div>
@@ -420,7 +432,7 @@ let listaFrentes = [
 ];
 
 let servicoAtivoId = 'graute_sup';
-let libroAtivo = { mappedLotes: {}, valorCasa: 1250, valorCasaCabeamento: 0, mesAtivo: 'Junho/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
+let libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Junho/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
 let funcionariosTemporarios = [];
 let equipeSelecionadaParaMarcacao = "";
 let indexEquipeEmEdicao = null;
@@ -537,6 +549,13 @@ function alternarFrenteDeServico(id, nome) {
   funcionariosTemporarios = []; 
   cancelarEdicaoEquipe();
   atualizarVisualListaTemporaria();
+
+  // CONTROLE VISUAL ESPECÍFICO PARA CABEAMENTO
+  const isCabeamento = (servicoAtivoId === 'cabeamento');
+  document.getElementById('box-valor-padrao').style.display = isCabeamento ? 'none' : 'flex';
+  document.getElementById('box-valor-equipe-cabeamento').style.display = isCabeamento ? 'flex' : 'none';
+  document.getElementById('th-valor-equipe').style.display = isCabeamento ? 'table-cell' : 'none';
+
   conectarSincronizacaoTempoReal();
 }
 
@@ -553,9 +572,8 @@ function conectarSincronizacaoTempoReal() {
       if (!libroAtivo.equipes) libroAtivo.equipes = [];
       if (!libroAtivo.tipoDivisao) libroAtivo.tipoDivisao = 'igual';
       if (!libroAtivo.pctCasa) libroAtivo.pctCasa = 0;
-      if (libroAtivo.valorCasaCabeamento === undefined) libroAtivo.valorCasaCabeamento = 0;
     } else {
-      libroAtivo = { mappedLotes: {}, valorCasa: 1250, valorCasaCabeamento: 0, mesAtivo: 'Junho/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
+      libroAtivo = { mappedLotes: {}, valorCasa: 1250, mesAtivo: 'Junho/2026', equipes: [], tipoDivisao: 'igual', pctCasa: 0 };
     }
 
     let mesPart = 'Junho';
@@ -569,7 +587,6 @@ function conectarSincronizacaoTempoReal() {
     document.getElementById('cfg-mes-nome').value = mesPart;
     document.getElementById('cfg-mes-ano').value = anoPart;
     document.getElementById('cfg-valor-casa').value = libroAtivo.valorCasa || 0;
-    document.getElementById('cfg-valor-cabeamento').value = libroAtivo.valorCasaCabeamento || 0;
     document.getElementById('cfg-tipo-divisao').value = libroAtivo.tipoDivisao;
     document.getElementById('cfg-pct-casa').value = libroAtivo.pctCasa;
     
@@ -616,7 +633,6 @@ function salvarConfigMensal() {
   const a = document.getElementById('cfg-mes-ano').value;
   libroAtivo.mesAtivo = `${m}/${a}`;
   libroAtivo.valorCasa = parseFloat(document.getElementById('cfg-valor-casa').value) || 0;
-  libroAtivo.valorCasaCabeamento = parseFloat(document.getElementById('cfg-valor-cabeamento').value) || 0;
   libroAtivo.tipoDivisao = document.getElementById('cfg-tipo-divisao').value;
   libroAtivo.pctCasa = parseFloat(document.getElementById('cfg-pct-casa').value) || 0;
   salvarEstadoNuvem();
@@ -779,6 +795,8 @@ function atualizarVisualListaTemporaria() {
 
 function fecharEquipeGeral() {
   const nomeEq = document.getElementById('nome-equipe').value.trim();
+  const valorEquipeCabeamento = parseFloat(document.getElementById('valor-equipe-cabeamento').value) || 0;
+
   if(!nomeEq) {
     alert("Digite o nome/identificação da equipe!");
     return;
@@ -801,11 +819,13 @@ function fecharEquipeGeral() {
     }
 
     libroAtivo.equipes[indexEquipeEmEdicao].nome = nomeEq;
+    libroAtivo.equipes[indexEquipeEmEdicao].valorCasa = valorEquipeCabeamento;
     libroAtivo.equipes[indexEquipeEmEdicao].membros = [...funcionariosTemporarios];
     mostrarToast("Equipe atualizada com sucesso!");
   } else {
     libroAtivo.equipes.push({
       nome: nomeEq,
+      valorCasa: valorEquipeCabeamento,
       membros: [...funcionariosTemporarios],
       ativa: true
     });
@@ -813,6 +833,7 @@ function fecharEquipeGeral() {
   }
 
   document.getElementById('nome-equipe').value = '';
+  document.getElementById('valor-equipe-cabeamento').value = '';
   funcionariosTemporarios = [];
   cancelarEdicaoEquipe();
   salvarEstadoNuvem();
@@ -824,6 +845,7 @@ function editarEquipe(idx) {
 
   indexEquipeEmEdicao = idx;
   document.getElementById('nome-equipe').value = eq.nome;
+  document.getElementById('valor-equipe-cabeamento').value = eq.valorCasa || '';
   funcionariosTemporarios = JSON.parse(JSON.stringify(eq.membros || []));
   
   document.getElementById('titulo-cadastro-equipe').innerText = "Editando Equipe: " + eq.nome;
@@ -836,6 +858,7 @@ function editarEquipe(idx) {
 function cancelarEdicaoEquipe() {
   indexEquipeEmEdicao = null;
   document.getElementById('nome-equipe').value = '';
+  document.getElementById('valor-equipe-cabeamento').value = '';
   document.getElementById('nome-funcionario').value = '';
   document.getElementById('desconto-funcionario').value = '';
   funcionariosTemporarios = [];
@@ -863,12 +886,14 @@ function renderizarEquipes() {
   const tbody = document.getElementById('lista-equipes-corpo');
   if(!tbody) return;
   tbody.innerHTML = '';
+  const isCabeamento = (servicoAtivoId === 'cabeamento');
 
   (libroAtivo.equipes || []).forEach((eq, idx) => {
     const totalDesc = (eq.membros || []).reduce((acc, m) => acc + (parseFloat(m.desconto) || 0), 0);
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><strong>${eq.nome}</strong></td>
+      ${isCabeamento ? `<td style="color:#3b82f6; font-weight:700;">R$ ${formatarMoeda(eq.valorCasa || 0)}</td>` : ''}
       <td>${(eq.membros || []).length} pessoas</td>
       <td>R$ ${formatarMoeda(totalDesc)}</td>
       <td>
@@ -885,18 +910,23 @@ function renderizarEquipes() {
   });
 }
 
-// OBTÉM O VALOR CORRETO COM BASE NA FRENTE DE SERVIÇO ATIVA
-function obterValorUnitarioAtual() {
-  if (servicoAtivoId === 'cabeamento') {
-    return libroAtivo.valorCasaCabeamento || 0;
-  }
-  return libroAtivo.valorCasa || 0;
-}
-
 function recalcularTotais() {
   const totalCasas = Object.keys(libroAtivo.mappedLotes || {}).length;
-  const valorUnit = obterValorUnitarioAtual();
-  const faturamento = totalCasas * valorUnit;
+  let faturamento = 0;
+
+  if (servicoAtivoId === 'cabeamento') {
+    // SOMA O VALOR DE CADA CASA DE ACORDO COM A EQUIPE QUE PRODUZIU
+    Object.values(libroAtivo.mappedLotes || {}).forEach(info => {
+      const eq = (libroAtivo.equipes || []).find(e => e.nome === info.equipe);
+      if (eq) {
+        faturamento += (parseFloat(eq.valorCasa) || 0);
+      }
+    });
+  } else {
+    const valorUnit = libroAtivo.valorCasa || 0;
+    faturamento = totalCasas * valorUnit;
+  }
+
   const pct = Math.round((totalCasas / 444) * 100);
 
   document.getElementById('lbl-casas-feitas').innerHTML = `${totalCasas}/444 <span style="font-size:14px;color:var(--text2);">UHs</span>`;
@@ -924,8 +954,17 @@ function executarEmissaoRelatorioMensal() {
 function gerarPDFResumo(mes, ano) {
   const nomeFrente = document.getElementById('tituloFrenteAtiva').innerText;
   const totalCasas = Object.keys(libroAtivo.mappedLotes || {}).length;
-  const valorUnit = obterValorUnitarioAtual();
-  const totalBruto = totalCasas * valorUnit;
+  
+  let totalBruto = 0;
+  if (servicoAtivoId === 'cabeamento') {
+    Object.values(libroAtivo.mappedLotes || {}).forEach(info => {
+      const eq = (libroAtivo.equipes || []).find(e => e.nome === info.equipe);
+      if (eq) totalBruto += (parseFloat(eq.valorCasa) || 0);
+    });
+  } else {
+    totalBruto = totalCasas * (libroAtivo.valorCasa || 0);
+  }
+
   const pctProgresso = Math.round((totalCasas / 444) * 100);
 
   const container = document.createElement('div');
@@ -995,17 +1034,17 @@ function gerarPDFResumo(mes, ano) {
 
 function gerarPDFDetalhado(mes, ano) {
   const nomeFrente = document.getElementById('tituloFrenteAtiva').innerText;
-  const valorUnit = obterValorUnitarioAtual();
+  const isCabeamento = (servicoAtivoId === 'cabeamento');
 
   const equipesMap = {};
   (libroAtivo.equipes || []).forEach(eq => {
-    equipesMap[eq.nome] = { membros: eq.membros || [], lotes: [] };
+    equipesMap[eq.nome] = { membros: eq.membros || [], lotes: [], valorCasa: eq.valorCasa || 0 };
   });
 
   Object.entries(libroAtivo.mappedLotes || {}).forEach(([loteId, info]) => {
     const eqNome = info.equipe;
     if (eqNome) {
-      if (!equipesMap[eqNome]) equipesMap[eqNome] = { membros: [], lotes: [] };
+      if (!equipesMap[eqNome]) equipesMap[eqNome] = { membros: [], lotes: [], valorCasa: 0 };
       equipesMap[eqNome].lotes.push(loteId);
     }
   });
@@ -1019,14 +1058,19 @@ function gerarPDFDetalhado(mes, ano) {
 
   Object.entries(equipesMap).forEach(([eqNome, dados]) => {
     const totalCasas = dados.lotes.length;
-    const valorBruto = totalCasas * valorUnit;
+    
+    let valorUnitEquipe = isCabeamento ? dados.valorCasa : (libroAtivo.valorCasa || 0);
+    const valorBruto = totalCasas * valorUnitEquipe;
     const totalDescontos = dados.membros.reduce((acc, m) => acc + (parseFloat(m.desconto) || 0), 0);
     const valorLiquido = valorBruto - totalDescontos;
 
     htmlEquipes += `
       <div style="border: 1px solid #ccc; border-radius: 6px; padding: 15px; margin-bottom: 20px; page-break-inside: avoid;">
         <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 10px;">
-          <h3 style="font-size: 15px; margin: 0; font-weight: bold;">EQUIPE: ${eqNome.toUpperCase()}</h3>
+          <div>
+            <h3 style="font-size: 15px; margin: 0; font-weight: bold;">EQUIPE: ${eqNome.toUpperCase()}</h3>
+            ${isCabeamento ? `<span style="font-size: 11px; color: #2563eb; font-weight: 600;">Valor por casa: R$ ${formatarMoeda(valorUnitEquipe)}</span>` : ''}
+          </div>
           <span style="font-size: 12px; font-weight: bold; color: #555;">Casas Concluídas: ${totalCasas} UHs</span>
         </div>
         
