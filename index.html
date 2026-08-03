@@ -78,7 +78,6 @@ body.light-mode .sidebar-logo-img { filter: invert(1); }
 
 .main-content { flex: 1; padding: 30px; overflow-y: auto; height: 100vh; }
 
-/* CORREÇÃO DA BARRA DE NAVEGAÇÃO SUPERIOR */
 .nav-header { display: flex; justify-content: space-between; align-items: center; background: var(--surface); border: 1px solid var(--border); padding: 16px 24px; border-radius: var(--radius); margin-bottom: 15px; flex-wrap: wrap; gap: 15px; }
 .nav-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .btn-web { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px 18px; border-radius: var(--radius); cursor: pointer; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
@@ -216,6 +215,7 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
       </select>
       
       <select id="seletorMesRelatorioAno" onchange="alterouMesAnoGlobal()">
+        <option value="2024">2024</option>
         <option value="2025">2025</option>
         <option value="2026" selected>2026</option>
         <option value="2027">2027</option>
@@ -417,12 +417,16 @@ let listaFrentes = [
   { id: "ceramica", nome: "Piso e Revestimento Cerâmico", progresso: 0 }
 ];
 
-let servicoAtivoId = 'graute_sup';
+let servicoAtivoId = 'contencao';
 let libroAtivo = { mappedLotes: {}, valorCasa: 1250, equipesPorMes: {}, tipoDivisao: 'igual', pctCasa: 0 };
 let funcionariosTemporarios = [];
 let equipeSelecionadaParaMarcacao = "";
 let indexEquipeEmEdicao = null;
 let currentFirebaseListener = null;
+
+function sanitizeKey(key) {
+  return key.replace(/[\/\.#\$\[\]]/g, "_");
+}
 
 function getMesAnoAtivo() {
   const m = document.getElementById('seletorMesRelatorioMes').value;
@@ -432,17 +436,15 @@ function getMesAnoAtivo() {
 
 function getEquipesDoMesAtivo() {
   const mesAno = getMesAnoAtivo();
+  const keyName = sanitizeKey(mesAno);
+  
   if (!libroAtivo.equipesPorMes) libroAtivo.equipesPorMes = {};
   
-  if (!libroAtivo.equipesPorMes[mesAno]) {
-    if (libroAtivo.equipes && Array.isArray(libroAtivo.equipes) && libroAtivo.equipes.length > 0) {
-      libroAtivo.equipesPorMes[mesAno] = JSON.parse(JSON.stringify(libroAtivo.equipes));
-    } else {
-      libroAtivo.equipesPorMes[mesAno] = [];
-    }
+  if (!libroAtivo.equipesPorMes[keyName]) {
+    libroAtivo.equipesPorMes[keyName] = [];
   }
   
-  return libroAtivo.equipesPorMes[mesAno];
+  return libroAtivo.equipesPorMes[keyName];
 }
 
 function copiarEquipesMesAnterior() {
@@ -459,15 +461,16 @@ function copiarEquipesMesAnterior() {
     idxMes--;
   }
 
-  const mesAnoAnterior = `${meses[idxMes]}/${ano}`;
+  const mesAnoAnteriorKey = sanitizeKey(`${meses[idxMes]}/${ano}`);
+  const mesAnoAtivoKey = sanitizeKey(mesAnoAtivo);
 
-  if (libroAtivo.equipesPorMes && libroAtivo.equipesPorMes[mesAnoAnterior] && libroAtivo.equipesPorMes[mesAnoAnterior].length > 0) {
-    const equipesCopiadas = JSON.parse(JSON.stringify(libroAtivo.equipesPorMes[mesAnoAnterior]));
-    libroAtivo.equipesPorMes[mesAnoAtivo] = equipesCopiadas;
+  if (libroAtivo.equipesPorMes && libroAtivo.equipesPorMes[mesAnoAnteriorKey] && libroAtivo.equipesPorMes[mesAnoAnteriorKey].length > 0) {
+    const equipesCopiadas = JSON.parse(JSON.stringify(libroAtivo.equipesPorMes[mesAnoAnteriorKey]));
+    libroAtivo.equipesPorMes[mesAnoAtivoKey] = equipesCopiadas;
     salvarEstadoNuvem();
-    mostrarToast(`Equipes importadas de ${mesAnoAnterior}! Ajuste os descontos se necessário.`);
+    mostrarToast(`Equipes importadas do mês anterior!`);
   } else {
-    alert(`Nenhuma equipe encontrada no mês de ${mesAnoAnterior} nesta frente de serviço.`);
+    alert(`Nenhuma equipe encontrada no mês anterior nesta frente de serviço.`);
   }
 }
 
@@ -501,10 +504,10 @@ function fazerLogin() {
   sincronizarFrentesGerais();
 
   if(!servicoAtivoId) {
-    alternarFrenteDeServico(listaFrentes[5].id, listaFrentes[5].nome);
+    alternarFrenteDeServico(listaFrentes[0].id, listaFrentes[0].nome);
   } else {
     const frenteAtual = listaFrentes.find(f => f.id === servicoAtivoId);
-    alternarFrenteDeServico(servicoAtivoId, frenteAtual ? frenteAtual.nome : 'Graute Superior');
+    alternarFrenteDeServico(servicoAtivoId, frenteAtual ? frenteAtual.nome : 'Contenção');
   }
 }
 
@@ -710,7 +713,6 @@ function renderizarSecaoLoteamento(containerId, config, prefixo) {
   });
 }
 
-/* CORREÇÃO NA FUNÇÃO DE DESMARCAR CASA NO FIREBASE */
 function clicouLote(loteId) {
   if (!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
 
@@ -748,7 +750,7 @@ function adicionarFuncionarioTemporario() {
   
   if (indexExistente !== -1) {
     funcionariosTemporarios[indexExistente].desconto = desc;
-    mostrarToast(`Desconto de ${nome} atualizado para este mês!`);
+    mostrarToast(`Desconto de ${nome} atualizado!`);
   } else {
     funcionariosTemporarios.push({ nome: nome, desconto: desc });
     mostrarToast(`${nome} adicionado!`);
@@ -803,6 +805,7 @@ function fecharEquipeGeral() {
   const nomeEq = document.getElementById('nome-equipe').value.trim();
   const valorEquipeCabeamento = parseFloat(document.getElementById('valor-equipe-cabeamento').value) || 0;
   const mesAno = getMesAnoAtivo();
+  const keyName = sanitizeKey(mesAno);
 
   if(!nomeEq) {
     alert("Digite o nome/identificação da equipe!");
@@ -810,11 +813,14 @@ function fecharEquipeGeral() {
   }
 
   if(funcionariosTemporarios.length === 0) {
-    alert("Adicione pelo menos um funcionário com seu desconto antes de salvar.");
+    alert("Adicione pelo menos um funcionário antes de salvar.");
     return;
   }
 
-  const equipesDoMes = getEquipesDoMesAtivo();
+  if (!libroAtivo.equipesPorMes) libroAtivo.equipesPorMes = {};
+  if (!libroAtivo.equipesPorMes[keyName]) libroAtivo.equipesPorMes[keyName] = [];
+
+  const equipesDoMes = libroAtivo.equipesPorMes[keyName];
 
   if(indexEquipeEmEdicao !== null) {
     const nomeAntigo = equipesDoMes[indexEquipeEmEdicao].nome;
@@ -830,7 +836,6 @@ function fecharEquipeGeral() {
     equipesDoMes[indexEquipeEmEdicao].nome = nomeEq;
     equipesDoMes[indexEquipeEmEdicao].valorCasa = valorEquipeCabeamento;
     equipesDoMes[indexEquipeEmEdicao].membros = [...funcionariosTemporarios];
-    mostrarToast(`Equipe salva para o mês de ${mesAno}!`);
   } else {
     equipesDoMes.push({
       nome: nomeEq,
@@ -838,11 +843,12 @@ function fecharEquipeGeral() {
       membros: [...funcionariosTemporarios],
       ativa: true
     });
-    mostrarToast(`Equipe salva para o mês de ${mesAno}!`);
   }
 
-  cancelarEdicaoEquipe();
   salvarEstadoNuvem();
+  mostrarToast(`Equipe salva com sucesso para ${mesAno}!`);
+  cancelarEdicaoEquipe();
+  atualizarExibicaoGeral();
 }
 
 function editarEquipe(idx) {
@@ -932,7 +938,8 @@ function recalcularTotais() {
 
   if (servicoAtivoId === 'cabeamento') {
     Object.values(libroAtivo.mappedLotes || {}).forEach(info => {
-      const eqMap = libroAtivo.equipesPorMes ? libroAtivo.equipesPorMes[info.mes] : null;
+      const keyName = sanitizeKey(info.mes);
+      const eqMap = libroAtivo.equipesPorMes ? libroAtivo.equipesPorMes[keyName] : null;
       if (eqMap) {
         const eq = eqMap.find(e => e.nome === info.equipe);
         if (eq) faturamento += (parseFloat(eq.valorCasa) || 0);
@@ -977,7 +984,8 @@ function gerarPDFResumo(mes, ano) {
   let totalBruto = 0;
   if (servicoAtivoId === 'cabeamento') {
     lotesFiltrados.forEach(([_, info]) => {
-      const eqMap = libroAtivo.equipesPorMes ? libroAtivo.equipesPorMes[info.mes] : null;
+      const keyName = sanitizeKey(info.mes);
+      const eqMap = libroAtivo.equipesPorMes ? libroAtivo.equipesPorMes[keyName] : null;
       if (eqMap) {
         const eq = eqMap.find(e => e.nome === info.equipe);
         if (eq) totalBruto += (parseFloat(eq.valorCasa) || 0);
@@ -1051,8 +1059,9 @@ function gerarPDFDetalhado(mes, ano) {
   const nomeFrente = document.getElementById('tituloFrenteAtiva').innerText;
   const isCabeamento = (servicoAtivoId === 'cabeamento');
   const mesAnoFiltro = `${mes}/${ano}`;
+  const keyName = sanitizeKey(mesAnoFiltro);
 
-  const equipesDoMes = (libroAtivo.equipesPorMes && libroAtivo.equipesPorMes[mesAnoFiltro]) ? libroAtivo.equipesPorMes[mesAnoFiltro] : [];
+  const equipesDoMes = (libroAtivo.equipesPorMes && libroAtivo.equipesPorMes[keyName]) ? libroAtivo.equipesPorMes[keyName] : [];
 
   const equipesMap = {};
   equipesDoMes.forEach(eq => {
