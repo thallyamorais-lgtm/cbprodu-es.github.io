@@ -10,32 +10,32 @@
 
 <style>
 :root {
-  --bg: #09090b;
-  --surface: #18181b;
-  --surface2: #27272a;
-  --border: #3f3f46;
-  --border2: #52525b;
-  --accent: #ffffff;          
-  --text: #fafafa;
-  --text2: #a1a1aa;
-  --radius: 8px;
-  --mono: 'IBM Plex Mono', monospace;
-  --sans: 'IBM Plex Sans', sans-serif;
-  --lote-bg: #18181b;
-  --lote-text: #a1a1aa;
+  --bg: #09090b;
+  --surface: #18181b;
+  --surface2: #27272a;
+  --border: #3f3f46;
+  --border2: #52525b;
+  --accent: #ffffff;          
+  --text: #fafafa;
+  --text2: #a1a1aa;
+  --radius: 8px;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --lote-bg: #18181b;
+  --lote-text: #a1a1aa;
 }
 
 body.light-mode {
-  --bg: #f4f4f5;
-  --surface: #ffffff;
-  --surface2: #e4e4e7;
-  --border: #d4d4d8;
-  --border2: #a1a1aa;
-  --accent: #000000;          
-  --text: #09090b;
-  --text2: #71717a;
-  --lote-bg: #ffffff;
-  --lote-text: #3f3f46;
+  --bg: #f4f4f5;
+  --surface: #ffffff;
+  --surface2: #e4e4e7;
+  --border: #d4d4d8;
+  --border2: #a1a1aa;
+  --accent: #000000;          
+  --text: #09090b;
+  --text2: #71717a;
+  --lote-bg: #ffffff;
+  --lote-text: #3f3f46;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -118,7 +118,7 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 
 .management-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 25px; }
 @media (max-width: 1024px) {
-  .management-container { grid-template-columns: 1fr; }
+  .management-container { grid-template-columns: 1fr; }
 }
 .manage-box { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: var(--radius); }
 .manage-box h4 { font-size: 14px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
@@ -150,212 +150,212 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 <body>
 
 <div class="login-screen" id="loginScreen">
-  <div class="grid-container" id="gridContainer"></div>
-  <div class="login-box">
-    <div class="logo-box">
-      <img src="Logo-01.png" alt="CB Engenharia" class="logo-img" id="img-login-logo" onerror="this.style.display='none'">
-      <div class="logo-text">CB ENGENHARIA</div>
-    </div>
-    <p>Plataforma de Controle de Produções</p>
-    <div class="input-group">
-      <label>Login</label>
-      <input type="email" id="email" placeholder="admin@cb.com">
-    </div>
-    <div class="input-group">
-      <label>Senha</label>
-      <input type="password" id="password" placeholder="••••••••">
-    </div>
-    <button class="btn-login" id="btnLoginAction" onclick="fazerLogin()">Acessar</button>
-    <p id="erroLogin" style="color:#ef4444; margin-top:15px; font-size:13px; font-weight:600;"></p>
-  </div>
+  <div class="grid-container" id="gridContainer"></div>
+  <div class="login-box">
+    <div class="logo-box">
+      <img src="Logo-01.png" alt="CB Engenharia" class="logo-img" id="img-login-logo" onerror="this.style.display='none'">
+      <div class="logo-text">CB ENGENHARIA</div>
+    </div>
+    <p>Plataforma de Controle de Produções</p>
+    <div class="input-group">
+      <label>Login</label>
+      <input type="email" id="email" placeholder="admin@cb.com">
+    </div>
+    <div class="input-group">
+      <label>Senha</label>
+      <input type="password" id="password" placeholder="••••••••">
+    </div>
+    <button class="btn-login" id="btnLoginAction" onclick="fazerLogin()">Acessar</button>
+    <p id="erroLogin" style="color:#ef4444; margin-top:15px; font-size:13px; font-weight:600;"></p>
+  </div>
 </div>
 
 <div class="sidebar" id="appSidebar" style="display:none;">
-  <div class="sidebar-header">
-    <img src="Logo-01.png" alt="CB" class="sidebar-logo-img" onerror="this.style.display='none'">
-    <div class="sidebar-logo">CB ENGENHARIA</div>
-    <button class="btn-tema-mini" onclick="toggleTema()" id="btnTema">🌓 Modo Claro</button>
-  </div>
-  <div class="sidebar-title-section">Frentes de Serviço</div>
-  <div class="menu-frentes" id="menuFrentes"></div>
+  <div class="sidebar-header">
+    <img src="Logo-01.png" alt="CB" class="sidebar-logo-img" onerror="this.style.display='none'">
+    <div class="sidebar-logo">CB ENGENHARIA</div>
+    <button class="btn-tema-mini" onclick="toggleTema()" id="btnTema">🌓 Modo Claro</button>
+  </div>
+  <div class="sidebar-title-section">Frentes de Serviço</div>
+  <div class="menu-frentes" id="menuFrentes"></div>
 </div>
 
 <div class="main-content" id="appMain" style="display:none;">
-  <div class="nav-header">
-    <div>
-      <h2 style="font-size:22px; font-weight:700;">Produção - CB Engenharia</h2>
-      <p style="font-size:13px; color:var(--text2); margin-top:2px;">Frente ativa: <span id="tituloFrenteAtiva" style="color:var(--accent); font-weight:700; text-decoration:underline;">Nenhuma</span></p>
-    </div>
-    <div class="nav-actions">
-      <div class="status-pill"><div class="indicator"></div><span>Sincronizado Nuvem</span></div>
-      <button class="btn-web btn-web-primary" onclick="forcarSalvarTudo()">Atualizar Dados</button>
-      <button class="btn-web" onclick="fazerLogout()" style="border-color:#ef4444; color:#ef4444;">Sair</button>
-    </div>
-  </div>
+  <div class="nav-header">
+    <div>
+      <h2 style="font-size:22px; font-weight:700;">Produção - CB Engenharia</h2>
+      <p style="font-size:13px; color:var(--text2); margin-top:2px;">Frente ativa: <span id="tituloFrenteAtiva" style="color:var(--accent); font-weight:700; text-decoration:underline;">Nenhuma</span></p>
+    </div>
+    <div class="nav-actions">
+      <div class="status-pill"><div class="indicator"></div><span>Sincronizado Nuvem</span></div>
+      <button class="btn-web btn-web-primary" onclick="forcarSalvarTudo()">Atualizar Dados</button>
+      <button class="btn-web" onclick="fazerLogout()" style="border-color:#ef4444; color:#ef4444;">Sair</button>
+    </div>
+  </div>
 
-  <div class="relatorio-menu-box">
-    <div class="relatorio-menu-title">
-      📊 Central de Relatórios Mensais da Frente
-    </div>
-    <div class="relatorio-controls">
-      <label style="font-size:12px; font-weight:600; color:var(--text2);">Período:</label>
-      <select id="seletorMesRelatorioMes" onchange="alterouMesAnoGlobal()">
-        <option value="Janeiro">Janeiro</option>
-        <option value="Fevereiro">Fevereiro</option>
-        <option value="Março">Março</option>
-        <option value="Abril">Abril</option>
-        <option value="Maio">Maio</option>
-        <option value="Junho">Junho</option>
-        <option value="Julho" selected>Julho</option>
-        <option value="Agosto">Agosto</option>
-        <option value="Setembro">Setembro</option>
-        <option value="Outubro">Outubro</option>
-        <option value="Novembro">Novembro</option>
-        <option value="Dezembro">Dezembro</option>
-      </select>
-      
-      <select id="seletorMesRelatorioAno" onchange="alterouMesAnoGlobal()">
-        <option value="2024">2024</option>
-        <option value="2025">2025</option>
-        <option value="2026" selected>2026</option>
-        <option value="2027">2027</option>
-        <option value="2028">2028</option>
-      </select>
+  <div class="relatorio-menu-box">
+    <div class="relatorio-menu-title">
+      📊 Central de Relatórios Mensais da Frente
+    </div>
+    <div class="relatorio-controls">
+      <label style="font-size:12px; font-weight:600; color:var(--text2);">Período:</label>
+      <select id="seletorMesRelatorioMes" onchange="alterouMesAnoGlobal()">
+        <option value="Janeiro">Janeiro</option>
+        <option value="Fevereiro">Fevereiro</option>
+        <option value="Março">Março</option>
+        <option value="Abril">Abril</option>
+        <option value="Maio">Maio</option>
+        <option value="Junho">Junho</option>
+        <option value="Julho" selected>Julho</option>
+        <option value="Agosto">Agosto</option>
+        <option value="Setembro">Setembro</option>
+        <option value="Outubro">Outubro</option>
+        <option value="Novembro">Novembro</option>
+        <option value="Dezembro">Dezembro</option>
+      </select>
+      
+      <select id="seletorMesRelatorioAno" onchange="alterouMesAnoGlobal()">
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026" selected>2026</option>
+        <option value="2027">2027</option>
+        <option value="2028">2028</option>
+      </select>
 
-      <label style="font-size:12px; font-weight:600; color:var(--text2);">Tipo de Relatório:</label>
-      <select id="seletorTipoRelatorio">
-        <option value="resumo_pdf">📄 Medição Atual (PDF)</option>
-        <option value="detalhado_pdf">📄 Extrato Detalhado por Equipe (PDF)</option>
-        <option value="excel">📊 Planilha Excel Mensal (.xlsx)</option>
-      </select>
+      <label style="font-size:12px; font-weight:600; color:var(--text2);">Tipo de Relatório:</label>
+      <select id="seletorTipoRelatorio">
+        <option value="resumo_pdf">📄 Medição Atual (PDF)</option>
+        <option value="detalhado_pdf">📄 Extrato Detalhado por Equipe (PDF)</option>
+        <option value="excel">📊 Planilha Excel Mensal (.xlsx)</option>
+      </select>
 
-      <button class="btn-web btn-web-success" onclick="executarEmissaoRelatorioMensal()">Gerar Relatório</button>
-    </div>
-  </div>
+      <button class="btn-web btn-web-success" onclick="executarEmissaoRelatorioMensal()">Gerar Relatório</button>
+    </div>
+  </div>
 
-  <div class="selector-top-box" id="blocoSeletorEquipeSuperior">
-    <label for="seletorEquipeAtiva">Equipe Ativa para Marcação:</label>
-    <select id="seletorEquipeAtiva" onchange="alterouEquipeMarcacao()">
-      <option value="">-- Cadastre ou selecione uma equipe --</option>
-    </select>
-  </div>
+  <div class="selector-top-box" id="blocoSeletorEquipeSuperior">
+    <label for="seletorEquipeAtiva">Equipe Ativa para Marcação:</label>
+    <select id="seletorEquipeAtiva" onchange="alterouEquipeMarcacao()">
+      <option value="">-- Cadastre ou selecione uma equipe --</option>
+    </select>
+  </div>
 
-  <div class="top-metrics-grid">
-    <div class="metric-card"><p>Produção da Frente</p><h3 id="lbl-casas-feitas">0/444 <span style="font-size:14px;color:var(--text2);">UHs</span></h3></div>
-    <div class="metric-card"><p>Equipes Ativas (Mês)</p><h3 id="lbl-equipes-ativas">0</h3></div>
-    <div class="metric-card"><p>Progresso da Frente</p><h3 style="font-size:18px;margin-top:12px;" id="lbl-status-frente-progresso">0% Concluído</h3></div>
-    <div class="metric-card"><p>Faturamento Bruto Frente</p><h3><span id="lbl-faturamento-total">R$ 0,00</span></h3></div>
-  </div>
+  <div class="top-metrics-grid">
+    <div class="metric-card"><p>Produção da Frente</p><h3 id="lbl-casas-feitas">0/444 <span style="font-size:14px;color:var(--text2);">UHs</span></h3></div>
+    <div class="metric-card"><p>Equipes Ativas (Mês)</p><h3 id="lbl-equipes-ativas">0</h3></div>
+    <div class="metric-card"><p>Progresso da Frente</p><h3 style="font-size:18px;margin-top:12px;" id="lbl-status-frente-progresso">0% Concluído</h3></div>
+    <div class="metric-card"><p>Faturamento Bruto Frente</p><h3><span id="lbl-faturamento-total">R$ 0,00</span></h3></div>
+  </div>
 
-  <div id="conteudoDoApp" style="display:none;">
-    
-    <div class="loteamento-section" id="print-jbi">
-      <div class="loteamento-header"><span>José Bernardino I</span><span style="font-size:13px;color:var(--text2);">Total: 225 Casas</span></div>
-      <div class="grid-quadras" id="container-jbi"></div>
-    </div>
+  <div id="conteudoDoApp" style="display:none;">
+    
+    <div class="loteamento-section" id="print-jbi">
+      <div class="loteamento-header"><span>José Bernardino I</span><span style="font-size:13px;color:var(--text2);">Total: 225 Casas</span></div>
+      <div class="grid-quadras" id="container-jbi"></div>
+    </div>
 
-    <div class="loteamento-section" id="print-jbii">
-      <div class="loteamento-header"><span>José Bernardino II</span><span style="font-size:13px;color:var(--text2);">Total: 219 Casas</span></div>
-      <div class="grid-quadras" id="container-jbii"></div>
-    </div>
+    <div class="loteamento-section" id="print-jbii">
+      <div class="loteamento-header"><span>José Bernardino II</span><span style="font-size:13px;color:var(--text2);">Total: 219 Casas</span></div>
+      <div class="grid-quadras" id="container-jbii"></div>
+    </div>
 
-    <div class="management-container">
-      <div class="manage-box">
-        <h4>Fechamento de Produção Mensal</h4>
-        <div class="form-row">
-          <div class="input-wrapper">
-            <label>Mês Vigente Selecionado</label>
-            <input type="text" id="cfg-mes-exibicao" readonly style="opacity: 0.8; font-weight: 700;">
-          </div>
-        </div>
+    <div class="management-container">
+      <div class="manage-box">
+        <h4>Fechamento de Produção Mensal</h4>
+        <div class="form-row">
+          <div class="input-wrapper">
+            <label>Mês Vigente Selecionado</label>
+            <input type="text" id="cfg-mes-exibicao" readonly style="opacity: 0.8; font-weight: 700;">
+          </div>
+        </div>
 
-        <div class="form-row" id="box-valor-padrao">
-          <div class="input-wrapper">
-            <label style="font-weight:700; color:var(--text);">Valor por Unidade (Geral da Frente)</label>
-            <div class="input-money-container">
-              <span class="money-prefix">R$</span>
-              <input type="number" id="cfg-valor-casa" placeholder="0.00" onchange="salvarConfigMensal()">
-            </div>
-          </div>
-        </div>
+        <div class="form-row" id="box-valor-padrao">
+          <div class="input-wrapper">
+            <label style="font-weight:700; color:var(--text);">Valor por Unidade (Geral da Frente)</label>
+            <div class="input-money-container">
+              <span class="money-prefix">R$</span>
+              <input type="number" id="cfg-valor-casa" placeholder="0.00" onchange="salvarConfigMensal()">
+            </div>
+          </div>
+        </div>
 
-        <div class="form-row" style="border-top: 1px dashed var(--border); padding-top: 15px; margin-top: 15px;">
-          <div class="input-wrapper" style="flex: 1.5;">
-            <label>Modelo de Divisão da Produção</label>
-            <select id="cfg-tipo-divisao" onchange="ajustarCamposDivisaoGeral()">
-              <option value="igual">Dividir Igual Entre Todos (Padrão)</option>
-              <option value="porcentagem">Definir % para a cada</option>
-              <option value="manual">Digitar Valores Manuais no PDF</option>
-            </select>
-          </div>
-          <div class="input-wrapper" id="box-pct-casa" style="flex: 1; display: none;">
-            <label>% Retida pela Casa</label>
-            <input type="number" id="cfg-pct-casa" value="0" min="0" max="100" onchange="salvarConfigMensal()">
-          </div>
-        </div>
-      </div>
+        <div class="form-row" style="border-top: 1px dashed var(--border); padding-top: 15px; margin-top: 15px;">
+          <div class="input-wrapper" style="flex: 1.5;">
+            <label>Modelo de Divisão da Produção</label>
+            <select id="cfg-tipo-divisao" onchange="ajustarCamposDivisaoGeral()">
+              <option value="igual">Dividir Igual Entre Todos (Padrão)</option>
+              <option value="porcentagem">Definir % para a cada</option>
+              <option value="manual">Digitar Valores Manuais no PDF</option>
+            </select>
+          </div>
+          <div class="input-wrapper" id="box-pct-casa" style="flex: 1; display: none;">
+            <label>% Retida pela Casa</label>
+            <input type="number" id="cfg-pct-casa" value="0" min="0" max="100" onchange="salvarConfigMensal()">
+          </div>
+        </div>
+      </div>
 
-      <div class="manage-box">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-          <h4 id="titulo-cadastro-equipe" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">Cadastro de Participantes (Mês Ativo)</h4>
-          <button class="btn-web" id="btn-importar-mes-anterior" onclick="copiarEquipesMesAnterior()" style="font-size: 11px; padding: 4px 8px; display: none; background: var(--surface2); color: var(--accent);">📋 Copiar Equipes do Mês Anterior</button>
-        </div>
-        <hr style="border:0; border-top:1px solid var(--border); margin-bottom:15px;">
-        
-        <div class="form-row" style="margin-bottom: 12px;">
-          <div style="flex: 2; min-width: 150px;" class="input-wrapper">
-            <label style="font-size: 11px; color: var(--text2);">1. Nome / Identificação Geral da Equipe</label>
-            <input type="text" id="nome-equipe" placeholder="Ex: Equipe João">
-          </div>
-          <div style="flex: 1; min-width: 130px; display: none;" class="input-wrapper" id="box-valor-equipe-cabeamento">
-            <label style="font-size: 11px; color: #3b82f6; font-weight: 700;">⚡ Valor/Casa (Equipe)</label>
-            <div class="input-money-container">
-              <span class="money-prefix">R$</span>
-              <input type="number" step="0.01" id="valor-equipe-cabeamento" placeholder="0.00">
-            </div>
-          </div>
-        </div>
-        
-        <div class="form-row" style="margin-bottom: 8px;">
-          <div style="flex: 2; min-width: 150px;" class="input-wrapper">
-            <label>2. Funcionário</label>
-            <input type="text" id="nome-funcionario" placeholder="Ex: José">
-          </div>
-          <div style="flex: 1; min-width: 100px;" class="input-wrapper">
-            <label>3. Desconto MENSAL</label>
-            <div class="input-money-container">
-              <span class="money-prefix">R$</span>
-              <input type="number" step="0.01" id="desconto-funcionario" placeholder="0.00">
-            </div>
-          </div>
-        </div>
-        
-        <button class="btn-web" onclick="adicionarFuncionarioTemporario()" style="width:100%; justify-content:center; margin-bottom: 12px; background: var(--surface2);">+ Adicionar / Atualizar Funcionário na Lista</button>
+      <div class="manage-box">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <h4 id="titulo-cadastro-equipe" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">Cadastro de Participantes (Mês Ativo)</h4>
+          <button class="btn-web" id="btn-importar-mes-anterior" onclick="copiarEquipesMesAnterior()" style="font-size: 11px; padding: 4px 8px; display: none; background: var(--surface2); color: var(--accent);">📋 Copiar Equipes do Mês Anterior</button>
+        </div>
+        <hr style="border:0; border-top:1px solid var(--border); margin-bottom:15px;">
+        
+        <div class="form-row" style="margin-bottom: 12px;">
+          <div style="flex: 2; min-width: 150px;" class="input-wrapper">
+            <label style="font-size: 11px; color: var(--text2);">1. Nome / Identificação Geral da Equipe</label>
+            <input type="text" id="nome-equipe" placeholder="Ex: Equipe João">
+          </div>
+          <div style="flex: 1; min-width: 130px; display: none;" class="input-wrapper" id="box-valor-equipe-cabeamento">
+            <label style="font-size: 11px; color: #3b82f6; font-weight: 700;">⚡ Valor/Casa (Equipe)</label>
+            <div class="input-money-container">
+              <span class="money-prefix">R$</span>
+              <input type="number" step="0.01" id="valor-equipe-cabeamento" placeholder="0.00">
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-row" style="margin-bottom: 8px;">
+          <div style="flex: 2; min-width: 150px;" class="input-wrapper">
+            <label>2. Funcionário</label>
+            <input type="text" id="nome-funcionario" placeholder="Ex: José">
+          </div>
+          <div style="flex: 1; min-width: 100px;" class="input-wrapper">
+            <label>3. Desconto MENSAL</label>
+            <div class="input-money-container">
+              <span class="money-prefix">R$</span>
+              <input type="number" step="0.01" id="desconto-funcionario" placeholder="0.00">
+            </div>
+          </div>
+        </div>
+        
+        <button class="btn-web" onclick="adicionarFuncionarioTemporario()" style="width:100%; justify-content:center; margin-bottom: 12px; background: var(--surface2);">+ Adicionar / Atualizar Funcionário na Lista</button>
 
-        <div id="lista-temporaria-container" style="display: none;">
-          <div style="font-size: 11px; color: var(--accent); margin-bottom: 4px; font-weight: 600;">Funcionários na equipe atual:</div>
-          <div class="temp-list" id="lista-temporaria-itens"></div>
-        </div>
+        <div id="lista-temporaria-container" style="display: none;">
+          <div style="font-size: 11px; color: var(--accent); margin-bottom: 4px; font-weight: 600;">Funcionários na equipe atual:</div>
+          <div class="temp-list" id="lista-temporaria-itens"></div>
+        </div>
 
-        <button class="btn-web btn-web-primary" id="btn-salvar-equipe" onclick="fecharEquipeGeral()" style="width:100%; justify-content:center; background: #22c55e; color: #000; font-weight: 700;">🔒 Salvar e Fechar Equipe para este Mês</button>
-        <button class="btn-web" id="btn-cancelar-edicao" onclick="cancelarEdicaoEquipe()" style="width:100%; justify-content:center; margin-top: 6px; display: none; background: #ef4444; color: #fff;">Cancelar Edição</button>
+        <button class="btn-web btn-web-primary" id="btn-salvar-equipe" onclick="fecharEquipeGeral()" style="width:100%; justify-content:center; background: #22c55e; color: #000; font-weight: 700;">🔒 Salvar e Fechar Equipe para este Mês</button>
+        <button class="btn-web" id="btn-cancelar-edicao" onclick="cancelarEdicaoEquipe()" style="width:100%; justify-content:center; margin-top: 6px; display: none; background: #ef4444; color: #fff;">Cancelar Edição</button>
 
-        <table class="team-list-table" style="margin-top: 25px;">
-          <thead>
-            <tr>
-              <th>Equipe Registrada</th>
-              <th id="th-valor-equipe" style="display:none;">Val/Casa</th>
-              <th>Integrantes</th>
-              <th>Descontos</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="lista-equipes-corpo"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+        <table class="team-list-table" style="margin-top: 25px;">
+          <thead>
+            <tr>
+              <th>Equipe Registrada</th>
+              <th id="th-valor-equipe" style="display:none;">Val/Casa</th>
+              <th>Integrantes</th>
+              <th>Descontos</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="lista-equipes-corpo"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast">Dados salvos com sucesso!</div>
@@ -366,55 +366,55 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 
 <script>
 const firebaseConfig = {
-  databaseURL: "https://cb-producoes-default-rtdb.firebaseio.com"
+  databaseURL: "https://cb-producoes-default-rtdb.firebaseio.com"
 };
 
 if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.database();
 
 const gridContainer = document.getElementById('gridContainer');
 if (gridContainer) {
-  const totalBlocks = Math.ceil(window.innerWidth / 60) * Math.ceil(window.innerHeight / 60);
-  for (let i = 0; i < totalBlocks; i++) {
-    const block = document.createElement('div');
-    block.className = 'grid-block';
-    gridContainer.appendChild(block);
-  }
+  const totalBlocks = Math.ceil(window.innerWidth / 60) * Math.ceil(window.innerHeight / 60);
+  for (let i = 0; i < totalBlocks; i++) {
+    const block = document.createElement('div');
+    block.className = 'grid-block';
+    gridContainer.appendChild(block);
+  }
 }
 
 const CONFIG_JBI = [
-  {qd: 'QD 03', lotes: 30}, {qd: 'QD 04', lotes: 30}, {qd: 'QD 06', lotes: 30},
-  {qd: 'QD 07', lotes: 30}, {qd: 'QD 10', lotes: 30}, {qd: 'QD 11', lotes: 30},
-  {qd: 'QD 02', lotes: 15}, {qd: 'QD 08', lotes: 15}, {qd: 'QD 09', lotes: 15}
+  {qd: 'QD 03', lotes: 30}, {qd: 'QD 04', lotes: 30}, {qd: 'QD 06', lotes: 30},
+  {qd: 'QD 07', lotes: 30}, {qd: 'QD 10', lotes: 30}, {qd: 'QD 11', lotes: 30},
+  {qd: 'QD 02', lotes: 15}, {qd: 'QD 08', lotes: 15}, {qd: 'QD 09', lotes: 15}
 ];
 
 const CONFIG_JBII = [
-  {qd: 'QD 18', lotes: 30}, {qd: 'QD 19', lotes: 30}, {qd: 'QD 20', lotes: 30}, 
-  {qd: 'QD 14', lotes: 30}, {qd: 'QD 13', lotes: 30}, {qd: 'QD 12', lotes: 30},
-  {qd: 'QD 15', lotes: 13}, {qd: 'QD 16', lotes: 13}, {qd: 'QD 17', lotes: 13}
+  {qd: 'QD 18', lotes: 30}, {qd: 'QD 19', lotes: 30}, {qd: 'QD 20', lotes: 30}, 
+  {qd: 'QD 14', lotes: 30}, {qd: 'QD 13', lotes: 30}, {qd: 'QD 12', lotes: 30},
+  {qd: 'QD 15', lotes: 13}, {qd: 'QD 16', lotes: 13}, {qd: 'QD 17', lotes: 13}
 ];
 
 let listaFrentes = [
-  { id: "contencao", nome: "Contenção", progresso: 0 },
-  { id: "inst_radier", nome: "Instalação de Radier", progresso: 0 },
-  { id: "lona_malha", nome: "Lona/Malha/Conc. Radier", progresso: 0 },
-  { id: "inst_reg", nome: "Instalações de Registros", progresso: 0 },
-  { id: "graute_inf", nome: "Graute Inferior", progresso: 0 },
-  { id: "graute_sup", nome: "Graute Superior", progresso: 0 },
-  { id: "telhado", nome: "Telhado", progresso: 0 },
-  { id: "inst_hidro", nome: "Instalações Hidrossanitárias", progresso: 0 },
-  { id: "alvenaria", nome: "Alvenaria", progresso: 0 },
-  { id: "acabamento", nome: "Acabamento", progresso: 0 },
-  { id: "gesso", nome: "Gesso", progresso: 0 },
-  { id: "contrapiso", nome: "Contrapiso", progresso: 0 },
-  { id: "caixinha", nome: "Caixinha", progresso: 0 },
-  { id: "peitoril", nome: "Peitoril", progresso: 0 },
-  { id: "esquadrias", nome: "Esquadrias", progresso: 0 },
-  { id: "cabeamento", nome: "Cabeamento", progresso: 0 },
-  { id: "impermea", nome: "Impermeabilização", progresso: 0 },
-  { id: "ceramica", nome: "Piso e Revestimento Cerâmico", progresso: 0 }
+  { id: "contencao", nome: "Contenção", progresso: 0 },
+  { id: "inst_radier", nome: "Instalação de Radier", progresso: 0 },
+  { id: "lona_malha", nome: "Lona/Malha/Conc. Radier", progresso: 0 },
+  { id: "inst_reg", nome: "Instalações de Registros", progresso: 0 },
+  { id: "graute_inf", nome: "Graute Inferior", progresso: 0 },
+  { id: "graute_sup", nome: "Graute Superior", progresso: 0 },
+  { id: "telhado", nome: "Telhado", progresso: 0 },
+  { id: "inst_hidro", nome: "Instalações Hidrossanitárias", progresso: 0 },
+  { id: "alvenaria", nome: "Alvenaria", progresso: 0 },
+  { id: "acabamento", nome: "Acabamento", progresso: 0 },
+  { id: "gesso", nome: "Gesso", progresso: 0 },
+  { id: "contrapiso", nome: "Contrapiso", progresso: 0 },
+  { id: "caixinha", nome: "Caixinha", progresso: 0 },
+  { id: "peitoril", nome: "Peitoril", progresso: 0 },
+  { id: "esquadrias", nome: "Esquadrias", progresso: 0 },
+  { id: "cabeamento", nome: "Cabeamento", progresso: 0 },
+  { id: "impermea", nome: "Impermeabilização", progresso: 0 },
+  { id: "ceramica", nome: "Piso e Revestimento Cerâmico", progresso: 0 }
 ];
 
 let servicoAtivoId = 'contencao';
@@ -425,713 +425,165 @@ let indexEquipeEmEdicao = null;
 let currentFirebaseListener = null;
 
 function sanitizeKey(key) {
-  return key.replace(/[\/\.#\$\[\]]/g, "_");
+  return key.replace(/[\/\.#\$\[\]]/g, "_");
 }
 
 function getMesAnoAtivo() {
-  const m = document.getElementById('seletorMesRelatorioMes').value;
-  const a = document.getElementById('seletorMesRelatorioAno').value;
-  return `${m}/${a}`;
+  const m = document.getElementById('seletorMesRelatorioMes').value;
+  const a = document.getElementById('seletorMesRelatorioAno').value;
+  return `${m}/${a}`;
 }
 
 function getEquipesDoMesAtivo() {
-  const mesAno = getMesAnoAtivo();
-  const keyName = sanitizeKey(mesAno);
-  
-  if (!libroAtivo.equipesPorMes) libroAtivo.equipesPorMes = {};
-  
-  if (!libroAtivo.equipesPorMes[keyName]) {
-    libroAtivo.equipesPorMes[keyName] = [];
-  }
-  
-  return libroAtivo.equipesPorMes[keyName];
+  const mesAno = getMesAnoAtivo();
+  const keyName = sanitizeKey(mesAno);
+  
+  if (!libroAtivo.equipesPorMes) libroAtivo.equipesPorMes = {};
+  
+  if (!libroAtivo.equipesPorMes[keyName]) {
+    libroAtivo.equipesPorMes[keyName] = [];
+  }
+  
+  return libroAtivo.equipesPorMes[keyName];
 }
 
 function copiarEquipesMesAnterior() {
-  const mesAnoAtivo = getMesAnoAtivo();
-  const partes = mesAnoAtivo.split('/');
-  const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-  let idxMes = meses.indexOf(partes[0]);
-  let ano = parseInt(partes[1]);
+  const mesAnoAtivo = getMesAnoAtivo();
+  const partes = mesAnoAtivo.split('/');
+  const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  let idxMes = meses.indexOf(partes[0]);
+  let ano = parseInt(partes[1]);
 
-  if (idxMes === 0) {
-    idxMes = 11;
-    ano--;
-  } else {
-    idxMes--;
-  }
+  if (idxMes === 0) {
+    idxMes = 11;
+    ano--;
+  } else {
+    idxMes--;
+  }
 
-  const mesAnoAnteriorKey = sanitizeKey(`${meses[idxMes]}/${ano}`);
-  const mesAnoAtivoKey = sanitizeKey(mesAnoAtivo);
+  const mesAnoAnteriorKey = sanitizeKey(`${meses[idxMes]}/${ano}`);
+  const mesAnoAtivoKey = sanitizeKey(mesAnoAtivo);
 
-  if (libroAtivo.equipesPorMes && libroAtivo.equipesPorMes[mesAnoAnteriorKey] && libroAtivo.equipesPorMes[mesAnoAnteriorKey].length > 0) {
-    const equipesCopiadas = JSON.parse(JSON.stringify(libroAtivo.equipesPorMes[mesAnoAnteriorKey]));
-    libroAtivo.equipesPorMes[mesAnoAtivoKey] = equipesCopiadas;
-    salvarEstadoNuvem();
-    mostrarToast(`Equipes importadas do mês anterior!`);
-  } else {
-    alert(`Nenhuma equipe encontrada no mês anterior nesta frente de serviço.`);
-  }
+  if (libroAtivo.equipesPorMes && libroAtivo.equipesPorMes[mesAnoAnteriorKey] && libroAtivo.equipesPorMes[mesAnoAnteriorKey].length > 0) {
+    const equipesCopiadas = JSON.parse(JSON.stringify(libroAtivo.equipesPorMes[mesAnoAnteriorKey]));
+    libroAtivo.equipesPorMes[mesAnoAtivoKey] = equipesCopiadas;
+    salvarEstadoNuvem();
+    mostrarToast(`Equipes importadas do mês anterior!`);
+  } else {
+    alert(`Nenhuma equipe encontrada no mês anterior nesta frente de serviço.`);
+  }
 }
 
 function formatarMoeda(val) {
-  return (val || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return (val || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function mostrarToast(msg) {
-  const t = document.getElementById('toast');
-  if (t) {
-    t.innerText = msg;
-    t.style.display = 'block';
-    setTimeout(() => { t.style.display = 'none'; }, 3000);
-  }
+  const t = document.getElementById('toast');
+  if (t) {
+    t.innerText = msg;
+    t.style.display = 'block';
+    setTimeout(() => { t.style.display = 'none'; }, 3000);
+  }
 }
 
 function fazerLogin() {
-  const email = document.getElementById('email').value.trim();
-  const senha = document.getElementById('password').value.trim();
-  const erro = document.getElementById('erroLogin');
+  const email = document.getElementById('email').value.trim();
+  const senha = document.getElementById('password').value.trim();
+  const erro = document.getElementById('erroLogin');
 
-  if (email === "" || senha === "") {
-    if (erro) erro.innerText = "Por favor, preencha o e-mail e a senha.";
-    return;
-  }
+  if (email === "" || senha === "") {
+    if (erro) erro.innerText = "Por favor, preencha o e-mail e a senha.";
+    return;
+  }
 
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('appSidebar').style.display = 'flex';
-  document.getElementById('appMain').style.display = 'block';
-  
-  sincronizarFrentesGerais();
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appSidebar').style.display = 'flex';
+  document.getElementById('appMain').style.display = 'block';
+  
+  sincronizarFrentesGerais();
 
-  if(!servicoAtivoId) {
-    alternarFrenteDeServico(listaFrentes[0].id, listaFrentes[0].nome);
-  } else {
-    const frenteAtual = listaFrentes.find(f => f.id === servicoAtivoId);
-    alternarFrenteDeServico(servicoAtivoId, frenteAtual ? frenteAtual.nome : 'Contenção');
-  }
+  if(!servicoAtivoId) {
+    alternarFrenteDeServico(listaFrentes[0].id, listaFrentes[0].nome);
+  } else {
+    const frenteAtual = listaFrentes.find(f => f.id === servicoAtivoId);
+    alternarFrenteDeServico(servicoAtivoId, frenteAtual ? frenteAtual.nome : 'Contenção');
+  }
 }
 
 function fazerLogout() {
-  document.getElementById('appSidebar').style.display = 'none';
-  document.getElementById('appMain').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('appSidebar').style.display = 'none';
+  document.getElementById('appMain').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
 }
 
 function toggleTema() {
-  const corpo = document.body;
-  corpo.classList.toggle('light-mode');
-  const isLight = corpo.classList.contains('light-mode');
-  document.getElementById('btnTema').innerText = isLight ? '🌓 Modo Escuro' : '🌓 Modo Claro';
+  const corpo = document.body;
+  corpo.classList.toggle('light-mode');
+  const isLight = corpo.classList.contains('light-mode');
+  document.getElementById('btnTema').innerText = isLight ? '🌓 Modo Escuro' : '🌓 Modo Claro';
 }
 
 function ajustarCamposDivisaoGeral() {
-  const tipo = document.getElementById('cfg-tipo-divisao').value;
-  document.getElementById('box-pct-casa').style.display = (tipo === 'porcentagem') ? 'block' : 'none';
-  salvarConfigMensal();
+  const tipo = document.getElementById('cfg-tipo-divisao').value;
+  document.getElementById('box-pct-casa').style.display = (tipo === 'porcentagem') ? 'block' : 'none';
+  salvarConfigMensal();
 }
 
 function alterouMesAnoGlobal() {
-  equipeSelecionadaParaMarcacao = ""; 
-  cancelarEdicaoEquipe();
-  atualizarExibicaoGeral();
+  equipeSelecionadaParaMarcacao = ""; 
+  cancelarEdicaoEquipe();
+  atualizarExibicaoGeral();
 }
 
 function renderizarMenuLateral() {
-  const container = document.getElementById('menuFrentes');
-  if(!container) return;
-  container.innerHTML = "";
-  listaFrentes.forEach(frente => {
-    const wrapper = document.createElement('div');
-    wrapper.className = `menu-btn-container ${frente.id === servicoAtivoId ? 'active' : ''}`;
-    wrapper.onclick = () => alternarFrenteDeServico(frente.id, frente.nome);
-    wrapper.innerHTML = `
-      <div class="menu-btn-header">
-        <span>${frente.nome}</span>
-        <span class="menu-pct-badge">${frente.progresso}%</span>
-      </div>
-      <div class="menu-progress-bg"><div class="menu-progress-bar" style="width: ${frente.progresso}%"></div></div>
-    `;
-    container.appendChild(wrapper);
-  });
+  const container = document.getElementById('menuFrentes');
+  if(!container) return;
+  container.innerHTML = "";
+  listaFrentes.forEach(frente => {
+    const wrapper = document.createElement('div');
+    wrapper.className = `menu-btn-container ${frente.id === servicoAtivoId ? 'active' : ''}`;
+    wrapper.onclick = () => alternarFrenteDeServico(frente.id, frente.nome);
+    wrapper.innerHTML = `
+      <div class="menu-btn-header">
+        <span>${frente.nome}</span>
+        <span class="menu-pct-badge">${frente.progresso}%</span>
+      </div>
+      <div class="menu-progress-bg"><div class="menu-progress-bar" style="width: ${frente.progresso}%"></div></div>
+    `;
+    container.appendChild(wrapper);
+  });
 }
 
 function alternarFrenteDeServico(id, nome) {
-  servicoAtivoId = id;
-  equipeSelecionadaParaMarcacao = ""; 
-  document.getElementById('tituloFrenteAtiva').innerText = nome;
-  document.getElementById('conteudoDoApp').style.display = 'block';
-  funcionariosTemporarios = []; 
-  cancelarEdicaoEquipe();
-  atualizarVisualListaTemporaria();
+  servicoAtivoId = id;
+  equipeSelecionadaParaMarcacao = ""; 
+  document.getElementById('tituloFrenteAtiva').innerText = nome;
+  document.getElementById('conteudoDoApp').style.display = 'block';
+  funcionariosTemporarios = []; 
+  cancelarEdicaoEquipe();
+  atualizarVisualListaTemporaria();
 
-  const isCabeamento = (servicoAtivoId === 'cabeamento');
-  document.getElementById('box-valor-padrao').style.display = isCabeamento ? 'none' : 'flex';
-  document.getElementById('box-valor-equipe-cabeamento').style.display = isCabeamento ? 'flex' : 'none';
-  document.getElementById('th-valor-equipe').style.display = isCabeamento ? 'table-cell' : 'none';
+  const isCabeamento = (servicoAtivoId === 'cabeamento');
+  document.getElementById('box-valor-padrao').style.display = isCabeamento ? 'none' : 'flex';
+  document.getElementById('box-valor-equipe-cabeamento').style.display = isCabeamento ? 'flex' : 'none';
+  document.getElementById('th-valor-equipe').style.display = isCabeamento ? 'table-cell' : 'none';
 
-  conectarSincronizacaoTempoReal();
+  conectarSincronizacaoTempoReal();
 }
 
 function conectarSincronizacaoTempoReal() {
-  if (currentFirebaseListener) {
-    db.ref('frentes/' + servicoAtivoId).off('value', currentFirebaseListener);
-  }
-
-  currentFirebaseListener = db.ref('frentes/' + servicoAtivoId).on('value', (snapshot) => {
-    const data = snapshot.val();
-    if (data) {
-      libroAtivo = data;
-      if (!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
-      if (!libroAtivo.equipesPorMes) libroAtivo.equipesPorMes = {};
-      if (!libroAtivo.tipoDivisao) libroAtivo.tipoDivisao = 'igual';
-      if (!libroAtivo.pctCasa) libroAtivo.pctCasa = 0;
-    } else {
-      libroAtivo = { mappedLotes: {}, valorCasa: 1250, equipesPorMes: {}, tipoDivisao: 'igual', pctCasa: 0 };
-    }
-    atualizarExibicaoGeral();
-  });
-}
-
-function sincronizarFrentesGerais() {
-  db.ref('frentes').on('value', (snapshot) => {
-    const data = snapshot.val() || {};
-    listaFrentes.forEach(f => {
-      if(data[f.id] && data[f.id].mappedLotes) {
-        const concluidas = Object.keys(data[f.id].mappedLotes).length;
-        f.progresso = Math.round((concluidas / 444) * 100);
-      } else {
-        f.progresso = 0;
-      }
-    });
-    renderizarMenuLateral();
-  });
-}
-
-function salvarEstadoNuvem() {
-  db.ref('frentes/' + servicoAtivoId).set(libroAtivo).then(() => {
-    mostrarToast("Atualizado na nuvem!");
-  });
-}
-
-function forcarSalvarTudo() {
-  salvarEstadoNuvem();
-}
-
-function salvarConfigMensal() {
-  const val = parseFloat(document.getElementById('cfg-valor-casa').value) || 0;
-  libroAtivo.valorCasa = val;
-  libroAtivo.tipoDivisao = document.getElementById('cfg-tipo-divisao').value;
-  libroAtivo.pctCasa = parseFloat(document.getElementById('cfg-pct-casa').value) || 0;
-  salvarEstadoNuvem();
-}
-
-function alterouEquipeMarcacao() {
-  equipeSelecionadaParaMarcacao = document.getElementById('seletorEquipeAtiva').value;
-}
-
-function alternarLote(loteKey) {
-  if (!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
-  
-  if (libroAtivo.mappedLotes[loteKey]) {
-    delete libroAtivo.mappedLotes[loteKey];
-  } else {
-    if (!equipeSelecionadaParaMarcacao) {
-      alert("Por favor, selecione uma equipe ativa no menu superior para realizar a marcação do lote.");
-      return;
-    }
-    libroAtivo.mappedLotes[loteKey] = {
-      equipe: equipeSelecionadaParaMarcacao,
-      mesAno: getMesAnoAtivo()
-    };
-  }
-  salvarEstadoNuvem();
-}
-
-function atualizarExibicaoGeral() {
-  const mesAnoVigente = getMesAnoAtivo();
-  document.getElementById('cfg-mes-exibicao').value = mesAnoVigente;
-  document.getElementById('cfg-valor-casa').value = libroAtivo.valorCasa || 1250;
-  document.getElementById('cfg-tipo-divisao').value = libroAtivo.tipoDivisao || 'igual';
-  document.getElementById('cfg-pct-casa').value = libroAtivo.pctCasa || 0;
-  document.getElementById('box-pct-casa').style.display = (libroAtivo.tipoDivisao === 'porcentagem') ? 'block' : 'none';
-
-  renderizarQuadras('container-jbi', CONFIG_JBI, 'JBI');
-  renderizarQuadras('container-jbii', CONFIG_JBII, 'JBII');
-  atualizarSeletorEListaEquipes();
-  atualizarMetricasTotais();
-}
-
-function renderizarQuadras(containerId, configs, prefixo) {
-  const container = document.getElementById(containerId);
-  if(!container) return;
-  container.innerHTML = "";
-
-  configs.forEach(conf => {
-    const qdBox = document.createElement('div');
-    qdBox.className = 'quadra-box';
-
-    let lotesFeitosQd = 0;
-    for (let i = 1; i <= conf.lotes; i++) {
-      const key = `${prefixo}_${conf.qd}_L${i}`;
-      if (libroAtivo.mappedLotes && libroAtivo.mappedLotes[key]) {
-        lotesFeitosQd++;
-      }
-    }
-
-    let html = `
-      <div class="quadra-info-header">
-        <span>${conf.qd}</span>
-        <span style="font-size:12px; color:var(--text2);">${lotesFeitosQd}/${conf.lotes} UHs</span>
-      </div>
-      <div class="lotes-flex-grid">
-    `;
-
-    for (let i = 1; i <= conf.lotes; i++) {
-      const key = `${prefixo}_${conf.qd}_L${i}`;
-      const info = (libroAtivo.mappedLotes && libroAtivo.mappedLotes[key]) ? libroAtivo.mappedLotes[key] : null;
-      const isActive = info !== null;
-
-      let subText = "";
-      if (isActive) {
-        subText = `
-          <span class="month-indicator">${info.mesAno || ''}</span>
-          <span class="team-indicator">${info.equipe || ''}</span>
-        `;
-      } else {
-        subText = `<span style="opacity:0.4;">L${i < 10 ? '0'+i : i}</span>`;
-      }
-
-      html += `
-        <button class="btn-lote-box ${isActive ? 'active' : ''}" onclick="alternarLote('${key}')">
-          ${subText}
-        </button>
-      `;
-    }
-
-    html += `</div>`;
-    qdBox.innerHTML = html;
-    container.appendChild(qdBox);
-  });
-}
-
-function atualizarSeletorEListaEquipes() {
-  const equipesMes = getEquipesDoMesAtivo();
-  const seletor = document.getElementById('seletorEquipeAtiva');
-  
-  if (seletor) {
-    let selHTML = `<option value="">-- Cadastre ou selecione uma equipe --</option>`;
-    equipesMes.forEach(eq => {
-      selHTML += `<option value="${eq.nome}" ${eq.nome === equipeSelecionadaParaMarcacao ? 'selected' : ''}>${eq.nome}</option>`;
-    });
-    seletor.innerHTML = selHTML;
-  }
-
-  const corpoTabela = document.getElementById('lista-equipes-corpo');
-  if (corpoTabela) {
-    corpoTabela.innerHTML = "";
-    const isCabeamento = (servicoAtivoId === 'cabeamento');
-
-    equipesMes.forEach((eq, idx) => {
-      let descTotal = 0;
-      let integrs = [];
-      if (eq.integrantes) {
-        eq.integrantes.forEach(i => {
-          descTotal += (parseFloat(i.desconto) || 0);
-          integrs.push(i.nome);
-        });
-      }
-
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td style="font-weight:700;">${eq.nome}</td>
-        ${isCabeamento ? `<td style="color:#3b82f6; font-weight:600;">R$ ${formatarMoeda(eq.valorCabeamento || 0)}</td>` : ''}
-        <td>${integrs.join(', ') || 'Nenhum'}</td>
-        <td style="color:#ef4444;">R$ ${formatarMoeda(descTotal)}</td>
-        <td><span class="badge-status status-active">Ativa</span></td>
-        <td>
-          <button class="action-btn" onclick="editarEquipe(${idx})" title="Editar">✏️</button>
-          <button class="action-btn action-btn-danger" onclick="excluirEquipe(${idx})" title="Excluir">🗑️</button>
-        </td>
-      `;
-      corpoTabela.appendChild(tr);
-    });
-  }
-}
-
-function atualizarMetricasTotais() {
-  let totalFeitoGeral = 0;
-  if (libroAtivo.mappedLotes) {
-    totalFeitoGeral = Object.keys(libroAtivo.mappedLotes).length;
-  }
-
-  const lblCasas = document.getElementById('lbl-casas-feitas');
-  if (lblCasas) lblCasas.innerHTML = `${totalFeitoGeral}/444 <span style="font-size:14px;color:var(--text2);">UHs</span>`;
-
-  const pct = Math.round((totalFeitoGeral / 444) * 100);
-  const lblProg = document.getElementById('lbl-status-frente-progresso');
-  if (lblProg) lblProg.innerText = `${pct}% Concluído`;
-
-  const equipes = getEquipesDoMesAtivo();
-  const lblEq = document.getElementById('lbl-equipes-ativas');
-  if (lblEq) lblEq.innerText = equipes.length;
-
-  let faturamento = 0;
-  if (servicoAtivoId === 'cabeamento') {
-    if (libroAtivo.mappedLotes) {
-      Object.values(libroAtivo.mappedLotes).forEach(item => {
-        const eqInfo = equipes.find(e => e.nome === item.equipe);
-        if (eqInfo) {
-          faturamento += (parseFloat(eqInfo.valorCabeamento) || 0);
-        }
-      });
-    }
-  } else {
-    faturamento = totalFeitoGeral * (libroAtivo.valorCasa || 1250);
-  }
-
-  const lblFat = document.getElementById('lbl-faturamento-total');
-  if (lblFat) lblFat.innerText = `R$ ${formatarMoeda(faturamento)}`;
-}
-
-function adicionarFuncionarioTemporario() {
-  const nome = document.getElementById('nome-funcionario').value.trim();
-  const desc = parseFloat(document.getElementById('desconto-funcionario').value) || 0;
-
-  if (!nome) {
-    alert("Informe o nome do funcionário.");
-    return;
-  }
-
-  const idxExistente = funcionariosTemporarios.findIndex(f => f.nome.toLowerCase() === nome.toLowerCase());
-  if (idxExistente >= 0) {
-    funcionariosTemporarios[idxExistente].desconto = desc;
-  } else {
-    funcionariosTemporarios.push({ nome: nome, desconto: desc });
-  }
-
-  document.getElementById('nome-funcionario').value = "";
-  document.getElementById('desconto-funcionario').value = "";
-  atualizarVisualListaTemporaria();
-}
-
-function removerFuncionarioTemporario(idx) {
-  funcionariosTemporarios.splice(idx, 1);
-  atualizarVisualListaTemporaria();
-}
-
-function atualizarVisualListaTemporaria() {
-  const cont = document.getElementById('lista-temporaria-container');
-  const itens = document.getElementById('lista-temporaria-itens');
-
-  if (funcionariosTemporarios.length === 0) {
-    cont.style.display = 'none';
-    itens.innerHTML = '';
-    return;
-  }
-
-  cont.style.display = 'block';
-  itens.innerHTML = '';
-  funcionariosTemporarios.forEach((f, idx) => {
-    const div = document.createElement('div');
-    div.className = 'temp-item';
-    div.innerHTML = `
-      <span><strong>${f.nome}</strong> (Desc: R$ ${formatarMoeda(f.desconto)})</span>
-      <button class="action-btn action-btn-danger" onclick="removerFuncionarioTemporario(${idx})">✖</button>
-    `;
-    itens.appendChild(div);
-  });
-}
-
-function fecharEquipeGeral() {
-  const nomeEq = document.getElementById('nome-equipe').value.trim();
-  if (!nomeEq) {
-    alert("Por favor, forneça um nome para a equipe.");
-    return;
-  }
-
-  const equipes = getEquipesDoMesAtivo();
-
-  if (indexEquipeEmEdicao === null) {
-    const existe = equipes.some(e => e.nome.toLowerCase() === nomeEq.toLowerCase());
-    if (existe) {
-      alert("Já existe uma equipe cadastrada com esse nome neste mês.");
-      return;
-    }
-  }
-
-  let valCabeamento = 0;
-  if (servicoAtivoId === 'cabeamento') {
-    valCabeamento = parseFloat(document.getElementById('valor-equipe-cabeamento').value) || 0;
-  }
-
-  const novaEquipe = {
-    nome: nomeEq,
-    valorCabeamento: valCabeamento,
-    integrantes: [...funcionariosTemporarios]
-  };
-
-  if (indexEquipeEmEdicao !== null) {
-    equipes[indexEquipeEmEdicao] = novaEquipe;
-  } else {
-    equipes.push(novaEquipe);
-  }
-
-  salvarEstadoNuvem();
-  cancelarEdicaoEquipe();
-}
-
-function editarEquipe(idx) {
-  const equipes = getEquipesDoMesAtivo();
-  const eq = equipes[idx];
-  if (!eq) return;
-
-  indexEquipeEmEdicao = idx;
-  document.getElementById('nome-equipe').value = eq.nome;
-  if (servicoAtivoId === 'cabeamento') {
-    document.getElementById('valor-equipe-cabeamento').value = eq.valorCabeamento || 0;
-  }
-  funcionariosTemporarios = eq.integrantes ? [...eq.integrantes] : [];
-  
-  document.getElementById('titulo-cadastro-equipe').innerText = "Editando Equipe";
-  document.getElementById('btn-salvar-equipe').innerText = "💾 Atualizar Equipe";
-  document.getElementById('btn-cancelar-edicao').style.display = 'block';
-
-  atualizarVisualListaTemporaria();
-}
-
-function cancelarEdicaoEquipe() {
-  indexEquipeEmEdicao = null;
-  document.getElementById('nome-equipe').value = "";
-  document.getElementById('nome-funcionario').value = "";
-  document.getElementById('desconto-funcionario').value = "";
-  if (servicoAtivoId === 'cabeamento') {
-    document.getElementById('valor-equipe-cabeamento').value = "";
-  }
-  funcionariosTemporarios = [];
-
-  document.getElementById('titulo-cadastro-equipe').innerText = "Cadastro de Participantes (Mês Ativo)";
-  document.getElementById('btn-salvar-equipe').innerText = "🔒 Salvar e Fechar Equipe para este Mês";
-  document.getElementById('btn-cancelar-edicao').style.display = 'none';
-
-  atualizarVisualListaTemporaria();
-}
-
-function excluirEquipe(idx) {
-  if (confirm("Tem certeza que deseja excluir esta equipe do mês vigente?")) {
-    const equipes = getEquipesDoMesAtivo();
-    equipes.splice(idx, 1);
-    salvarEstadoNuvem();
-  }
-}
-
-// GERAÇÃO DE RELATÓRIO PDF FORMATADO OFICIALMENTE
-function executarEmissaoRelatorioMensal() {
-  const mes = document.getElementById('seletorMesRelatorioMes').value;
-  const ano = document.getElementById('seletorMesRelatorioAno').value;
-  const tipoRelatorio = document.getElementById('seletorTipoRelatorio').value;
-  const frenteNome = document.getElementById('tituloFrenteAtiva').innerText;
-  const mesAnoAtivo = `${mes}/${ano}`;
-
-  if (tipoRelatorio === 'excel') {
-    alert("Função de exportação para Excel pode ser expandida aqui.");
-    return;
-  }
-
-  // Mapeia medições por loteamento, quadra e lote
-  const lotesMapeados = libroAtivo.mappedLotes || {};
-  const valorUnitarioPadrao = libroAtivo.valorCasa || 1250;
-  
-  // Estrutura para agrupar medição do mês atual por quadra
-  const medicaoPorQuadra = {};
-  let qtdTotalMedicao = 0;
-
-  Object.keys(lotesMapeados).forEach(key => {
-    const item = lotesMapeados[key];
-    if (item.mesAno === mesAnoAtivo) {
-      const partes = key.split('_'); // Ex: JBI_QD 03_L1
-      const qd = partes[1] ? partes[1].replace('QD ', '') : '00';
-      const loteNum = partes[2] ? partes[2].replace('L', '') : '00';
-
-      if (!medicaoPorQuadra[qd]) {
-        medicaoPorQuadra[qd] = [];
-      }
-      medicaoPorQuadra[qd].push(loteNum.padStart(2, '0'));
-      qtdTotalMedicao++;
-    }
-  });
-
-  const equipesDoMes = getEquipesDoMesAtivo();
-  const nomeEquipeAtiva = equipesDoMes.length > 0 ? equipesDoMes[0].nome : "GERAL";
-
-  // Calcular descontos totais de equipes
-  let totalDescontos = 0;
-  equipesDoMes.forEach(eq => {
-    if (eq.integrantes) {
-      eq.integrantes.forEach(i => {
-        totalDescontos += parseFloat(i.desconto) || 0;
-      });
-    }
-  });
-
-  // Tabela com linhas do PDF
-  let linhasTabelaHTML = "";
-  let valorTotalMedicao = 0;
-
-  const quadrasChaves = Object.keys(medicaoPorQuadra).sort();
-
-  if (quadrasChaves.length === 0) {
-    linhasTabelaHTML += `
-      <tr>
-        <td style="border: 1px solid #000; padding: 4px; text-align: center;">-</td>
-        <td style="border: 1px solid #000; padding: 4px;">Nenhuma medição cadastrada no período</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: center;">0.00</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: right;">R$ ${formatarMoeda(valorUnitarioPadrao)}</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: right;">R$ 0,00</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: center;">0,00</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: right;">R$ 0,00</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: center;">0.00</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: right;">R$ 0,00</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: right;">R$ 0,00</td>
-      </tr>
-    `;
-  } else {
-    quadrasChaves.forEach(qd => {
-      const lotesLista = medicaoPorQuadra[qd].sort((a,b) => parseInt(a)-parseInt(b));
-      const qtdLotes = lotesLista.length;
-      const valSubtotal = qtdLotes * valorUnitarioPadrao;
-      valorTotalMedicao += valSubtotal;
-
-      linhasTabelaHTML += `
-        <tr>
-          <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">${qd}</td>
-          <td style="border: 1px solid #000; padding: 4px;">UH: ${lotesLista.join(', ')}</td>
-          <td style="border: 1px solid #000; padding: 4px; text-align: center;">${qtdLotes.toFixed(2)}</td>
-          <td style="border: 1px solid #000; padding: 4px; text-align: right;">R$ ${formatarMoeda(valorUnitarioPadrao)}</td>
-          <td style="border: 1px solid #000; padding: 4px; text-align: right;">R$ ${formatarMoeda(valSubtotal)}</td>
-          <td style="border: 1px solid #000; padding: 4px; text-align: center;">0,00</td>
-          <td style="border: 1px solid #000; padding: 4px; text-align: right;">R$ 0,00</td>
-          <td style="border: 1px solid #000; padding: 4px; text-align: center;">${qtdLotes.toFixed(2)}</td>
-          <td style="border: 1px solid #000; padding: 4px; text-align: right;">R$ ${formatarMoeda(valSubtotal)}</td>
-          <td style="border: 1px solid #000; padding: 4px; text-align: right;">R$ ${formatarMoeda(valSubtotal)}</td>
-        </tr>
-      `;
-    });
-  }
-
-  // Linha de descontos na folha de medição
-  if (totalDescontos > 0) {
-    linhasTabelaHTML += `
-      <tr>
-        <td style="border: 1px solid #000; padding: 4px; text-align: center;"></td>
-        <td style="border: 1px solid #000; padding: 4px; font-weight: bold;">DESCONTO DA PRODUÇÃO (EQUIPE)</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: center;">1,00</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: right; color: red;">R$ -${formatarMoeda(totalDescontos)}</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: right; color: red;">- R$ ${formatarMoeda(totalDescontos)}</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: center;">0,00</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: right;">R$ 0,00</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: center;">1,00</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: right; color: red;">- R$ ${formatarMoeda(totalDescontos)}</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: right; color: red;">- R$ ${formatarMoeda(totalDescontos)}</td>
-      </tr>
-    `;
-  }
-
-  const valorTotalAPagar = valorTotalMedicao - totalDescontos;
-
-  // Montagem do Container do PDF Temporário
-  const pdfWrapper = document.createElement('div');
-  pdfWrapper.style.position = 'absolute';
-  pdfWrapper.style.left = '-9999px';
-  pdfWrapper.style.top = '-9999px';
-  pdfWrapper.style.width = '800px';
-  pdfWrapper.style.padding = '20px';
-  pdfWrapper.style.background = '#ffffff';
-  pdfWrapper.style.color = '#000000';
-  pdfWrapper.style.fontFamily = 'Arial, sans-serif';
-  pdfWrapper.style.fontSize = '11px';
-
-  pdfWrapper.innerHTML = `
-    <div style="border: 2px solid #000; padding: 15px; background: #fff;">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 12px;">
-        <div>
-          <h2 style="font-size: 18px; font-weight: bold; margin: 0; color: #000;">CB ENGENHARIA</h2>
-          <div style="font-size: 11px; margin-top: 4px;"><strong>Mês:</strong> ${mes.toUpperCase()} &nbsp;&nbsp;&nbsp;&nbsp; <strong>Ano:</strong> ${ano}</div>
-        </div>
-        <div style="text-align: right; font-size: 10px;">
-          <div style="font-weight: bold;">SISTEMA DE GESTÃO DA QUALIDADE</div>
-          <div>LOTEAMENTO JOSÉ BERNARDINO I</div>
-          <div style="margin-top: 4px;"><strong>Identificação:</strong> PQO-Anexo A</div>
-          <div><strong>Revisão:</strong> 02</div>
-        </div>
-      </div>
-
-      <div style="background: #f0f0f0; border: 1px solid #000; padding: 6px 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 13px; font-weight: bold;">CONTROLE DE PRODUÇÃO - ${frenteNome.toUpperCase()}</span>
-        <span style="font-size: 12px;"><strong>Equipe:</strong> ${nomeEquipeAtiva.toUpperCase()}</span>
-      </div>
-
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 10px;">
-        <thead>
-          <tr style="background: #e5e5e5; text-align: center;">
-            <th style="border: 1px solid #000; padding: 4px; width: 6%;">Quadra</th>
-            <th style="border: 1px solid #000; padding: 4px; width: 28%;">Descrição</th>
-            <th style="border: 1px solid #000; padding: 4px; width: 6%;">Quant. (un)</th>
-            <th style="border: 1px solid #000; padding: 4px; width: 10%;">Valor unitário (un)</th>
-            <th style="border: 1px solid #000; padding: 4px; width: 10%;">Medição Atual (Valor total)</th>
-            <th style="border: 1px solid #000; padding: 4px; width: 7%;">Acum. Ant. (un)</th>
-            <th style="border: 1px solid #000; padding: 4px; width: 9%;">Acum. Ant. (Valor)</th>
-            <th style="border: 1px solid #000; padding: 4px; width: 7%;">Acum. Quant. (un)</th>
-            <th style="border: 1px solid #000; padding: 4px; width: 9%;">Total Acumulado</th>
-            <th style="border: 1px solid #000; padding: 4px; width: 8%;">Total a Ser Pago</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${linhasTabelaHTML}
-        </tbody>
-        <tfoot>
-          <tr style="font-weight: bold; background: #f9f9f9;">
-            <td style="border: 1px solid #000; padding: 6px; text-align: center;" colspan="2">Valor total</td>
-            <td style="border: 1px solid #000; padding: 6px; text-align: center;">${qtdTotalMedicao.toFixed(2)}</td>
-            <td style="border: 1px solid #000; padding: 6px;"></td>
-            <td style="border: 1px solid #000; padding: 6px; text-align: right;">R$ ${formatarMoeda(valorTotalMedicao)}</td>
-            <td style="border: 1px solid #000; padding: 6px; text-align: center;">0,00</td>
-            <td style="border: 1px solid #000; padding: 6px; text-align: right;">R$ 0,00</td>
-            <td style="border: 1px solid #000; padding: 6px; text-align: center;">${qtdTotalMedicao.toFixed(2)}</td>
-            <td style="border: 1px solid #000; padding: 6px; text-align: right;">R$ ${formatarMoeda(valorTotalMedicao)}</td>
-            <td style="border: 1px solid #000; padding: 6px; text-align: right;">R$ ${formatarMoeda(valorTotalAPagar)}</td>
-          </tr>
-        </tfoot>
-      </table>
-
-      <div style="border: 1px solid #000; padding: 10px; margin-top: 20px; text-align: right; background: #fafafa;">
-        <span style="font-size: 13px; font-weight: bold;">Produção total do mês de ${mes.toUpperCase()}: R$ ${formatarMoeda(valorTotalAPagar)}</span>
-      </div>
-
-      <div style="display: flex; justify-content: space-between; margin-top: 60px; padding: 0 30px;">
-        <div style="border-top: 1px solid #000; width: 40%; text-align: center; padding-top: 4px; font-size: 10px;">
-          Responsável Técnico / Encarregado
-        </div>
-        <div style="border-top: 1px solid #000; width: 40%; text-align: center; padding-top: 4px; font-size: 10px;">
-          Gerência de Obras
-        </div>
-      </div>
-    </div>
-  `;
-
-  document.body.appendChild(pdfWrapper);
-
-  const opt = {
-    margin: 8,
-    filename: `Medicao_${frenteNome.toUpperCase().replace(/\s+/g, '_')}_${mes.toUpperCase()}_${ano}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-
-  html2pdf().set(opt).from(pdfWrapper).save().then(() => {
-    document.body.removeChild(pdfWrapper);
-  });
-}
-</script>
-</body>
-</html>
+  if (currentFirebaseListener) {
+    db.ref('frentes/' + servicoAtivoId).off('value', currentFirebaseListener);
+  }
+
+  currentFirebaseListener = db.ref('frentes/' + servicoAtivoId).on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      libroAtivo = data;
+      if (!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
+      if (!libroAtivo.equipesPorMes) libroAtivo.equipesPorMes = {};
+      if (!libroAtivo.tipoDivisao) libroAtivo.tipoDivisao = 'igual';
+      if (!libroAtivo.pctCasa) libroAtivo.pctCasa = 0;
+    } else {
+      libroA
