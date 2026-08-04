@@ -145,6 +145,126 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 .action-btn { background: transparent; border: none; cursor: pointer; color: var(--text2); font-size: 14px; margin: 0 4px; transition: color 0.2s; }
 .action-btn:hover { color: var(--text); }
 .action-btn-danger:hover { color: #ef4444; }
+
+/* ==========================================================================
+   ESTILOS DE IMPRESSÃO / GERADOR DE PDF A4
+   ========================================================================== */
+.pdf-page {
+  width: 210mm;
+  min-height: 295mm;
+  padding: 15mm;
+  background: #ffffff !important;
+  color: #000000 !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  box-sizing: border-box;
+  page-break-after: always;
+  font-size: 11px;
+}
+
+.pdf-header-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+.pdf-header-table td {
+  border: 1px solid #000;
+  padding: 6px;
+  vertical-align: middle;
+}
+
+.pdf-logo-cell {
+  width: 20%;
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.pdf-title-cell {
+  width: 60%;
+  text-align: center;
+}
+
+.pdf-title-cell h1 {
+  font-size: 13px;
+  margin: 2px 0;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.pdf-title-cell h2 {
+  font-size: 10px;
+  margin: 2px 0;
+  text-transform: uppercase;
+  font-weight: normal;
+}
+
+.pdf-meta-cell {
+  width: 20%;
+  font-size: 9px;
+  line-height: 1.3;
+}
+
+.pdf-info-bar {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+.pdf-info-bar td {
+  border: 1px solid #000;
+  padding: 5px 8px;
+  font-weight: bold;
+  font-size: 10px;
+  background-color: #f8f9fa;
+}
+
+.pdf-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+}
+
+.pdf-table th, .pdf-table td {
+  border: 1px solid #000;
+  padding: 5px 4px;
+  text-align: center;
+  font-size: 9.5px;
+}
+
+.pdf-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.pdf-summary-box {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  margin-bottom: 30px;
+}
+
+.pdf-summary-box td {
+  border: 1px solid #000;
+  padding: 6px 10px;
+}
+
+.pdf-footer-signatures {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 60px;
+  padding: 0 20px;
+}
+
+.pdf-sig-line {
+  width: 40%;
+  border-top: 1px solid #000;
+  text-align: center;
+  font-size: 9.5px;
+  padding-top: 5px;
+  font-weight: bold;
+}
 </style>
 </head>
 <body>
@@ -360,6 +480,9 @@ body.light-mode .btn-lote-box.active .team-indicator { color: #fff; background: 
 
 <div class="toast" id="toast">Dados salvos com sucesso!</div>
 
+<!-- WRAPPER PARA COMPATIBILIDADE DE RENDERIZAÇÃO DO PDF -->
+<div id="pdf-render-wrapper" style="display:none; position:fixed; left:0; top:0; z-index:-9999; background:#ffffff;"></div>
+
 <!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -501,8 +624,6 @@ function fazerLogin() {
   document.getElementById('appSidebar').style.display = 'flex';
   document.getElementById('appMain').style.display = 'block';
   
-  sincronizarFrentesGerais();
-
   if(!servicoAtivoId) {
     alternarFrenteDeServico(listaFrentes[0].id, listaFrentes[0].nome);
   } else {
@@ -536,25 +657,6 @@ function alterouMesAnoGlobal() {
   atualizarExibicaoGeral();
 }
 
-function renderizarMenuLateral() {
-  const container = document.getElementById('menuFrentes');
-  if(!container) return;
-  container.innerHTML = "";
-  listaFrentes.forEach(frente => {
-    const wrapper = document.createElement('div');
-    wrapper.className = `menu-btn-container ${frente.id === servicoAtivoId ? 'active' : ''}`;
-    wrapper.onclick = () => alternarFrenteDeServico(frente.id, frente.nome);
-    wrapper.innerHTML = `
-      <div class="menu-btn-header">
-        <span>${frente.nome}</span>
-        <span class="menu-pct-badge">${frente.progresso}%</span>
-      </div>
-      <div class="menu-progress-bg"><div class="menu-progress-bar" style="width: ${frente.progresso}%"></div></div>
-    `;
-    container.appendChild(wrapper);
-  });
-}
-
 function alternarFrenteDeServico(id, nome) {
   servicoAtivoId = id;
   equipeSelecionadaParaMarcacao = ""; 
@@ -562,7 +664,6 @@ function alternarFrenteDeServico(id, nome) {
   document.getElementById('conteudoDoApp').style.display = 'block';
   funcionariosTemporarios = []; 
   cancelarEdicaoEquipe();
-  atualizarVisualListaTemporaria();
 
   const isCabeamento = (servicoAtivoId === 'cabeamento');
   document.getElementById('box-valor-padrao').style.display = isCabeamento ? 'none' : 'flex';
@@ -592,9 +693,293 @@ function conectarSincronizacaoTempoReal() {
   });
 }
 
-/* ==========================================================================
-   GERADOR DE RELATÓRIO PDF POR EQUIPE EM FOLHAS SEPARADAS (MODELO DA IMAGEM)
-   ========================================================================== */
+function salvarEstadoNuvem() {
+  if (servicoAtivoId) {
+    db.ref('frentes/' + servicoAtivoId).set(libroAtivo);
+  }
+}
+
+function forcarSalvarTudo() {
+  salvarEstadoNuvem();
+  mostrarToast("Dados sincronizados com sucesso!");
+}
+
+function salvarConfigMensal() {
+  const v = parseFloat(document.getElementById('cfg-valor-casa').value) || 0;
+  const t = document.getElementById('cfg-tipo-divisao').value;
+  const p = parseFloat(document.getElementById('cfg-pct-casa').value) || 0;
+  
+  libroAtivo.valorCasa = v;
+  libroAtivo.tipoDivisao = t;
+  libroAtivo.pctCasa = p;
+
+  salvarEstadoNuvem();
+}
+
+function cancelarEdicaoEquipe() {
+  indexEquipeEmEdicao = null;
+  document.getElementById('nome-equipe').value = "";
+  document.getElementById('valor-equipe-cabeamento').value = "";
+  document.getElementById('nome-funcionario').value = "";
+  document.getElementById('desconto-funcionario').value = "";
+  document.getElementById('btn-salvar-equipe').innerText = "🔒 Salvar e Fechar Equipe para este Mês";
+  document.getElementById('btn-cancelar-edicao').style.display = "none";
+  document.getElementById('titulo-cadastro-equipe').innerText = "Cadastro de Participantes (Mês Ativo)";
+  funcionariosTemporarios = [];
+  atualizarVisualListaTemporaria();
+}
+
+function adicionarFuncionarioTemporario() {
+  const nomeFunc = document.getElementById('nome-funcionario').value.trim();
+  const descFunc = parseFloat(document.getElementById('desconto-funcionario').value) || 0;
+
+  if (!nomeFunc) {
+    alert("Digite o nome do funcionário.");
+    return;
+  }
+
+  funcionariosTemporarios.push({ nome: nomeFunc, desconto: descFunc });
+  document.getElementById('nome-funcionario').value = "";
+  document.getElementById('desconto-funcionario').value = "";
+  atualizarVisualListaTemporaria();
+}
+
+function removerFuncionarioTemporario(idx) {
+  funcionariosTemporarios.splice(idx, 1);
+  atualizarVisualListaTemporaria();
+}
+
+function atualizarVisualListaTemporaria() {
+  const cont = document.getElementById('lista-temporaria-container');
+  const box = document.getElementById('lista-temporaria-itens');
+  box.innerHTML = "";
+
+  if (funcionariosTemporarios.length > 0) {
+    cont.style.display = 'block';
+    funcionariosTemporarios.forEach((item, index) => {
+      const div = document.createElement('div');
+      div.className = 'temp-item';
+      div.innerHTML = `
+        <span><strong>${item.nome}</strong> - Desconto: R$ ${formatarMoeda(item.desconto)}</span>
+        <button class="action-btn action-btn-danger" onclick="removerFuncionarioTemporario(${index})">✕</button>
+      `;
+      box.appendChild(div);
+    });
+  } else {
+    cont.style.display = 'none';
+  }
+}
+
+function fecharEquipeGeral() {
+  const nomeEq = document.getElementById('nome-equipe').value.trim();
+  const valCab = parseFloat(document.getElementById('valor-equipe-cabeamento').value) || 0;
+
+  if (!nomeEq) {
+    alert("Informe o nome/identificação da equipe.");
+    return;
+  }
+
+  const equipes = getEquipesDoMesAtivo();
+
+  if (indexEquipeEmEdicao !== null) {
+    equipes[indexEquipeEmEdicao].nome = nomeEq;
+    equipes[indexEquipeEmEdicao].valorCabeamento = valCab;
+    equipes[indexEquipeEmEdicao].funcionarios = [...funcionariosTemporarios];
+  } else {
+    equipes.push({
+      nome: nomeEq,
+      valorCabeamento: valCab,
+      funcionarios: [...funcionariosTemporarios]
+    });
+  }
+
+  salvarEstadoNuvem();
+  cancelarEdicaoEquipe();
+  atualizarExibicaoGeral();
+  mostrarToast("Equipe salva com sucesso!");
+}
+
+function editarEquipe(index) {
+  const equipes = getEquipesDoMesAtivo();
+  const eq = equipes[index];
+  if (!eq) return;
+
+  indexEquipeEmEdicao = index;
+  document.getElementById('nome-equipe').value = eq.nome || "";
+  document.getElementById('valor-equipe-cabeamento').value = eq.valorCabeamento || "";
+  funcionariosTemporarios = eq.funcionarios ? JSON.parse(JSON.stringify(eq.funcionarios)) : [];
+  
+  document.getElementById('btn-salvar-equipe').innerText = "✏️ Atualizar Equipe";
+  document.getElementById('btn-cancelar-edicao').style.display = "block";
+  document.getElementById('titulo-cadastro-equipe').innerText = `Editando Equipe: ${eq.nome}`;
+  
+  atualizarVisualListaTemporaria();
+}
+
+function excluirEquipe(index) {
+  if (confirm("Deseja realmente remover esta equipe deste mês?")) {
+    const equipes = getEquipesDoMesAtivo();
+    equipes.splice(index, 1);
+    salvarEstadoNuvem();
+    atualizarExibicaoGeral();
+    mostrarToast("Equipe removida.");
+  }
+}
+
+function alterouEquipeMarcacao() {
+  equipeSelecionadaParaMarcacao = document.getElementById('seletorEquipeAtiva').value;
+}
+
+function alternarLoteMarcado(loteKey) {
+  if (!equipeSelecionadaParaMarcacao) {
+    alert("Selecione uma equipe no topo da tela para realizar as marcações!");
+    return;
+  }
+
+  const mesAnoAtivo = getMesAnoAtivo();
+
+  if (!libroAtivo.mappedLotes) libroAtivo.mappedLotes = {};
+
+  if (libroAtivo.mappedLotes[loteKey] && libroAtivo.mappedLotes[loteKey].mesAno === mesAnoAtivo && libroAtivo.mappedLotes[loteKey].equipe === equipeSelecionadaParaMarcacao) {
+    delete libroAtivo.mappedLotes[loteKey];
+  } else {
+    libroAtivo.mappedLotes[loteKey] = {
+      equipe: equipeSelecionadaParaMarcacao,
+      mesAno: mesAnoAtivo
+    };
+  }
+
+  salvarEstadoNuvem();
+  atualizarExibicaoGeral();
+}
+
+function renderizarGridLoteamento(containerId, config, prefix) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = "";
+
+  const mesAnoAtivo = getMesAnoAtivo();
+
+  config.forEach(qdItem => {
+    const boxQuadra = document.createElement('div');
+    boxQuadra.className = 'quadra-box';
+
+    let lotesHTML = "";
+    for (let i = 1; i <= qdItem.lotes; i++) {
+      const numLote = i < 10 ? `0${i}` : `${i}`;
+      const loteKey = `${prefix}_${qdItem.qd}_L${numLote}`;
+      const dataLote = libroAtivo.mappedLotes ? libroAtivo.mappedLotes[loteKey] : null;
+
+      let isActive = false;
+      let labelMes = "";
+      let labelEquipe = "";
+
+      if (dataLote) {
+        isActive = true;
+        labelMes = dataLote.mesAno || "";
+        labelEquipe = dataLote.equipe || "";
+      }
+
+      lotesHTML += `
+        <button class="btn-lote-box ${isActive ? 'active' : ''}" onclick="alternarLoteMarcado('${loteKey}')" title="${labelEquipe}">
+          ${isActive ? `<span class="month-indicator">${labelMes}</span>` : ''}
+          <span>L${numLote}</span>
+          ${isActive ? `<span class="team-indicator">${labelEquipe}</span>` : ''}
+        </button>
+      `;
+    }
+
+    boxQuadra.innerHTML = `
+      <div class="quadra-info-header">
+        <span>${qdItem.qd}</span>
+        <span style="font-size:11px; font-weight:normal; opacity:0.8;">${qdItem.lotes} lotes</span>
+      </div>
+      <div class="lotes-flex-grid">${lotesHTML}</div>
+    `;
+
+    container.appendChild(boxQuadra);
+  });
+}
+
+function atualizarExibicaoGeral() {
+  const mesAnoAtivo = getMesAnoAtivo();
+  document.getElementById('cfg-mes-exibicao').value = mesAnoAtivo;
+  document.getElementById('cfg-valor-casa').value = libroAtivo.valorCasa || 0;
+  document.getElementById('cfg-tipo-divisao').value = libroAtivo.tipoDivisao || 'igual';
+  document.getElementById('cfg-pct-casa').value = libroAtivo.pctCasa || 0;
+  
+  ajustarCamposDivisaoGeral();
+
+  // Atualizar Lista de Equipes
+  const equipes = getEquipesDoMesAtivo();
+  const corpoTabela = document.getElementById('lista-equipes-corpo');
+  corpoTabela.innerHTML = "";
+
+  const seletorSup = document.getElementById('seletorEquipeAtiva');
+  seletorSup.innerHTML = '<option value="">-- Selecione uma equipe para marcar --</option>';
+
+  equipes.forEach((eq, idx) => {
+    const isCabeamento = (servicoAtivoId === 'cabeamento');
+    const totalDescontos = (eq.funcionarios || []).reduce((acc, f) => acc + (parseFloat(f.desconto) || 0), 0);
+    const nomesIntegrantes = (eq.funcionarios || []).map(f => f.nome).join(', ') || 'Nenhum integrante';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${eq.nome}</strong></td>
+      ${isCabeamento ? `<td>R$ ${formatarMoeda(eq.valorCabeamento)}</td>` : ''}
+      <td>${nomesIntegrantes}</td>
+      <td>R$ ${formatarMoeda(totalDescontos)}</td>
+      <td><span class="badge-status status-active">Ativa</span></td>
+      <td>
+        <button class="action-btn" onclick="editarEquipe(${idx})" title="Editar">✏️</button>
+        <button class="action-btn action-btn-danger" onclick="excluirEquipe(${idx})" title="Excluir">🗑️</button>
+      </td>
+    `;
+    corpoTabela.appendChild(tr);
+
+    // Opções do Select Superior
+    const opt = document.createElement('option');
+    opt.value = eq.nome;
+    opt.innerText = eq.nome;
+    if (eq.nome === equipeSelecionadaParaMarcacao) opt.selected = true;
+    seletorSup.appendChild(opt);
+  });
+
+  // Renderizar Loteamentos
+  renderizarGridLoteamento('container-jbi', CONFIG_JBI, 'JBI');
+  renderizarGridLoteamento('container-jbii', CONFIG_JBII, 'JBII');
+
+  // Cálculo de Métricas Topo
+  let totalLotesFrente = 0;
+  let lotesConcluidosFrente = 0;
+  let faturamentoTotal = 0;
+
+  if (libroAtivo.mappedLotes) {
+    Object.entries(libroAtivo.mappedLotes).forEach(([key, info]) => {
+      lotesConcluidosFrente++;
+      const isCab = (servicoAtivoId === 'cabeamento');
+      let valUnit = libroAtivo.valorCasa || 0;
+      if (isCab) {
+        const eqEncontrada = equipes.find(e => e.nome === info.equipe);
+        if (eqEncontrada) valUnit = eqEncontrada.valorCabeamento || 0;
+      }
+      faturamentoTotal += valUnit;
+    });
+  }
+
+  totalLotesFrente = 444; 
+  const pctGeral = Math.round((lotesConcluidosFrente / totalLotesFrente) * 100) || 0;
+
+  document.getElementById('lbl-casas-feitas').innerHTML = `${lotesConcluidosFrente}/444 <span style="font-size:14px;color:var(--text2);">UHs</span>`;
+  document.getElementById('lbl-equipes-ativas').innerText = equipes.length;
+  document.getElementById('lbl-status-frente-progresso').innerText = `${pctGeral}% Concluído`;
+  document.getElementById('lbl-faturamento-total').innerText = `R$ ${formatarMoeda(faturamentoTotal)}`;
+}
+
+function gerarExcel() {
+  alert("Gerando Planilha Excel dos lançamentos mensais...");
+}
+
 function executarEmissaoRelatorioMensal() {
   const tipo = document.getElementById('seletorTipoRelatorio').value;
   if (tipo === 'excel') {
@@ -604,6 +989,9 @@ function executarEmissaoRelatorioMensal() {
   }
 }
 
+/* ==========================================================================
+   GERADOR DE RELATÓRIO PDF POR EQUIPE EM FOLHAS SEPARADAS (MODELO CORRIGIDO)
+   ========================================================================== */
 function gerarPDFModeloIndividualPorEquipe() {
   const mesAnoAtivo = getMesAnoAtivo();
   const partesMes = mesAnoAtivo.split('/');
@@ -618,7 +1006,6 @@ function gerarPDFModeloIndividualPorEquipe() {
     return;
   }
 
-  // Agrupar produção por Equipe e por Loteamento / Quadra
   const producaoPorEquipe = {};
 
   if (libroAtivo.mappedLotes) {
@@ -629,8 +1016,7 @@ function gerarPDFModeloIndividualPorEquipe() {
           producaoPorEquipe[eqNome] = [];
         }
 
-        // Extrair Loteamento, Quadra e Lote do loteKey
-        const partes = loteKey.split('_'); // Ex: JBI_QD 03_L01
+        const partes = loteKey.split('_');
         const loteamento = partes[0] === 'JBI' ? 'LOTEAMENTO JOSE BERNARDINO I' : 'LOTEAMENTO JOSE BERNARDINO II';
         const quadra = partes[1];
         const loteNum = partes[2].replace('L', '');
@@ -648,14 +1034,10 @@ function gerarPDFModeloIndividualPorEquipe() {
   const wrapper = document.getElementById('pdf-render-wrapper');
   wrapper.innerHTML = "";
 
-  let totalPaginasGeradas = 0;
-
-  // Gerar folha individual para cada equipe cadastrada
   equipesMes.forEach(equipe => {
     const lotesEquipe = producaoPorEquipe[equipe.nome] || [];
     const valorUnitario = isCabeamento ? (equipe.valorCabeamento || 0) : (libroAtivo.valorCasa || 0);
 
-    // Separar lotes por loteamento (JBI e JBII)
     const porLoteamento = {};
     lotesEquipe.forEach(item => {
       if (!porLoteamento[item.loteamento]) porLoteamento[item.loteamento] = {};
@@ -663,10 +1045,8 @@ function gerarPDFModeloIndividualPorEquipe() {
       porLoteamento[item.loteamento][item.quadra].push(item.loteNum);
     });
 
-    const lotesAnterioresEquipe = 0; // Calculado caso necessário historicamente
     const totalDescontoEquipe = (equipe.funcionarios || []).reduce((acc, f) => acc + (parseFloat(f.desconto) || 0), 0);
 
-    // Montar integrantes para o cabeçalho
     let integrantesHTML = "";
     if (equipe.funcionarios && equipe.funcionarios.length > 0) {
       equipe.funcionarios.forEach((func, fIdx) => {
@@ -690,10 +1070,8 @@ function gerarPDFModeloIndividualPorEquipe() {
       `;
     }
 
-    // Identificar Loteamento principal para exibi-lo no topo
     const nomeLoteamentoTopo = Object.keys(porLoteamento)[0] || 'LOTEAMENTO JOSE BERNARDINO I / II';
 
-    // Construção das Linhas da Tabela de Produção
     let linhasTabelaProducaoHTML = "";
     let somaQuantAtual = 0;
     let somaValorAtual = 0;
@@ -726,7 +1104,6 @@ function gerarPDFModeloIndividualPorEquipe() {
       });
     });
 
-    // Se a equipe não produziu no mês, colocar linha zerada explicativa
     if (somaQuantAtual === 0) {
       linhasTabelaProducaoHTML += `
         <tr>
@@ -744,7 +1121,6 @@ function gerarPDFModeloIndividualPorEquipe() {
       `;
     }
 
-    // LINHA ADICIONADA: DESCONTO LOGO ABAIXO DA QUADRA / PRODUÇÃO
     linhasTabelaProducaoHTML += `
       <tr style="background-color: #fcf8e3;">
         <td>-</td>
@@ -762,16 +1138,12 @@ function gerarPDFModeloIndividualPorEquipe() {
 
     const totalLiquidoPago = somaValorAtual - totalDescontoEquipe;
 
-    // Estrutura HTML da página do PDF da Equipe
     const pageContainer = document.createElement('div');
     pageContainer.className = 'pdf-page';
     pageContainer.innerHTML = `
-      <!-- CABEÇALHO PADRÃO CB ENGENHARIA -->
       <table class="pdf-header-table">
         <tr>
-          <td class="pdf-logo-cell">
-            CB ENGENHARIA
-          </td>
+          <td class="pdf-logo-cell">CB ENGENHARIA</td>
           <td class="pdf-title-cell">
             <h2>Sistema de Gestão da Qualidade</h2>
             <h1>${nomeLoteamentoTopo}</h1>
@@ -785,7 +1157,6 @@ function gerarPDFModeloIndividualPorEquipe() {
         </tr>
       </table>
 
-      <!-- INFORMAÇÕES DE MÊS, ANO E EQUIPE -->
       <table class="pdf-info-bar">
         <tr>
           <td style="width: 25%;">Mês: ${mesNome}</td>
@@ -794,14 +1165,12 @@ function gerarPDFModeloIndividualPorEquipe() {
         </tr>
       </table>
 
-      <!-- INTEGRANTES DA EQUIPE -->
       <table class="pdf-table" style="margin-bottom: 15px;">
         <tbody>
           ${integrantesHTML}
         </tbody>
       </table>
 
-      <!-- TABELA PRINCIPAL DE MEDIÇÃO COM CABEÇALHOS DETALHADOS -->
       <table class="pdf-table">
         <thead>
           <tr>
@@ -824,7 +1193,6 @@ function gerarPDFModeloIndividualPorEquipe() {
         </thead>
         <tbody>
           ${linhasTabelaProducaoHTML}
-          <!-- LINHA DE TOTAIS -->
           <tr style="font-weight:bold; background-color:#f2f2f2;">
             <td colspan="2" style="text-align:right;">Valor total</td>
             <td>${somaQuantAtual.toFixed(2)}</td>
@@ -839,7 +1207,6 @@ function gerarPDFModeloIndividualPorEquipe() {
         </tbody>
       </table>
 
-      <!-- RESUMO FINAL -->
       <table class="pdf-summary-box">
         <tr>
           <td style="width: 70%; text-align: right; font-size: 11px;">Produção total do mês de ${mesNome}:</td>
@@ -847,7 +1214,6 @@ function gerarPDFModeloIndividualPorEquipe() {
         </tr>
       </table>
 
-      <!-- CAMPOS DE ASSINATURA -->
       <div class="pdf-footer-signatures">
         <div class="pdf-sig-line">Responsável Técnico / Encarregado</div>
         <div class="pdf-sig-line">Gerência de Obras</div>
@@ -855,7 +1221,6 @@ function gerarPDFModeloIndividualPorEquipe() {
     `;
 
     wrapper.appendChild(pageContainer);
-    totalPaginasGeradas++;
   });
 
   wrapper.style.display = 'block';
@@ -870,17 +1235,14 @@ function gerarPDFModeloIndividualPorEquipe() {
 
   html2pdf().set(opt).from(wrapper).save().then(() => {
     wrapper.style.display = 'none';
-    mostrarToast("PDF gerado com sucesso em páginas separadas!");
+    mostrarToast("PDF gerado com sucesso!");
   }).catch(err => {
     console.error(err);
     wrapper.style.display = 'none';
-    alert("Erro ao gerar PDF. Verifique o console.");
+    alert("Erro ao gerar PDF.");
   });
 }
 </script>
-
-<!-- WRAPPER PARA COMPATIBILIDADE DE RENDERIZAÇÃO DO PDF -->
-<div id="pdf-render-wrapper" style="display:none; position:absolute; left:-9999px; top:-9999px;"></div>
 
 </body>
 </html>
